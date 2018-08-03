@@ -90,26 +90,26 @@ check_fileServerType_param $fileServerType
   PhpVer=$(get_php_version)
 
   if [ $fileServerType = "gluster" ]; then
-    # Mount gluster fs for /moodle
-    sudo mkdir -p /moodle
-    sudo chown www-data /moodle
-    sudo chmod 770 /moodle
+    # Mount gluster fs for /azlamp
+    sudo mkdir -p /azlamp
+    sudo chown www-data /azlamp
+    sudo chmod 770 /azlamp
     sudo echo -e 'Adding Gluster FS to /etc/fstab and mounting it'
-    setup_and_mount_gluster_moodle_share $glusterNode $glusterVolume
+    setup_and_mount_gluster_share $glusterNode $glusterVolume /azlamp
   elif [ $fileServerType = "nfs" ]; then
     # mount NFS export (set up on controller VM--No HA)
-    echo -e '\n\rMounting NFS export from '$nfsVmName':/moodle on /moodle and adding it to /etc/fstab\n\r'
-    configure_nfs_client_and_mount $nfsVmName /moodle /moodle
+    echo -e '\n\rMounting NFS export from '$nfsVmName':/azlamp on /azlamp and adding it to /etc/fstab\n\r'
+    configure_nfs_client_and_mount $nfsVmName /azlamp /azlamp
   elif [ $fileServerType = "nfs-ha" ]; then
     # mount NFS-HA export
-    echo -e '\n\rMounting NFS export from '$nfsHaLbIP':'$nfsHaExportPath' on /moodle and adding it to /etc/fstab\n\r'
-    configure_nfs_client_and_mount $nfsHaLbIP $nfsHaExportPath /moodle
+    echo -e '\n\rMounting NFS export from '$nfsHaLbIP':'$nfsHaExportPath' on /azlamp and adding it to /etc/fstab\n\r'
+    configure_nfs_client_and_mount $nfsHaLbIP $nfsHaExportPath /azlamp
   elif [ $fileServerType = "nfs-byo" ]; then
     # mount NFS-BYO export
-    echo -e '\n\rMounting NFS export from '$nfsByoIpExportPath' on /moodle and adding it to /etc/fstab\n\r'
-    configure_nfs_client_and_mount0 $nfsByoIpExportPath /moodle
+    echo -e '\n\rMounting NFS export from '$nfsByoIpExportPath' on /azlamp and adding it to /etc/fstab\n\r'
+    configure_nfs_client_and_mount0 $nfsByoIpExportPath /azlamp
   else # "azurefiles"
-    setup_and_mount_azure_files_moodle_share $storageAccountName $storageAccountKey
+    setup_and_mount_azure_files_share azlamp $storageAccountName $storageAccountKey
   fi
 
   # Configure syslog to forward
@@ -190,154 +190,19 @@ EOF
   fi # if [ "$webServerType" = "nginx" -o "$httpsTermination" = "VMSS" ];
 
   # Set up html dir local copy if specified
-  htmlRootDir="/moodle/html/moodle"
   if [ "$htmlLocalCopySwitch" = "true" ]; then
     mkdir -p /var/www/html
-    rsync -av --delete /moodle/html/moodle /var/www/html
-    htmlRootDir="/var/www/html/moodle"
+    rsync -av --delete /azlamp/html/. /var/www/html
     setup_html_local_copy_cron_job
   fi
-
-  if [ "$httpsTermination" = "VMSS" ]; then
-    # Configure nginx/https
-    cat <<EOF >> /etc/nginx/sites-enabled/${siteFQDN}.conf
-server {
-        listen 443 ssl;
-        root ${htmlRootDir};
-	index index.php index.html index.htm;
-
-        ssl on;
-        ssl_certificate /moodle/certs/nginx.crt;
-        ssl_certificate_key /moodle/certs/nginx.key;
-
-        # Log to syslog
-        error_log syslog:server=localhost,facility=local1,severity=error,tag=moodle;
-        access_log syslog:server=localhost,facility=local1,severity=notice,tag=moodle moodle_combined;
-
-        # Log XFF IP instead of varnish
-        set_real_ip_from    10.0.0.0/8;
-        set_real_ip_from    127.0.0.1;
-        set_real_ip_from    172.16.0.0/12;
-        set_real_ip_from    192.168.0.0/16;
-        real_ip_header      X-Forwarded-For;
-        real_ip_recursive   on;
-
-        location / {
-          proxy_set_header Host \$host;
-          proxy_set_header HTTP_REFERER \$http_referer;
-          proxy_set_header X-Forwarded-Host \$host;
-          proxy_set_header X-Forwarded-Server \$host;
-          proxy_set_header X-Forwarded-Proto https;
-          proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-          proxy_pass http://localhost:80;
-
-          proxy_connect_timeout       3600;
-          proxy_send_timeout          3600;
-          proxy_read_timeout          3600;
-          send_timeout                3600;
-        }
-}
-EOF
-  fi
-
-  if [ "$webServerType" = "nginx" ]; then
-    cat <<EOF >> /etc/nginx/sites-enabled/${siteFQDN}.conf
-server {
-        listen 81 default;
-        server_name ${siteFQDN};
-        root ${htmlRootDir};
-	index index.php index.html index.htm;
-
-        # Log to syslog
-        error_log syslog:server=localhost,facility=local1,severity=error,tag=moodle;
-        access_log syslog:server=localhost,facility=local1,severity=notice,tag=moodle moodle_combined;
-
-        # Log XFF IP instead of varnish
-        set_real_ip_from    10.0.0.0/8;
-        set_real_ip_from    127.0.0.1;
-        set_real_ip_from    172.16.0.0/12;
-        set_real_ip_from    192.168.0.0/16;
-        real_ip_header      X-Forwarded-For;
-        real_ip_recursive   on;
-EOF
-    if [ "$httpsTermination" != "None" ]; then
-      cat <<EOF >> /etc/nginx/sites-enabled/${siteFQDN}.conf
-        # Redirect to https
-        if (\$http_x_forwarded_proto != https) {
-                return 301 https://\$server_name\$request_uri;
-        }
-        rewrite ^/(.*\.php)(/)(.*)$ /\$1?file=/\$3 last;
-EOF
-    fi
-    cat <<EOF >> /etc/nginx/sites-enabled/${siteFQDN}.conf
-        # Filter out php-fpm status page
-        location ~ ^/server-status {
-            return 404;
-        }
-
-	location / {
-		try_files \$uri \$uri/index.php?\$query_string;
-	}
- 
-        location ~ [^/]\.php(/|$) {
-          fastcgi_split_path_info ^(.+?\.php)(/.*)$;
-          if (!-f \$document_root\$fastcgi_script_name) {
-                  return 404;
-          }
- 
-          fastcgi_buffers 16 16k;
-          fastcgi_buffer_size 32k;
-          fastcgi_param   SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-          fastcgi_pass unix:/run/php/php${PhpVer}-fpm.sock;
-          fastcgi_read_timeout 3600;
-          fastcgi_index index.php;
-          include fastcgi_params;
-        }
-}
-
-EOF
-  fi # if [ "$webServerType" = "nginx" ];
 
   if [ "$webServerType" = "apache" ]; then
     # Configure Apache/php
     sed -i "s/Listen 80/Listen 81/" /etc/apache2/ports.conf
     a2enmod rewrite && a2enmod remoteip && a2enmod headers
+  fi
 
-    cat <<EOF >> /etc/apache2/sites-enabled/${siteFQDN}.conf
-<VirtualHost *:81>
-	ServerName ${siteFQDN}
-
-	ServerAdmin webmaster@localhost
-	DocumentRoot ${htmlRootDir}
-
-	<Directory ${htmlRootDir}>
-		Options FollowSymLinks
-		AllowOverride All
-		Require all granted
-	</Directory>
-EOF
-    if [ "$httpsTermination" != "None" ]; then
-      cat <<EOF >> /etc/apache2/sites-enabled/${siteFQDN}.conf
-    # Redirect unencrypted direct connections to HTTPS
-    <IfModule mod_rewrite.c>
-      RewriteEngine on
-      RewriteCond %{HTTP:X-Forwarded-Proto} !https [NC]
-      RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [L,R=301]
-    </IFModule>
-EOF
-    fi
-    cat <<EOF >> /etc/apache2/sites-enabled/${siteFQDN}.conf
-    # Log X-Forwarded-For IP address instead of varnish (127.0.0.1)
-    SetEnvIf X-Forwarded-For "^.*\..*\..*\..*" forwarded
-    LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
-    LogFormat "%{X-Forwarded-For}i %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" forwarded
-	ErrorLog "|/usr/bin/logger -t moodle -p local1.error"
-    CustomLog "|/usr/bin/logger -t moodle -p local1.notice" combined env=!forwarded
-    CustomLog "|/usr/bin/logger -t moodle -p local1.notice" forwarded env=forwarded
-
-</VirtualHost>
-EOF
-  fi # if [ "$webServerType" = "apache" ];
+  config_all_sites $htmlLocalCopySwitch $httpsTermination $webServerType
 
    # php config 
    if [ "$webServerType" = "apache" ]; then
@@ -366,8 +231,8 @@ EOF
    fi
 
    if [ "$webServerType" = "nginx" -o "$httpsTermination" = "VMSS" ]; then
-     # update startup script to wait for certificate in /moodle mount
-     setup_moodle_mount_dependency_for_systemd_service nginx || exit 1
+     # update startup script to wait for certificate in /azlamp mount
+     setup_azlamp_mount_dependency_for_systemd_service nginx || exit 1
      # restart Nginx
      sudo service nginx restart 
    fi
@@ -394,7 +259,7 @@ EOF
 
    if [ "$webServerType" = "apache" ]; then
       if [ "$htmlLocalCopySwitch" != "true" ]; then
-        setup_moodle_mount_dependency_for_systemd_service apache2 || exit 1
+        setup_azlamp_mount_dependency_for_systemd_service apache2 || exit 1
       fi
       sudo service apache2 restart
    fi
