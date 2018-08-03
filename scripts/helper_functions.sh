@@ -103,48 +103,51 @@ function check_fileServerType_param
     fi
 }
 
-function create_azure_files_moodle_share
+function create_azure_files_share
 {
-    local storageAccountName=$1
-    local storageAccountKey=$2
-    local logFilePath=$3
+    local shareName=$1
+    local storageAccountName=$2
+    local storageAccountKey=$3
+    local logFilePath=$4
 
     az storage share create \
-        --name moodle \
+        --name $shareName \
         --account-name $storageAccountName \
         --account-key $storageAccountKey \
         --fail-on-exist >> $logFilePath
 }
 
-function setup_and_mount_gluster_moodle_share
+function setup_and_mount_gluster_share
 {
     local glusterNode=$1
     local glusterVolume=$2
+    local mountPoint=$3     # E.g., /azlamp
 
-    grep -q "/moodle.*glusterfs" /etc/fstab || echo -e $glusterNode':/'$glusterVolume'   /moodle         glusterfs       defaults,_netdev,log-level=WARNING,log-file=/var/log/gluster.log 0 0' >> /etc/fstab
-    mount /moodle
+    grep -q "${mountPoint}.*glusterfs" /etc/fstab || echo -e $glusterNode':/'$glusterVolume'   '$mountPoint'         glusterfs       defaults,_netdev,log-level=WARNING,log-file=/var/log/gluster.log 0 0' >> /etc/fstab
+    mount $mountPoint
 }
 
-function setup_and_mount_azure_files_moodle_share
+function setup_and_mount_azure_files_share
 {
-    local storageAccountName=$1
-    local storageAccountKey=$2
+    local shareName=$1
+    local storageAccountName=$2
+    local storageAccountKey=$3
 
-    cat <<EOF > /etc/moodle_azure_files.credential
+    cat <<EOF > /etc/azlamp_azure_files.credential
 username=$storageAccountName
 password=$storageAccountKey
 EOF
-    chmod 600 /etc/moodle_azure_files.credential
+    chmod 600 /etc/azlamp_azure_files.credential
     
-    grep -q -s "^//$storageAccountName.file.core.windows.net/moodle\s\s*/moodle\s\s*cifs" /etc/fstab && _RET=$? || _RET=$?
+    grep -q -s "^//$storageAccountName.file.core.windows.net/azlamp\s\s*/azlamp\s\s*cifs" /etc/fstab && _RET=$? || _RET=$?
     if [ $_RET != "0" ]; then
-        echo -e "\n//$storageAccountName.file.core.windows.net/moodle   /moodle cifs    credentials=/etc/moodle_azure_files.credential,uid=www-data,gid=www-data,nofail,vers=3.0,dir_mode=0770,file_mode=0660,serverino,mfsymlinks" >> /etc/fstab
+        echo -e "\n//$storageAccountName.file.core.windows.net/azlamp   /azlamp cifs    credentials=/etc/azlamp_azure_files.credential,uid=www-data,gid=www-data,nofail,vers=3.0,dir_mode=0770,file_mode=0660,serverino,mfsymlinks" >> /etc/fstab
     fi
-    mkdir -p /moodle
-    mount /moodle
+    mkdir -p /azlamp
+    mount /azlamp
 }
 
-function setup_moodle_mount_dependency_for_systemd_service
+function setup_azlamp_mount_dependency_for_systemd_service
 {
   local serviceName=$1 # E.g., nginx, apache2
   if [ -z "$serviceName" ]; then
@@ -152,14 +155,14 @@ function setup_moodle_mount_dependency_for_systemd_service
   fi
 
   local systemdSvcOverrideFileDir="/etc/systemd/system/${serviceName}.service.d"
-  local systemdSvcOverrideFilePath="${systemdSvcOverrideFileDir}/moodle_on_azure_override.conf"
+  local systemdSvcOverrideFilePath="${systemdSvcOverrideFileDir}/azlamp_override.conf"
 
-  grep -q -s "After=moodle.mount" $systemdSvcOverrideFilePath && _RET=$? || _RET=$?
+  grep -q -s "After=azlamp.mount" $systemdSvcOverrideFilePath && _RET=$? || _RET=$?
   if [ $_RET != "0" ]; then
     mkdir -p $systemdSvcOverrideFileDir
     cat <<EOF > $systemdSvcOverrideFilePath
 [Unit]
-After=moodle.mount
+After=azlamp.mount
 EOF
     systemctl daemon-reload
   fi
@@ -228,7 +231,7 @@ function do_partition {
 
 function add_local_filesystem_to_fstab {
     local UUID=${1}
-    local MOUNTPOINT=${2}   # E.g., /moodle
+    local MOUNTPOINT=${2}   # E.g., /azlamp
 
     grep -q -s "${UUID}" /etc/fstab && _RET=$? || _RET=$?
     if [ $_RET -eq 0 ];
@@ -241,7 +244,7 @@ function add_local_filesystem_to_fstab {
 }
 
 function setup_raid_disk_and_filesystem {
-    local MOUNTPOINT=${1}     # E.g., /moodle
+    local MOUNTPOINT=${1}     # E.g., /azlamp
     local RAIDDISK=${2}       # E.g., /dev/md1
     local RAIDPARTITION=${3}  # E.g., /dev/md1p1
     local CREATE_FILESYSTEM=${4}  # E.g., "" (true) or any non-empty string (false)
@@ -285,7 +288,7 @@ function setup_raid_disk_and_filesystem {
 }
 
 function configure_nfs_server_and_export {
-    local MOUNTPOINT=${1}     # E.g., /moodle
+    local MOUNTPOINT=${1}     # E.g., /azlamp
 
     echo "Installing nfs server..."
     apt install -y nfs-kernel-server
@@ -301,8 +304,8 @@ function configure_nfs_server_and_export {
 }
 
 function configure_nfs_client_and_mount0 {
-    local NFS_HOST_EXPORT_PATH=${1}   # E.g., controller-vm-ab12cd:/moodle or 172.16.3.100:/drbd/data
-    local MOUNTPOINT=${2}             # E.g., /moodle
+    local NFS_HOST_EXPORT_PATH=${1}   # E.g., controller-vm-ab12cd:/azlamp or 172.16.3.100:/drbd/data
+    local MOUNTPOINT=${2}             # E.g., /azlamp
 
     apt install -y nfs-common
     mkdir -p ${MOUNTPOINT}
@@ -318,16 +321,16 @@ function configure_nfs_client_and_mount0 {
 
 function configure_nfs_client_and_mount {
     local NFS_SERVER=${1}     # E.g., controller-vm-ab12cd or IP (NFS-HA LB)
-    local NFS_DIR=${2}        # E.g., /moodle or /drbd/data
-    local MOUNTPOINT=${3}     # E.g., /moodle
+    local NFS_DIR=${2}        # E.g., /azlamp or /drbd/data
+    local MOUNTPOINT=${3}     # E.g., /azlamp
 
     configure_nfs_client_and_mount0 "${NFS_SERVER}:${NFS_DIR}" ${MOUNTPOINT}
 }
 
-SERVER_TIMESTAMP_FULLPATH="/moodle/html/moodle/.last_modified_time.moodle_on_azure"
-LOCAL_TIMESTAMP_FULLPATH="/var/www/html/moodle/.last_modified_time.moodle_on_azure"
+SERVER_TIMESTAMP_FULLPATH="/azlamp/html/.last_modified_time.azlamp"
+LOCAL_TIMESTAMP_FULLPATH="/var/www/html/.last_modified_time.azlamp"
 
-# Create a script to sync /moodle/html/moodle (gluster/NFS) and /var/www/html/moodle (local) and set up a minutely cron job
+# Create a script to sync /azlamp/html (gluster/NFS) and /var/www/html (local) and set up a minutely cron job
 # Should be called by root and only on a VMSS web frontend VM
 function setup_html_local_copy_cron_job {
   if [ "$(whoami)" != "root" ]; then
@@ -335,10 +338,10 @@ function setup_html_local_copy_cron_job {
     return 1
   fi
 
-  local SYNC_SCRIPT_FULLPATH="/usr/local/bin/sync_moodle_html_local_copy_if_modified.sh"
+  local SYNC_SCRIPT_FULLPATH="/usr/local/bin/sync_azlamp_html_local_copy_if_modified.sh"
   mkdir -p $(dirname ${SYNC_SCRIPT_FULLPATH})
 
-  local SYNC_LOG_FULLPATH="/var/log/moodle-html-sync.log"
+  local SYNC_LOG_FULLPATH="/var/log/azlamp-html-sync.log"
 
   cat <<EOF > ${SYNC_SCRIPT_FULLPATH}
 #!/bin/bash
@@ -350,7 +353,7 @@ if [ -f "$SERVER_TIMESTAMP_FULLPATH" ]; then
   if [ -f "$LOCAL_TIMESTAMP_FULLPATH" ]; then
     LOCAL_TIMESTAMP=\$(cat $LOCAL_TIMESTAMP_FULLPATH)
   else
-    logger -p local2.notice -t moodle "Local timestamp file ($LOCAL_TIMESTAMP_FULLPATH) does not exist. Probably first time syncing? Continuing to sync."
+    logger -p local2.notice -t azlamp "Local timestamp file ($LOCAL_TIMESTAMP_FULLPATH) does not exist. Probably first time syncing? Continuing to sync."
     mkdir -p /var/www/html
   fi
   if [ "\$SERVER_TIMESTAMP" != "\$LOCAL_TIMESTAMP" ]; then
@@ -359,16 +362,16 @@ if [ -f "$SERVER_TIMESTAMP_FULLPATH" ]; then
       truncate -s 0 $SYNC_LOG_FULLPATH
     fi
     echo \$(date +%Y%m%d%H%M%S) >> $SYNC_LOG_FULLPATH
-    rsync -av --delete /moodle/html/moodle /var/www/html >> $SYNC_LOG_FULLPATH
+    rsync -av --delete /azlamp/html/. /var/www/html >> $SYNC_LOG_FULLPATH
   fi
 else
-  logger -p local2.notice -t moodle "Remote timestamp file ($SERVER_TIMESTAMP_FULLPATH) does not exist. Is /moodle mounted? Exiting with error."
+  logger -p local2.notice -t azlamp "Remote timestamp file ($SERVER_TIMESTAMP_FULLPATH) does not exist. Is /azlamp mounted? Exiting with error."
   exit 1
 fi
 EOF
   chmod 500 ${SYNC_SCRIPT_FULLPATH}
 
-  local CRON_DESC_FULLPATH="/etc/cron.d/sync-moodle-html-local-copy"
+  local CRON_DESC_FULLPATH="/etc/cron.d/sync-azlamp-html-local-copy"
   cat <<EOF > ${CRON_DESC_FULLPATH}
 * * * * * root ${SYNC_SCRIPT_FULLPATH}
 EOF
@@ -377,16 +380,16 @@ EOF
   # Addition of a hook for custom script run on VMSS from shared mount to allow customised configuration of the VMSS as required
   local CRON_DESC_FULLPATH2="/etc/cron.d/update-vmss-config"
   cat <<EOF > ${CRON_DESC_FULLPATH2}
-* * * * * root [ -f /moodle/bin/update-vmss-config ] && /bin/bash /moodle/bin/update-vmss-config
+* * * * * root [ -f /azlamp/bin/update-vmss-config ] && /bin/bash /azlamp/bin/update-vmss-config
 EOF
   chmod 644 ${CRON_DESC_FULLPATH2}
 }
 
-LAST_MODIFIED_TIME_UPDATE_SCRIPT_FULLPATH="/usr/local/bin/update_last_modified_time.moodle_on_azure.sh"
+LAST_MODIFIED_TIME_UPDATE_SCRIPT_FULLPATH="/usr/local/bin/update_last_modified_time.azlamp.sh"
 
-# Create a script to modify the last modified timestamp file (/moodle/html/moodle/last_modified_time.moodle_on_azure)
+# Create a script to modify the last modified timestamp file (/azlamp/html/.last_modified_time.azlamp)
 # Should be called by root and only on the controller VM.
-# The moodle admin should run the generated script everytime the /moodle/html/moodle directory content is updated (e.g., moodle upgrade, config change or plugin install/upgrade)
+# The moodle admin should run the generated script everytime the /azlamp/html directory content is updated (e.g., moodle upgrade, config change or plugin install/upgrade)
 function create_last_modified_time_update_script {
   if [ "$(whoami)" != "root" ]; then
     echo "${0}: Must be run as root!"
@@ -432,11 +435,205 @@ function get_moodle_unzip_dir_from_moodle_version {
   fi
 }
 
+function config_one_site
+{
+  local siteFQDN=${1}             # E.g., "moodle.univ1.edu". Will be used as the site's HTML subdirectory name in /azlamp/html (as /azlamp/html/$siteFQDN)
+  local htmlLocalCopySwitch=${2}  # "true" or anything else (don't care)
+  local httpsTermination=${3}     # "VMSS" or "None"
+  local webServerType=${4}        # "apache" or "nginx"
+
+  # Find the correct htmlRootDir depending on the htmlLocalCopySwitch
+  if [ "$htmlLocalCopySwitch" = "true" ]; then
+    local htmlRootDir="/var/www/html/$siteFQDN"
+  else
+    local htmlRootDir="/azlamp/html/$siteFQDN"
+  fi
+
+  local certsDir="/azlamp/certs/$siteFQDN"
+
+  if [ "$httpsTermination" = "VMSS" ]; then
+    # Configure nginx/https
+    cat <<EOF >> /etc/nginx/sites-enabled/${siteFQDN}.conf
+server {
+        listen 443 ssl;
+        root ${htmlRootDir};
+        index index.php index.html index.htm;
+        server_name ${siteFQDN};
+
+        ssl on;
+        ssl_certificate ${certsDir}/nginx.crt;
+        ssl_certificate_key ${certsDir}/nginx.key;
+
+        # Log to syslog
+        error_log syslog:server=localhost,facility=local1,severity=error,tag=moodle;
+        access_log syslog:server=localhost,facility=local1,severity=notice,tag=moodle moodle_combined;
+
+        # Log XFF IP instead of varnish
+        set_real_ip_from    10.0.0.0/8;
+        set_real_ip_from    127.0.0.1;
+        set_real_ip_from    172.16.0.0/12;
+        set_real_ip_from    192.168.0.0/16;
+        real_ip_header      X-Forwarded-For;
+        real_ip_recursive   on;
+
+        location / {
+          proxy_set_header Host \$host;
+          proxy_set_header HTTP_REFERER \$http_referer;
+          proxy_set_header X-Forwarded-Host \$host;
+          proxy_set_header X-Forwarded-Server \$host;
+          proxy_set_header X-Forwarded-Proto https;
+          proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+          proxy_pass http://localhost:80;
+
+          proxy_connect_timeout       3600;
+          proxy_send_timeout          3600;
+          proxy_read_timeout          3600;
+          send_timeout                3600;
+        }
+}
+EOF
+  fi
+
+  if [ "$webServerType" = "nginx" ]; then
+    cat <<EOF >> /etc/nginx/sites-enabled/${siteFQDN}.conf
+server {
+        listen 81 default;
+        server_name ${siteFQDN};
+        root ${htmlRootDir};
+	      index index.php index.html index.htm;
+
+        # Log to syslog
+        error_log syslog:server=localhost,facility=local1,severity=error,tag=azlamp;
+        access_log syslog:server=localhost,facility=local1,severity=notice,tag=azlamp azlamp_combined;
+
+        # Log XFF IP instead of varnish
+        set_real_ip_from    10.0.0.0/8;
+        set_real_ip_from    127.0.0.1;
+        set_real_ip_from    172.16.0.0/12;
+        set_real_ip_from    192.168.0.0/16;
+        real_ip_header      X-Forwarded-For;
+        real_ip_recursive   on;
+EOF
+    if [ "$httpsTermination" != "None" ]; then
+      cat <<EOF >> /etc/nginx/sites-enabled/${siteFQDN}.conf
+        # Redirect to https
+        if (\$http_x_forwarded_proto != https) {
+                return 301 https://\$server_name\$request_uri;
+        }
+        rewrite ^/(.*\.php)(/)(.*)$ /\$1?file=/\$3 last;
+EOF
+    fi
+    cat <<EOF >> /etc/nginx/sites-enabled/${siteFQDN}.conf
+        # Filter out php-fpm status page
+        location ~ ^/server-status {
+            return 404;
+        }
+
+        location / {
+          try_files \$uri \$uri/index.php?\$query_string;
+        }
+ 
+        location ~ [^/]\.php(/|$) {
+          fastcgi_split_path_info ^(.+?\.php)(/.*)$;
+          if (!-f \$document_root\$fastcgi_script_name) {
+                  return 404;
+          }
+ 
+          fastcgi_buffers 16 16k;
+          fastcgi_buffer_size 32k;
+          fastcgi_param   SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+          fastcgi_pass unix:/run/php/php${PhpVer}-fpm.sock;
+          fastcgi_read_timeout 3600;
+          fastcgi_index index.php;
+          include fastcgi_params;
+        }
+}
+
+EOF
+  fi # if [ "$webServerType" = "nginx" ];
+
+  if [ "$webServerType" = "apache" ]; then
+    # Configure Apache/php
+    cat <<EOF >> /etc/apache2/sites-enabled/${siteFQDN}.conf
+<VirtualHost *:81>
+	ServerName ${siteFQDN}
+
+	ServerAdmin webmaster@localhost
+	DocumentRoot ${htmlRootDir}
+
+	<Directory ${htmlRootDir}>
+		Options FollowSymLinks
+		AllowOverride All
+		Require all granted
+	</Directory>
+EOF
+    if [ "$httpsTermination" != "None" ]; then
+      cat <<EOF >> /etc/apache2/sites-enabled/${siteFQDN}.conf
+    # Redirect unencrypted direct connections to HTTPS
+    <IfModule mod_rewrite.c>
+      RewriteEngine on
+      RewriteCond %{HTTP:X-Forwarded-Proto} !https [NC]
+      RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [L,R=301]
+    </IFModule>
+EOF
+    fi
+    cat <<EOF >> /etc/apache2/sites-enabled/${siteFQDN}.conf
+    # Log X-Forwarded-For IP address instead of varnish (127.0.0.1)
+    SetEnvIf X-Forwarded-For "^.*\..*\..*\..*" forwarded
+    LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
+    LogFormat "%{X-Forwarded-For}i %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" forwarded
+	  ErrorLog "|/usr/bin/logger -t moodle -p local1.error"
+    CustomLog "|/usr/bin/logger -t moodle -p local1.notice" combined env=!forwarded
+    CustomLog "|/usr/bin/logger -t moodle -p local1.notice" forwarded env=forwarded
+
+</VirtualHost>
+EOF
+  fi # if [ "$webServerType" = "apache" ];
+} # function config_one_site
+
+function config_all_sites
+{
+  local htmlLocalCopySwitch=${1}  # "true" or anything else (don't care)
+  local httpsTermination=${2}     # "VMSS" or "None"
+  local webServerType=${3}        # "apache" or "nginx"
+
+  local allSites=$(ls /azlamp/html)
+  for site in $allSites; do
+    config_one_site $site $htmlLocalCopySwitch $httpsTermination $webServerType
+  done
+}
+
+# To be used after the initial deployment on any site addition/deletion
+function reset_all_sites
+{
+  local htmlLocalCopySwitch=${1}  # "true" or anything else (don't care)
+  local httpsTermination=${2}     # "VMSS" or "None"
+  local webServerType=${3}        # "apache" or "nginx"
+
+  if [ "$webServerType" = "nginx" -o "$httpsTermination" = "VMSS" ]; then
+    rm /etc/nginx/sites-enabled/*
+  fi
+  if [ "$webServerType" = "apache" ]; then
+    rm /etc/apache2/sites-enabled/*
+  fi
+
+  config_all_sites $htmlLocalCopySwitch $httpsTermination $webServerType
+
+  if [ "$webServerType" = "nginx" -o "$httpsTermination" = "VMSS" ]; then
+    sudo service nginx restart 
+  fi
+  if [ "$webServerType" = "apache" ]; then
+    sudo service apache2 restart
+  fi
+}
+
 # Long Redis cache Moodle config file generation code moved here
 function create_redis_configuration_in_moodledata_muc_config_php
 {
-    # create redis configuration in /moodle/moodledata/muc/config.php
-    cat <<EOF > /moodle/moodledata/muc/config.php
+    local mucConfigPhpPath=$1
+
+    # create redis configuration in .../moodledata/muc/config.php
+    cat <<EOF > $mucConfigPhpPath
 <?php defined('MOODLE_INTERNAL') || die();
  \$configuration = array (
   'siteidentifier' => '7a142be09ea65699e4a6f6ef91c0773c',

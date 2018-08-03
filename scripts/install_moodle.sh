@@ -92,7 +92,7 @@ set -ex
     config_fail2ban
 
     # create gluster, nfs or Azure Files mount point
-    mkdir -p /moodle
+    mkdir -p /azlamp
 
     export DEBIAN_FRONTEND=noninteractive
 
@@ -101,8 +101,8 @@ set -ex
         sudo add-apt-repository ppa:gluster/glusterfs-3.8 -y                 >> /tmp/apt1.log
     elif [ $fileServerType = "nfs" ]; then
         # configure NFS server and export
-        setup_raid_disk_and_filesystem /moodle /dev/md1 /dev/md1p1
-        configure_nfs_server_and_export /moodle
+        setup_raid_disk_and_filesystem /azlamp /dev/md1 /dev/md1p1
+        configure_nfs_server_and_export /azlamp
     fi
 
     sudo apt-get -y update                                                   >> /tmp/apt2.log
@@ -156,16 +156,16 @@ set -ex
 
     if [ $fileServerType = "gluster" ]; then
         # mount gluster files system
-        echo -e '\n\rInstalling GlusterFS on '$glusterNode':/'$glusterVolume '/moodle\n\r' 
-        setup_and_mount_gluster_moodle_share $glusterNode $glusterVolume
+        echo -e '\n\rInstalling GlusterFS on '$glusterNode':/'$glusterVolume '/azlamp\n\r' 
+        setup_and_mount_gluster_share $glusterNode $glusterVolume /azlamp
     elif [ $fileServerType = "nfs-ha" ]; then
         # mount NFS-HA export
-        echo -e '\n\rMounting NFS export from '$nfsHaLbIP' on /moodle\n\r'
-        configure_nfs_client_and_mount $nfsHaLbIP $nfsHaExportPath /moodle
+        echo -e '\n\rMounting NFS export from '$nfsHaLbIP' on /azlamp\n\r'
+        configure_nfs_client_and_mount $nfsHaLbIP $nfsHaExportPath /azlamp
     elif [ $fileServerType = "nfs-byo" ]; then
         # mount NFS-BYO export
-        echo -e '\n\rMounting NFS export from '$nfsByoIpExportPath' on /moodle\n\r'
-        configure_nfs_client_and_mount0 $nfsByoIpExportPath /moodle
+        echo -e '\n\rMounting NFS export from '$nfsByoIpExportPath' on /azlamp\n\r'
+        configure_nfs_client_and_mount0 $nfsByoIpExportPath /azlamp
     fi
     
     # install pre-requisites
@@ -189,9 +189,13 @@ set -ex
     fi
 
     # Set up initial moodle dirs
-    mkdir -p /moodle/html
-    mkdir -p /moodle/certs
-    mkdir -p /moodle/moodledata
+    moodleHtmlDir="/azlamp/html/$siteFQDN"
+    moodleCertsDir="/azlamp/certs/$siteFQDN"
+    moodleDataDir="/azlamp/data/$siteFQDN/moodledata"   # Need the .../moodledata subdir because we also save the DB backup files in /azlamp/data/$siteFQDN and we'd like to separate it from moodledata content
+
+    mkdir -p /azlamp/html       # /azlamp/html/$siteFQDN should NOT be created here, but below (to support the case of already created /azlamp/html/$siteFQDN directory and avoiding redownloading)
+    mkdir -p $moodleCertsDir
+    mkdir -p $moodleDataDir
 
     o365pluginVersion=$(get_o365plugin_version_from_moodle_version $moodleVersion)
     moodleStableVersion=$o365pluginVersion  # Need Moodle stable version for GDPR plugins, and o365pluginVersion is just Moodle stable version, so reuse it.
@@ -199,32 +203,32 @@ set -ex
 
     # install Moodle 
     echo '#!/bin/bash
-    mkdir -p /moodle/tmp
-    cd /moodle/tmp
+    mkdir -p /azlamp/tmp
+    cd /azlamp/tmp
 
-    if [ ! -d /moodle/html/moodle ]; then
-        # downloading moodle only if /moodle/html/moodle does not exist -- if it exists, user should populate it in advance correctly as below. This is to reduce template deployment time.
+    if [ ! -d '$moodleHtmlDir' ]; then
+        # downloading moodle only if '$moodleHtmlDir' does not exist -- if it exists, user should populate it in advance correctly as below. This is to reduce template deployment time.
         /usr/bin/curl -k --max-redirs 10 https://github.com/moodle/moodle/archive/'$moodleVersion'.zip -L -o moodle.zip
         /usr/bin/unzip -q moodle.zip
-        /bin/mv '$moodleUnzipDir' /moodle/html/moodle
+        /bin/mv '$moodleUnzipDir' '$moodleHtmlDir'
     fi
 
     if [ "'$installGdprPluginsSwitch'" = "true" ]; then
         # install Moodle GDPR plugins (Note: This is only for Moodle versions 3.4.2+ or 3.3.5+ and will be included in Moodle 3.5, so no need for 3.5)
         curl -k --max-redirs 10 https://github.com/moodlehq/moodle-tool_policy/archive/'$moodleStableVersion'.zip -L -o plugin-policy.zip
         unzip -q plugin-policy.zip
-        mv moodle-tool_policy-'$moodleStableVersion' /moodle/html/moodle/admin/tool/policy
+        mv moodle-tool_policy-'$moodleStableVersion' '$moodleHtmlDir'/admin/tool/policy
 
         curl -k --max-redirs 10 https://github.com/moodlehq/moodle-tool_dataprivacy/archive/'$moodleStableVersion'.zip -L -o plugin-dataprivacy.zip
         unzip -q plugin-dataprivacy.zip
-        mv moodle-tool_dataprivacy-'$moodleStableVersion' /moodle/html/moodle/admin/tool/dataprivacy
+        mv moodle-tool_dataprivacy-'$moodleStableVersion' '$moodleHtmlDir'/admin/tool/dataprivacy
     fi
 
     if [ "'$installO365pluginsSwitch'" = "true" ]; then
         # install Office 365 plugins
         curl -k --max-redirs 10 https://github.com/Microsoft/o365-moodle/archive/'$o365pluginVersion'.zip -L -o o365.zip
         unzip -q o365.zip
-        cp -r o365-moodle-'$o365pluginVersion'/* /moodle/html/moodle
+        cp -r o365-moodle-'$o365pluginVersion'/* '$moodleHtmlDir'
         rm -rf o365-moodle-'$o365pluginVersion'
     fi
 
@@ -232,33 +236,33 @@ set -ex
         # Install ElasticSearch plugin
         /usr/bin/curl -k --max-redirs 10 https://github.com/catalyst/moodle-search_elastic/archive/master.zip -L -o plugin-elastic.zip
         /usr/bin/unzip -q plugin-elastic.zip
-        /bin/mv moodle-search_elastic-master /moodle/html/moodle/search/engine/elastic
+        /bin/mv moodle-search_elastic-master '$moodleHtmlDir'/search/engine/elastic
 
         # Install ElasticSearch plugin dependency
         /usr/bin/curl -k --max-redirs 10 https://github.com/catalyst/moodle-local_aws/archive/master.zip -L -o local-aws.zip
         /usr/bin/unzip -q local-aws.zip
-        /bin/mv moodle-local_aws-master /moodle/html/moodle/local/aws
+        /bin/mv moodle-local_aws-master '$moodleHtmlDir'/local/aws
 
     elif [ "'$searchType'" = "azure" ]; then
         # Install Azure Search service plugin
         /usr/bin/curl -k --max-redirs 10 https://github.com/catalyst/moodle-search_azure/archive/master.zip -L -o plugin-azure-search.zip
         /usr/bin/unzip -q plugin-azure-search.zip
-        /bin/mv moodle-search_azure-master /moodle/html/moodle/search/engine/azure
+        /bin/mv moodle-search_azure-master '$moodleHtmlDir'/search/engine/azure
     fi
 
     if [ "'$installObjectFsSwitch'" = "true" ]; then
         # Install the ObjectFS plugin
         /usr/bin/curl -k --max-redirs 10 https://github.com/catalyst/moodle-tool_objectfs/archive/master.zip -L -o plugin-objectfs.zip
         /usr/bin/unzip -q plugin-objectfs.zip
-        /bin/mv moodle-tool_objectfs-master /moodle/html/moodle/admin/tool/objectfs
+        /bin/mv moodle-tool_objectfs-master '$moodleHtmlDir'/admin/tool/objectfs
 
         # Install the ObjectFS Azure library
         /usr/bin/curl -k --max-redirs 10 https://github.com/catalyst/moodle-local_azure_storage/archive/master.zip -L -o plugin-azurelibrary.zip
         /usr/bin/unzip -q plugin-azurelibrary.zip
-        /bin/mv moodle-local_azure_storage-master /moodle/html/moodle/local/azure_storage
+        /bin/mv moodle-local_azure_storage-master '$moodleHtmlDir'/local/azure_storage
     fi
-    cd /moodle
-    rm -rf /moodle/tmp
+    cd /azlamp
+    rm -rf /azlamp/tmp
     ' > /tmp/setup-moodle.sh 
 
     chmod 755 /tmp/setup-moodle.sh
@@ -333,7 +337,7 @@ EOF
 server {
         listen 81 default;
         server_name ${siteFQDN};
-        root /moodle/html/moodle;
+        root ${moodleHtmlDir};
         index index.php index.html index.htm;
 
         # Log to syslog
@@ -388,12 +392,12 @@ EOF
         cat <<EOF >> /etc/nginx/sites-enabled/${siteFQDN}.conf
 server {
         listen 443 ssl;
-        root /moodle/html/moodle;
+        root ${moodleHtmlDir};
         index index.php index.html index.htm;
 
         ssl on;
-        ssl_certificate /moodle/certs/nginx.crt;
-        ssl_certificate_key /moodle/certs/nginx.key;
+        ssl_certificate ${moodleCertsDir}/nginx.crt;
+        ssl_certificate_key ${moodleCertsDir}/nginx.key;
 
         # Log to syslog
         error_log syslog:server=localhost,facility=local1,severity=error,tag=moodle;
@@ -424,18 +428,18 @@ EOF
         ### SSL cert ###
         if [ "$thumbprintSslCert" != "None" ]; then
             echo "Using VM's cert (/var/lib/waagent/$thumbprintSslCert.*) for SSL..."
-            cat /var/lib/waagent/$thumbprintSslCert.prv > /moodle/certs/nginx.key
-            cat /var/lib/waagent/$thumbprintSslCert.crt > /moodle/certs/nginx.crt
+            cat /var/lib/waagent/$thumbprintSslCert.prv > $moodleCertsDir/nginx.key
+            cat /var/lib/waagent/$thumbprintSslCert.crt > $moodleCertsDir/nginx.crt
             if [ "$thumbprintCaCert" != "None" ]; then
                 echo "CA cert was specified (/var/lib/waagent/$thumbprintCaCert.crt), so append it to nginx.crt..."
-                cat /var/lib/waagent/$thumbprintCaCert.crt >> /moodle/certs/nginx.crt
+                cat /var/lib/waagent/$thumbprintCaCert.crt >> $moodleCertsDir/nginx.crt
             fi
         else
             echo -e "Generating SSL self-signed certificate"
-            openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /moodle/certs/nginx.key -out /moodle/certs/nginx.crt -subj "/C=US/ST=WA/L=Redmond/O=IT/CN=$siteFQDN"
+            openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout $moodleCertsDir/nginx.key -out $moodleCertsDir/nginx.crt -subj "/C=US/ST=WA/L=Redmond/O=IT/CN=$siteFQDN"
         fi
-        chown www-data:www-data /moodle/certs/nginx.*
-        chmod 0400 /moodle/certs/nginx.*
+        chown www-data:www-data $moodleCertsDir/nginx.*
+        chmod 0400 $moodleCertsDir/nginx.*
     fi
 
    # php config 
@@ -758,9 +762,9 @@ EOF
 \$UDPServerRun 514
 EOF
     cat <<EOF >> /etc/rsyslog.d/40-sitelogs.conf
-local1.*   /var/log/sitelogs/moodle/access.log
-local1.err   /var/log/sitelogs/moodle/error.log
-local2.*   /var/log/sitelogs/moodle/cron.log
+local1.*   /var/log/sitelogs/azlamp/access.log
+local1.err   /var/log/sitelogs/azlamp/error.log
+local2.*   /var/log/sitelogs/azlamp/cron.log
 EOF
     service rsyslog restart
 
@@ -771,8 +775,8 @@ EOF
         siteProtocol="https"
     fi
     if [ $dbServerType = "mysql" ]; then
-        echo -e "cd /tmp; /usr/bin/php /moodle/html/moodle/admin/cli/install.php --chmod=770 --lang=en_us --wwwroot="$siteProtocol"://"$siteFQDN" --dataroot=/moodle/moodledata --dbhost="$mysqlIP" --dbname="$moodledbname" --dbuser="$azuremoodledbuser" --dbpass="$moodledbpass" --dbtype=mysqli --fullname='Moodle LMS' --shortname='Moodle' --adminuser=admin --adminpass="$adminpass" --adminemail=admin@"$siteFQDN" --non-interactive --agree-license --allow-unstable || true "
-        cd /tmp; /usr/bin/php /moodle/html/moodle/admin/cli/install.php --chmod=770 --lang=en_us --wwwroot=$siteProtocol://$siteFQDN   --dataroot=/moodle/moodledata --dbhost=$mysqlIP   --dbname=$moodledbname   --dbuser=$azuremoodledbuser   --dbpass=$moodledbpass   --dbtype=mysqli --fullname='Moodle LMS' --shortname='Moodle' --adminuser=admin --adminpass=$adminpass   --adminemail=admin@$siteFQDN   --non-interactive --agree-license --allow-unstable || true
+        echo -e "cd /tmp; /usr/bin/php "$moodleHtmlDir"/admin/cli/install.php --chmod=770 --lang=en_us --wwwroot="$siteProtocol"://"$siteFQDN" --dataroot="$moodleDataDir" --dbhost="$mysqlIP" --dbname="$moodledbname" --dbuser="$azuremoodledbuser" --dbpass="$moodledbpass" --dbtype=mysqli --fullname='Moodle LMS' --shortname='Moodle' --adminuser=admin --adminpass="$adminpass" --adminemail=admin@"$siteFQDN" --non-interactive --agree-license --allow-unstable || true "
+        cd /tmp; /usr/bin/php $moodleHtmlDir/admin/cli/install.php --chmod=770 --lang=en_us --wwwroot=$siteProtocol://$siteFQDN   --dataroot=$moodleDataDir --dbhost=$mysqlIP   --dbname=$moodledbname   --dbuser=$azuremoodledbuser   --dbpass=$moodledbpass   --dbtype=mysqli --fullname='Moodle LMS' --shortname='Moodle' --adminuser=admin --adminpass=$adminpass   --adminemail=admin@$siteFQDN   --non-interactive --agree-license --allow-unstable || true
 
         if [ "$installObjectFsSwitch" = "true" ]; then
             mysql -h $mysqlIP -u $mysqladminlogin -p${mysqladminpass} ${moodledbname} -e "INSERT INTO mdl_config_plugins (plugin, name, value) VALUES ('tool_objectfs', 'enabletasks', 1);" 
@@ -782,7 +786,7 @@ EOF
             mysql -h $mysqlIP -u $mysqladminlogin -p${mysqladminpass} ${moodledbname} -e "INSERT INTO mdl_config_plugins (plugin, name, value) VALUES ('tool_objectfs', 'azure_sastoken', '${sas}');"
         fi
     elif [ $dbServerType = "mssql" ]; then
-        cd /tmp; /usr/bin/php /moodle/html/moodle/admin/cli/install.php --chmod=770 --lang=en_us --wwwroot=$siteProtocol://$siteFQDN   --dataroot=/moodle/moodledata --dbhost=$mssqlIP   --dbname=$moodledbname   --dbuser=$azuremoodledbuser   --dbpass=$moodledbpass   --dbtype=sqlsrv --fullname='Moodle LMS' --shortname='Moodle' --adminuser=admin --adminpass=$adminpass   --adminemail=admin@$siteFQDN   --non-interactive --agree-license --allow-unstable || true
+        cd /tmp; /usr/bin/php $moodleHtmlDir/admin/cli/install.php --chmod=770 --lang=en_us --wwwroot=$siteProtocol://$siteFQDN   --dataroot=$moodleDataDir --dbhost=$mssqlIP   --dbname=$moodledbname   --dbuser=$azuremoodledbuser   --dbpass=$moodledbpass   --dbtype=sqlsrv --fullname='Moodle LMS' --shortname='Moodle' --adminuser=admin --adminpass=$adminpass   --adminemail=admin@$siteFQDN   --non-interactive --agree-license --allow-unstable || true
 
         if [ "$installObjectFsSwitch" = "true" ]; then
             /opt/mssql-tools/bin/sqlcmd -S $mssqlIP -U $mssqladminlogin -P ${mssqladminpass} -d ${moodledbname} -Q "INSERT INTO mdl_config_plugins (plugin, name, value) VALUES ('tool_objectfs', 'enabletasks', 1)" 
@@ -792,8 +796,8 @@ EOF
             /opt/mssql-tools/bin/sqlcmd -S $mssqlIP -U $mssqladminlogin -P ${mssqladminpass} -d${moodledbname} -Q "INSERT INTO mdl_config_plugins (plugin, name, value) VALUES ('tool_objectfs', 'azure_sastoken', '${sas}')"
         fi
     else
-        echo -e "cd /tmp; /usr/bin/php /moodle/html/moodle/admin/cli/install.php --chmod=770 --lang=en_us --wwwroot="$siteProtocol"://"$siteFQDN" --dataroot=/moodle/moodledata --dbhost="$postgresIP" --dbname="$moodledbname" --dbuser="$azuremoodledbuser" --dbpass="$moodledbpass" --dbtype=pgsql --fullname='Moodle LMS' --shortname='Moodle' --adminuser=admin --adminpass="$adminpass" --adminemail=admin@"$siteFQDN" --non-interactive --agree-license --allow-unstable || true "
-        cd /tmp; /usr/bin/php /moodle/html/moodle/admin/cli/install.php --chmod=770 --lang=en_us --wwwroot=$siteProtocol://$siteFQDN   --dataroot=/moodle/moodledata --dbhost=$postgresIP   --dbname=$moodledbname   --dbuser=$azuremoodledbuser   --dbpass=$moodledbpass   --dbtype=pgsql --fullname='Moodle LMS' --shortname='Moodle' --adminuser=admin --adminpass=$adminpass   --adminemail=admin@$siteFQDN   --non-interactive --agree-license --allow-unstable || true
+        echo -e "cd /tmp; /usr/bin/php "$moodleHtmlDir"/admin/cli/install.php --chmod=770 --lang=en_us --wwwroot="$siteProtocol"://"$siteFQDN" --dataroot="$moodleDataDir" --dbhost="$postgresIP" --dbname="$moodledbname" --dbuser="$azuremoodledbuser" --dbpass="$moodledbpass" --dbtype=pgsql --fullname='Moodle LMS' --shortname='Moodle' --adminuser=admin --adminpass="$adminpass" --adminemail=admin@"$siteFQDN" --non-interactive --agree-license --allow-unstable || true "
+        cd /tmp; /usr/bin/php $moodleHtmlDir/admin/cli/install.php --chmod=770 --lang=en_us --wwwroot=$siteProtocol://$siteFQDN   --dataroot=$moodleDataDir --dbhost=$postgresIP   --dbname=$moodledbname   --dbuser=$azuremoodledbuser   --dbpass=$moodledbpass   --dbtype=pgsql --fullname='Moodle LMS' --shortname='Moodle' --adminuser=admin --adminpass=$adminpass   --adminemail=admin@$siteFQDN   --non-interactive --agree-license --allow-unstable || true
 
         if [ "$installObjectFsSwitch" = "true" ]; then
             # Add the ObjectFS configuration to Moodle.
@@ -809,56 +813,58 @@ EOF
 
     echo -e "\n\rDone! Installation completed!\n\r"
 
-    if [ "$redisAuth" != "None" ]; then
-        create_redis_configuration_in_moodledata_muc_config_php
+    configPhpPath="$moodleHtmlDir/config.php"
 
-        # redis configuration in /moodle/html/moodle/config.php
-        sed -i "23 a \$CFG->session_redis_lock_expire = 7200;" /moodle/html/moodle/config.php
-        sed -i "23 a \$CFG->session_redis_acquire_lock_timeout = 120;" /moodle/html/moodle/config.php
-        sed -i "23 a \$CFG->session_redis_prefix = 'moodle_prod'; // Optional, default is don't set one." /moodle/html/moodle/config.php
-        sed -i "23 a \$CFG->session_redis_database = 0;  // Optional, default is db 0." /moodle/html/moodle/config.php
-        sed -i "23 a \$CFG->session_redis_port = 6379;  // Optional." /moodle/html/moodle/config.php
-        sed -i "23 a \$CFG->session_redis_host = '$redisDns';" /moodle/html/moodle/config.php
-        sed -i "23 a \$CFG->session_redis_auth = '$redisAuth';" /moodle/html/moodle/config.php
-        sed -i "23 a \$CFG->session_handler_class = '\\\core\\\session\\\redis';" /moodle/html/moodle/config.php
+    if [ "$redisAuth" != "None" ]; then
+        create_redis_configuration_in_moodledata_muc_config_php $moodleDataDir/muc/config.php
+
+        # redis configuration in $moodleHtmlDir/config.php
+        sed -i "23 a \$CFG->session_redis_lock_expire = 7200;" $configPhpPath
+        sed -i "23 a \$CFG->session_redis_acquire_lock_timeout = 120;" $configPhpPath
+        sed -i "23 a \$CFG->session_redis_prefix = 'moodle_prod'; // Optional, default is don't set one." $configPhpPath
+        sed -i "23 a \$CFG->session_redis_database = 0;  // Optional, default is db 0." $configPhpPath
+        sed -i "23 a \$CFG->session_redis_port = 6379;  // Optional." $configPhpPath
+        sed -i "23 a \$CFG->session_redis_host = '$redisDns';" $configPhpPath
+        sed -i "23 a \$CFG->session_redis_auth = '$redisAuth';" $configPhpPath
+        sed -i "23 a \$CFG->session_handler_class = '\\\core\\\session\\\redis';" $configPhpPath
     fi
 
     if [ "$httpsTermination" != "None" ]; then
         # We proxy ssl, so moodle needs to know this
-        sed -i "23 a \$CFG->sslproxy  = 'true';" /moodle/html/moodle/config.php
+        sed -i "23 a \$CFG->sslproxy  = 'true';" $configPhpPath
     fi
 
     if [ "$searchType" = "elastic" ]; then
         # Set up elasticsearch plugin
         if [ "$tikaVmIP" = "none" ]; then
-           sed -i "23 a \$CFG->forced_plugin_settings = ['search_elastic' => ['hostname' => 'http://$elasticVm1IP']];" /moodle/html/moodle/config.php
+           sed -i "23 a \$CFG->forced_plugin_settings = ['search_elastic' => ['hostname' => 'http://$elasticVm1IP']];" $configPhpPath
         else
-           sed -i "23 a \$CFG->forced_plugin_settings = ['search_elastic' => ['hostname' => 'http://$elasticVm1IP', 'fileindexing' => 'true', 'tikahostname' => 'http://$tikaVmIP', 'tikaport' => '9998'],];" /moodle/html/moodle/config.php
+           sed -i "23 a \$CFG->forced_plugin_settings = ['search_elastic' => ['hostname' => 'http://$elasticVm1IP', 'fileindexing' => 'true', 'tikahostname' => 'http://$tikaVmIP', 'tikaport' => '9998'],];" $configPhpPath
         fi
 
-        sed -i "23 a \$CFG->searchengine = 'elastic';" /moodle/html/moodle/config.php
-        sed -i "23 a \$CFG->enableglobalsearch = 'true';" /moodle/html/moodle/config.php
+        sed -i "23 a \$CFG->searchengine = 'elastic';" $configPhpPath
+        sed -i "23 a \$CFG->enableglobalsearch = 'true';" $configPhpPath
         # create index
-        php /moodle/html/moodle/search/cli/indexer.php --force --reindex
+        php $moodleHtmlDir/search/cli/indexer.php --force --reindex
 
     elif [ "$searchType" = "azure" ]; then
         # Set up Azure Search service plugin
         if [ "$tikaVmIP" = "none" ]; then
-           sed -i "23 a \$CFG->forced_plugin_settings = ['search_azure' => ['searchurl' => 'https://$azureSearchNameHost', 'apikey' => '$azureSearchKey']];" /moodle/html/moodle/config.php
+           sed -i "23 a \$CFG->forced_plugin_settings = ['search_azure' => ['searchurl' => 'https://$azureSearchNameHost', 'apikey' => '$azureSearchKey']];" $configPhpPath
         else
-           sed -i "23 a \$CFG->forced_plugin_settings = ['search_azure' => ['searchurl' => 'https://$azureSearchNameHost', 'apikey' => '$azureSearchKey', 'fileindexing' => '1', 'tikahostname' => 'http://$tikaVmIP', 'tikaport' => '9998'],];" /moodle/html/moodle/config.php
+           sed -i "23 a \$CFG->forced_plugin_settings = ['search_azure' => ['searchurl' => 'https://$azureSearchNameHost', 'apikey' => '$azureSearchKey', 'fileindexing' => '1', 'tikahostname' => 'http://$tikaVmIP', 'tikaport' => '9998'],];" $configPhpPath
         fi
 
-        sed -i "23 a \$CFG->searchengine = 'azure';" /moodle/html/moodle/config.php
-        sed -i "23 a \$CFG->enableglobalsearch = 'true';" /moodle/html/moodle/config.php
+        sed -i "23 a \$CFG->searchengine = 'azure';" $configPhpPath
+        sed -i "23 a \$CFG->enableglobalsearch = 'true';" $configPhpPath
         # create index
-        php /moodle/html/moodle/search/cli/indexer.php --force --reindex
+        php $moodleHtmlDir/search/cli/indexer.php --force --reindex
 
     fi
 
     if [ "$installObjectFsSwitch" = "true" ]; then
         # Set the ObjectFS alternate filesystem
-        sed -i "23 a \$CFG->alternative_file_system_class = '\\\tool_objectfs\\\azure_file_system';" /moodle/html/moodle/config.php
+        sed -i "23 a \$CFG->alternative_file_system_class = '\\\tool_objectfs\\\azure_file_system';" $configPhpPath
     fi
 
    if [ "$dbServerType" = "postgres" ]; then
@@ -871,16 +877,16 @@ EOF
 
    # create cron entry
    # It is scheduled for once per minute. It can be changed as needed.
-   echo '* * * * * www-data /usr/bin/php /moodle/html/moodle/admin/cli/cron.php 2>&1 | /usr/bin/logger -p local2.notice -t moodle' > /etc/cron.d/moodle-cron
+   echo '* * * * * www-data /usr/bin/php '$moodleHtmlDir'/admin/cli/cron.php 2>&1 | /usr/bin/logger -p local2.notice -t moodle' > /etc/cron.d/moodle-cron
 
    # Set up cronned sql dump
    if [ "$dbServerType" = "mysql" ]; then
       cat <<EOF > /etc/cron.d/sql-backup
-22 02 * * * root /usr/bin/mysqldump -h $mysqlIP -u ${azuremoodledbuser} -p'${moodledbpass}' --databases ${moodledbname} | gzip > /moodle/db-backup.sql.gz
+22 02 * * * root /usr/bin/mysqldump -h $mysqlIP -u ${azuremoodledbuser} -p'${moodledbpass}' --databases ${moodledbname} | gzip > /azlamp/data/$siteFQDN/db-backup.sql.gz
 EOF
    elif [ "$dbServerType" = "postgres" ]; then
       cat <<EOF > /etc/cron.d/sql-backup
-22 02 * * * root /usr/bin/pg_dump -Fc -h $postgresIP -U ${azuremoodledbuser} ${moodledbname} > /moodle/db-backup.sql
+22 02 * * * root /usr/bin/pg_dump -Fc -h $postgresIP -U ${azuremoodledbuser} ${moodledbname} > /azlamp/data/$siteFQDN/db-backup.sql
 EOF
    #else # mssql. TODO It's missed earlier! Complete this!
    fi
@@ -896,29 +902,29 @@ EOF
     # Leaving this code as a remark that we are explicitly leaving the ownership to root:root
 #    if [ $fileServerType = "gluster" -o $fileServerType = "nfs" -o $fileServerType = "nfs-ha" ]; then
 #       # make sure Moodle can read its code directory but not write
-#       sudo chown -R root.root /moodle/html/moodle
-#       sudo find /moodle/html/moodle -type f -exec chmod 644 '{}' \;
-#       sudo find /moodle/html/moodle -type d -exec chmod 755 '{}' \;
+#       sudo chown -R root.root $moodleHtmlDir
+#       sudo find $moodleHtmlDir -type f -exec chmod 644 '{}' \;
+#       sudo find $moodleHtmlDir -type d -exec chmod 755 '{}' \;
 #    fi
     # But now we need to adjust the moodledata and the certs directory ownerships, and the permission for the generated config.php
-    sudo chown -R www-data.www-data /moodle/moodledata /moodle/certs
-    sudo chmod +r /moodle/html/moodle/config.php
+    sudo chown -R www-data.www-data $moodleDataDir $moodleCertsDir
+    sudo chmod +r $moodleHtmlDir/config.php
 
    if [ $fileServerType = "azurefiles" ]; then
       # Delayed copy of moodle installation to the Azure Files share
 
-      # First rename moodle directory to something else
-      mv /moodle /moodle_old_delete_me
+      # First rename azlamp directory to something else
+      mv /azlamp /azlamp_old_delete_me
       # Then create the moodle share
-      echo -e '\n\rCreating an Azure Files share for moodle'
-      create_azure_files_moodle_share $storageAccountName $storageAccountKey /tmp/wabs.log
+      echo -e '\n\rCreating an Azure Files share for azlamp'
+      create_azure_files_share azlamp $storageAccountName $storageAccountKey /tmp/wabs.log
       # Set up and mount Azure Files share. Must be done after nginx is installed because of www-data user/group
-      echo -e '\n\rSetting up and mounting Azure Files share on //'$storageAccountName'.file.core.windows.net/moodle on /moodle\n\r'
-      setup_and_mount_azure_files_moodle_share $storageAccountName $storageAccountKey
+      echo -e '\n\rSetting up and mounting Azure Files share on //'$storageAccountName'.file.core.windows.net/azlamp on /azlamp\n\r'
+      setup_and_mount_azure_files_share azlamp $storageAccountName $storageAccountKey
       # Move the local installation over to the Azure Files
       echo -e '\n\rMoving locally installed moodle over to Azure Files'
-      cp -a /moodle_old_delete_me/* /moodle || true # Ignore case sensitive directory copy failure
-      # rm -rf /moodle_old_delete_me || true # Keep the files just in case
+      cp -a /azlamp_old_delete_me/* /azlamp || true # Ignore case sensitive directory copy failure
+      # rm -rf /azlamp_old_delete_me || true # Keep the files just in case
    fi
 
    create_last_modified_time_update_script
