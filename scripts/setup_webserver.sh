@@ -202,7 +202,7 @@ EOF
     a2enmod rewrite && a2enmod remoteip && a2enmod headers
   fi
 
-  config_all_sites $htmlLocalCopySwitch $httpsTermination $webServerType
+  config_all_sites_on_vmss $htmlLocalCopySwitch $httpsTermination $webServerType
 
    # php config 
    if [ "$webServerType" = "apache" ]; then
