@@ -285,7 +285,7 @@ set -ex
         fi
     fi
 
-    setup_per_site_moodle_cron_jobs $moodleHtmlDir $siteFQDN $dbServerType $dbIP $moodledbname $azuremoodledbuser $moodledbpass
+    setup_per_site_moodle_cron_jobs_on_controller $moodleHtmlDir $siteFQDN $dbServerType $dbIP $moodledbname $azuremoodledbuser $moodledbpass
 
     # Turning off services we don't need the controller running
     service nginx stop
