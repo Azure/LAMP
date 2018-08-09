@@ -939,7 +939,7 @@ function setup_and_config_per_site_moodle_on_controller
     chown -R www-data.www-data $moodleDataDir
 }
 
-function setup_per_site_moodle_cron_jobs
+function setup_per_site_moodle_cron_jobs_on_controller
 {
     local moodleHtmlDir=${1}
     local siteFQDN=${2}
@@ -1301,6 +1301,40 @@ local1.*   /var/log/sitelogs/azlamp/access.log
 local1.err   /var/log/sitelogs/azlamp/error.log
 local2.*   /var/log/sitelogs/azlamp/cron.log
 EOF
+}
+
+# A rudimentary script to add another Moodle site after initial deployment.
+# - No additional Moodle plugins are specify-able (must install separately).
+# - MSSQL DB server type not supported.
+# - There must be other restrictions...
+function add_another_moodle_site_on_controller_after_deployment
+{
+    local moodleVersion=${1}  # E.g., "MOODLE_35_STABLE"
+    local siteFQDN=${2}       # E.g., "moodle.site2.edu"
+    local httpsTermination=${3} # E.g., "VMSS" or "None"
+    local dbServerType=${4}   # E.g., "mysql" or "postgres"
+    local dbIP=${5}           # E.g., "mysql-xyz123.mysql.database.azure.com"
+    local dbadminloginazure=${6}  # E.g., "admin@mysql-xyz123"
+    local dbadminpass=${7}
+    local moodledbname=${8}   # E.g., "moodle2"
+    local moodledbuser=${9}   # E.g., "moodle2" (no "@mysql-xyz123" suffix)
+    local moodledbpass=${10}
+    local azuremoodledbuser=${11} # E.g., "moodle2@mysql-xyz123" (must be with "@mysql-xyz123" suffix)
+    local adminpass=${12}     # Moodle site admin password (not an SQL DB user password)
+
+    local moodleHtmlDir="/azlamp/html/$siteFQDN"
+    local moodleDataDir="/azlamp/data/$siteFQDN/moodledata"
+    local moodleCertsDir="/azlamp/certs/$siteFQDN"
+
+    mkdir -p $moodleDataDir
+    mkdir -p $moodleCertsDir
+
+    download_and_place_per_site_moodle_and_plugins_on_controller $moodleVersion $moodleHtmlDir false false false
+    create_per_site_nginx_conf_on_controller $siteFQDN $httpsTermination $moodleHtmlDir $moodleCertsDir
+    create_per_site_nginx_ssl_certs_on_controller $siteFQDN $moodleCertsDir $httpsTermination None None
+    create_per_site_sql_db_from_controller $dbServerType $dbIP $dbadminloginazure $dbadminpass $moodledbname $moodledbuser $moodledbpass None None None
+    setup_and_config_per_site_moodle_on_controller $httpsTermination $siteFQDN $dbServerType $moodleHtmlDir $moodleDataDir $dbIP $moodledbname $azuremoodledbuser $moodledbpass $adminpass
+    setup_per_site_moodle_cron_jobs_on_controller $moodleHtmlDir $siteFQDN $dbServerType $dbIP $moodledbname $azuremoodledbuser $moodledbpass
 }
 
 # Long Redis cache Moodle config file generation code moved here
