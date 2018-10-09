@@ -1,6 +1,6 @@
 # Cleanup All Resources
 
-To cleanup a LAMP deployment simply delete the Resource Group that
+To cleanup a Moodle/LAMP deployment simply delete the Resource Group that
 contains it. The commands below will iterate over your workspace
 directory and delete all deployments.
 
@@ -18,5 +18,5 @@ you have Azure Backup enabled since the Recovery Services Vault will
 not be deleted (it's got the backups of you data!).
 
 ``` bash
-for filename in $LAMP_AZURE_WORKSPACE/*; do az group delete --yes --name $(basename $filename) --no-wait; done
+for filename in $MOODLE_AZURE_WORKSPACE/*; do az group delete --yes --name $(basename $filename) --no-wait; done
 ```
