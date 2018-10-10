@@ -122,7 +122,7 @@ Ensure the workspace directory exists:
 
 
 ``` bash
-if [ ! -f "$MOODLE_AZURE_WORKSPACE/$MOODLE_RG_NAME" ]; then echo "Worspace exists"; fi
+if [ ! -f "$MOODLE_AZURE_WORKSPACE/$MOODLE_RG_NAME" ]; then echo "Workspace exists"; fi
 ```
 
 Results:
