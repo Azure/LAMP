@@ -15,8 +15,8 @@ For convenience and readability this document also assumes that essential [deplo
 
 ## Updating Moodle code/settings
 
-Your controller Virtual Machine has Moodle code and data stored in
-`/moodle`. The site code is stored in `/moodle/html/moodle/`. This
+Your controller Virtual Machine has Moodle/LAMP code and data stored in
+`/azlamp`. The site code is stored in `/azlamp/html/<yoursitename>/`. This
 data is replicated across dual gluster nodes to provide high
 availability. This directory is also mounted to your autoscaled
 frontends so all changes to files on the controller VM are immediately
@@ -28,27 +28,27 @@ HTML directory's permission is read-only for the web frontend VMs (thus any web-
 Moodle code updates will fail).
 
 Depending on how large your Gluster disks are sized, it may be helpful
-to keep multiple older versions (/moodle/html1, /moodle/html2, etc) to
+to keep multiple older versions (/azlamp/html/site1, /azlamp/html/site1, etc) to
 roll back if needed.
 
 To connect to your Controller VM use SSH with a username of
 'azureuser' and the SSH provided in the `sshPublicKey` input
 parameter. For example, to retrieve a listing of files and directories
-in the `/moodle` directory use:
+in the `/azlamp` directory use:
 
 ```
-ssh -o StrictHostKeyChecking=no azureadmin@$MOODLE_CONTROLLER_INSTANCE_IP ls -l /moodle
+ssh -o StrictHostKeyChecking=no azureadmin@$MOODLE_CONTROLLER_INSTANCE_IP ls -l /azlamp
 ```
 
 Results:
 
 ```
 Warning: Permanently added '52.228.45.38' (ECDSA) to the list of known hosts.
-total 12
-drwxr-xr-x  2 www-data www-data 4096 Jan 17 00:59 certs
--rw-r--r--  1 root     root        0 Jan 17 02:22 db-backup.sql
-drwxr-xr-x  3 www-data www-data 4096 Jan 17 00:54 html
-drwxrwx--- 10 www-data www-data 4096 Jan 17 06:55 moodledata
+total 32
+drwxr-xr-x 2 root root  4096 Aug 28 18:27 bin
+drwxr-xr-x 5 root root  4096 Aug  8 16:49 certs
+drwxr-xr-x 5 root root  4096 Aug  8 16:52 data
+drwxr-xr-x 5 root root  4096 Aug  8 16:48 html
 ```
 
 **IMPORTANT NOTE**
@@ -65,13 +65,13 @@ Q&A](https://superuser.com/questions/421074/ssh-the-authenticity-of-host-host-ca
 
 ### If you set `htmlLocalCopySwitch` to true (this is the default now)
 
-Originally the `/moodle/html` directory was shared across all autoscaled
+Originally the `/azlamp/html` directory was shared across all autoscaled
 web VMs through the specified file server (Gluster or NFS), and this is
 not good for web response time. Therefore, we introduced the
-`htmlLocalCopySwitch` that'll copy the `/moodle/html` directory to
+`htmlLocalCopySwitch` that'll copy the `/azlamp/html` directory to
 `/var/www/html` in each autoscaled web VM and reconfigures the web
 server (apache/nginx)'s server root directory accordingly, when it's set
-to true. This now requires directory sync between `/moodle/html` and
+to true. This now requires directory sync between `/azlamp/html` and
 `/var/www/html`, and currently it's addressed by simple polling
 (minutely). Therefore, if you are going to update your Moodle
 code/settings with the switch set to true, please follow the

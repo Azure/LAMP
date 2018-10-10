@@ -1,12 +1,12 @@
 # SSL Certificate Management
 
-A valid SSL (TLS) certificate should be used with your domain name for the Moodle
+A valid SSL (TLS) certificate should be used with your domain name for the Moodle/LAMP
 site to be deployed using the templates. By default, the templates will configure
 the HTTPS server with a self-signed SSL server certificate/private key, which can
 be manually changed with your own valid SSL server certificate/private key after
 the deployment.
 
-If you'd like to configure the Moodle cluster (to be deployed) with your own domain
+If you'd like to configure the Moodle/LAMP cluster (to be deployed) with your own domain
 and your valid SSL server certificate/private key, then you can do so by utilizing
 [Azure Key Vault](https://azure.microsoft.com/en-us/services/key-vault/) and
 configuring the related template parameters as described below. This support is
@@ -15,7 +15,7 @@ and adapted to our situation.
 
 ## Initial deployment
 
-To configure the Moodle cluster (to be deployed) with your purchased SSL certificate,
+To configure the Moodle/LAMP cluster (to be deployed) with your purchased SSL certificate,
 currently the related files should be stored in an Azure Key Vault as secrets, so that
 Azure Resource Manager can reference when it deploys VMs as specified in templates.
 
@@ -68,5 +68,5 @@ HTTPS server will use this certificate and private key.
 Another important benefit of using Azure Key Vault is to handle certificate expiration/rotation automatically.
 Unfortunately, the current implementation doesn't support the auto-rotation. So when it becomes near your SSL
 certificate's expiry, you'll need to manually update the deployed certificate and private key files
-(it's in `/moodle/certs/nginx.{crt,key}` on the controller VM) and restart all the web frontend VM instances.
+(it's in `/azlamp/certs/nginx.{crt,key}` on the controller VM) and restart all the web frontend VM instances.
 We'll improve our implementation to support auto-rotation in the future.
