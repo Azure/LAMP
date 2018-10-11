@@ -1,6 +1,6 @@
 # Prepare cluster for LAMP applications
 
-If you chose Apache as your `webServerType` and `true` for the `htmlLocalCopy` switch at your Moodle cluster deployment time, you can install additional LAMP sites on your Moodle cluster, utilizing Apache's VirtualHost feature (we call this "LAMP generalization"). To generalize an installed Moodle cluster so you can run LAMP applications, you'll first need to login to the Moodle cluster controller virtual machine. The directory you'll need to work out of is `/azlamp`. 
+If you chose Apache as your `webServerType` and `true` for the `htmlLocalCopy` switch at your Moodle cluster deployment time, you can install additional LAMP sites on your Moodle cluster, utilizing Apache's VirtualHost feature (we call this "LAMP generalization"). To generalize an installed Moodle cluster so you can run LAMP applications, you'll first need to login to the Moodle cluster controller virtual machine. The directory you'll need to work out of is `/azlamp`. You will need privileged access which means that you'll either need to be root (superuser) or have *sudo* access. 
 
 ## Removing all Moodle content
 
