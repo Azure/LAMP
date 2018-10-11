@@ -17,7 +17,7 @@ and adapted to our situation.
 
 To configure the Moodle/LAMP cluster (to be deployed) with your purchased SSL certificate,
 currently the related files should be stored in an Azure Key Vault as secrets, so that
-Azure Resource Manager can reference when it deploys VMs as specified in templates.
+Azure Resource Manager can retrieve them when it deploys VMs as specified in templates.
 
 You can create your own Azure Key Vault and store your purchased SSL certificate (called
 'import' in Azure Key Vault terminology) by following related documentation like
@@ -32,7 +32,7 @@ To use this script, you'll first need to upload your SSL certificate/private key
 - `key.pem`: The private key for the SSL certificate only in PEM format
 - `chain.pem`: This is optional in case your server certificate is signed by an intermediate CA (Certificate Authority) certificate, instead of a root CA certificate. Currently only one intermediate CA certificate is supported by the script.
 
-Once you updloaded the files to your deployment environment, you can run the following command
+Once you uploaded the files to your deployment environment, you can run the following command
 to create an Azure Key Vault on your subscription and store your SSL certificate, private key, and optionally
 the intermediate CA certificate:
 

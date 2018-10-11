@@ -1,7 +1,7 @@
 # Retrieve essential install details
 
 Once a deployment has completed the ARM template will output some
-values that you will need for managing your Moodle instalation. These
+values that you will need for managing your Moodle installation. These
 are available in the portal, but in this document we will retrieve
 them using the AZ command line tools and through the AZ CLI tool. This
 document describes the available parameters and how to retrieve them.
@@ -20,7 +20,7 @@ The available output parameters are:
     the loadBalancerDNS, see below.
   - **loadBalancerDNS**: This is the DNS name of your application load
     balancer. If you provided a `siteURL` parameter when deploying
-    you'll need to add a DNS entry to its CNAMEs pointing to this address.
+    you'll need to add a CNAME entry in your DNS zone that should point to this address.
   - **moodleAdminPassword**: The generated password for the "admin" user
     in your Moodle install.
   - **controllerInstanceIP**: This is the IP address of the controller
@@ -49,7 +49,7 @@ just the value of the `siteURL` use:
 az group deployment show --resource-group $MOODLE_RG_NAME --name $MOODLE_DEPLOYMENT_NAME --out json --query *.outputs.siteURL.value
 ```
 
-However, since we are reqeusting JSON output (the default) the value
+However, since we are requesting JSON output (the default) the value
 is enclosed in quotes. In order to remove these we can output as a tab
 separated list (TSV):
 

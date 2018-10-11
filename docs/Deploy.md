@@ -1,6 +1,6 @@
 # Deploy Autoscaling Moodle Stack to Azure
 
-After following the steps in this this document you with awill have a
+After following the steps in this this document you will have a
 new Moodle site with caching for speed and scaling frontends to handle
 load. The filesystem behind it is mirrored for high availability and
 optionally backed up through Azure. Filesystem permissions and options
@@ -81,7 +81,7 @@ az group deployment create --name $MOODLE_DEPLOYMENT_NAME --resource-group $MOOD
 
 ## Using the created stack
 
-In testing, stacks typically took between 1 and 2 hours to finish,
+In testing, stacks typically took between 0.5 and 1 hour to finish,
 depending on spec. Once complete you will receive a JSON output
 containing information needed to manage your Moodle install (see
 `outputs`). You can also retrieve this infromation from the portal or
@@ -98,7 +98,7 @@ how to retrieve configuration data](./Get-Install-Data.md) along
 with full details of all the output parameters avialble to you.
 
 Note that by default the deployment uses a self-signed certificate,
-consequently you will recieve a warning when accessing the site. To
+consequently you will receive a warning when accessing the site. To
 add a genuine certificate see the documentation on [managing your
 cluster](./Manage.md).
 
@@ -126,7 +126,7 @@ here: https://docs.microsoft.com/en-us/azure/mysql/concepts-limits
 
 As the Moodle database will handle cron processes as well as the
 website, any public facing website with more than 10 users will likely
-require upgrading to 100. Once the site reaches 30+ users it will
+require upgrading to 2. Once the site reaches 30+ users it will
 require upgrading to General Purpose for more compute units. This depends
 entirely on the individual site. As MySQL databases cannot change (or
 be restored to a different tier) once deployed it is a good idea to
