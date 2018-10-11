@@ -80,7 +80,7 @@ set -ex
 
     if [ $fileServerType = "gluster" ]; then
         # configure gluster repository & install gluster client
-        sudo add-apt-repository ppa:gluster/glusterfs-3.8 -y                 >> /tmp/apt1.log
+        sudo add-apt-repository ppa:gluster/glusterfs-3.10 -y                 >> /tmp/apt1.log
     elif [ $fileServerType = "nfs" ]; then
         # configure NFS server and export
         setup_raid_disk_and_filesystem /azlamp /dev/md1 /dev/md1p1
@@ -172,6 +172,7 @@ set -ex
     if [ $dbServerType = "mysql" ]; then
         sudo apt-get install -y --force-yes php-mysql
     elif [ $dbServerType = "mssql" ]; then
+        sudo apt-get install -y libapache2-mod-php  # Need this because install_php_mssql_driver tries to update apache2-mod-php settings always (which will fail without this)
         install_php_mssql_driver
     else
         sudo apt-get install -y --force-yes php-pgsql
@@ -311,6 +312,11 @@ set -ex
         # rm -rf /azlamp_old_delete_me || true # Keep the files just in case
     fi
 
+    # chmod /azlamp for Azure NetApp Files (its default is 770!)
+    if [ $fileServerType = "nfs-byo" ]; then
+        sudo chmod +rx /azlamp
+    fi
+
     create_last_modified_time_update_script
     run_once_last_modified_time_update_script
 
@@ -351,4 +357,5 @@ do
 
 done
 EOF
+  
 }  > /tmp/install.log
