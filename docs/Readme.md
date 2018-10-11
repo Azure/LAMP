@@ -27,6 +27,8 @@ Below are a list of pre-defined/restricted deployment options based on typical d
 
 NOTE: Depending on the region you choose to deploy the stack in - the deployment might fail due to SKUs being hardcoded in the template where they are not available. For example, today our small-mid-size deployment option hard codes Gen-4 Azure MySQL SKUs into the template, and if a region where that is currently not available in (i.e. westus2) is used, your deployment will fail.  If your deployment fails, please revert to the fully configurable template where possible and change the SKU paramater to one that exists in your region (i.e. Gen-5) or alternatively change your deployment region to one in which the SKU is available (i.e. southcentralus).     
 
+For a comprehensive listing of all the components and attached services in the Moodle/LAMP cluster, please go through the documentation [here](../README.md)
+
 ## Next Steps
 
   1. [Prepare a Moodle cluster deployment to handle general LAMP applications](Generalize-To-Lamp.md)
