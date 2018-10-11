@@ -1,13 +1,13 @@
 
 # Deploy and Manage a Scalable LAMP cluster on Azure
 
-The documentation provided here is about deploying and managing a Moodle (a popular LAMP application) on Azure. However, with a few simple manual steps, you can take the provisioned Moodle cluster and arrive at a general cluster for running any LAMP application.
+The core documentation provided here is about deploying and managing a Moodle (a popular LAMP application) on Azure. However, with a few simple manual steps, you can take the provisioned Moodle cluster and arrive at a general cluster for running any LAMP application.
 
-While the section below will help you arrive at a LAMP cluster on Azure, it's recommended you deploy the Moodle cluster using an ARM template
+While you can manually [deploy](Deploy.md) a Moodle cluster and this option offers you complete control, it's recommended you deploy the Moodle cluster using an ARM template, especially if you aren't command line savvy.
 
 ## Cluster Deployment
 
-he following button will allow you to specify various configurations for your Moodle cluster
+The following button will allow you to specify various configurations for your Moodle cluster
 deployment. The number of configuration options might be overwhelming, so some pre-defined/restricted deployment options for
 typical Moodle scenarios follow this.
 
@@ -29,7 +29,7 @@ NOTE: Depending on the region you choose to deploy the stack in - the deployment
 
 ## Next Steps
 
-  1. [Prepare a Moodle cluster deployment to handle general LAMP applications](docs/Generalize-To-Lamp.md)
-  2. [Manage a Moodle/LAMP cluster on Azure](docs/Manage.md)
-  3. [Delete a Moodle/LAMP Cluster](docs/Delete.md)
+  1. [Prepare a Moodle cluster deployment to handle general LAMP applications](Generalize-To-Lamp.md)
+  2. [Manage a Moodle/LAMP cluster on Azure](dManage.md)
+  3. [Delete a Moodle/LAMP Cluster](Delete.md)
 
