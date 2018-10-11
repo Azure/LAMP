@@ -116,3 +116,4 @@ node_modules
 .params/
 .vs/
 .vscode/
+*.zip
