@@ -92,10 +92,10 @@ configured your custom `siteURL` DNS to point to the
 `loadBalancerDNS`, you should be able to load the `siteURL` in a
 browser and login with the username "admin" and the
 `moodleAdminPassword`. Note that the values for each of these
-parameters are avialble in the portal or the `outputs` section of the
+parameters are available in the portal or the `outputs` section of the
 JSON response from the previous deploy command. See [documentation on
 how to retrieve configuration data](./Get-Install-Data.md) along
-with full details of all the output parameters avialble to you.
+with full details of all the output parameters available to you.
 
 Note that by default the deployment uses a self-signed certificate,
 consequently you will receive a warning when accessing the site. To
