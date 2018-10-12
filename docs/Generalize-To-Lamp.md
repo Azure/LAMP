@@ -4,7 +4,7 @@ If you chose Apache as your `webServerType` and `true` for the `htmlLocalCopy` s
 
 ## Removing all Moodle content
 
-Leaving the Moodle related content in place is not detrimental but if you'd like to remove all Moodle related content, please locate the directories (under `/azlamp/html`, `/azlamp/data`, and `/azlamp/certs`, and delete the corresponding subdirectories). If this is done after a fresh cluster installation, there's only sub-directory each in each of the three mentioned directories:
+Leaving the Moodle related content in place is not detrimental but if you'd like to remove all Moodle related content, please locate the directories (under `/azlamp/html`, `/azlamp/data`, and `/azlamp/certs`), and delete the corresponding subdirectories). If this is done after a fresh cluster installation, there's only sub-directory each in each of the three mentioned directories:
 
 ```
 rm -rf /azlamp/html/<your_moodle_siteURL_or_lb_dns>
