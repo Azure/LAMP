@@ -164,7 +164,7 @@ set -ex
     sudo apt-get -y  --force-yes install nginx php-fpm varnish >> /tmp/apt5a.log
     sudo apt-get -y  --force-yes install php php-cli php-curl php-zip >> /tmp/apt5b.log
 
-    # Moodle requirements
+    # LAMP requirements
     sudo apt-get -y update > /dev/null
     sudo apt-get install -y --force-yes graphviz aspell php-common php-soap php-json php-redis > /tmp/apt6.log
     sudo apt-get install -y --force-yes php-bcmath php-gd php-xmlrpc php-intl php-xml php-bz2 php-pear php-mbstring php-dev mcrypt >> /tmp/apt6.log
@@ -178,21 +178,13 @@ set -ex
         sudo apt-get install -y --force-yes php-pgsql
     fi
 
-    # Set up initial moodle dirs
-    moodleHtmlDir="/azlamp/html/$siteFQDN"
-    moodleCertsDir="/azlamp/certs/$siteFQDN"
-    moodleDataDir="/azlamp/data/$siteFQDN/moodledata"   # Need the .../moodledata subdir because we also save the DB backup files in /azlamp/data/$siteFQDN and we'd like to separate it from moodledata content
-
-    mkdir -p /azlamp/html       # /azlamp/html/$siteFQDN should NOT be created here, but in download_and_place_... (to support the case of already created /azlamp/html/$siteFQDN directory and avoiding redownloading)
-    mkdir -p $moodleCertsDir
-    mkdir -p $moodleDataDir
-
-    download_and_place_per_site_moodle_and_plugins_on_controller $moodleVersion $moodleHtmlDir $installGdprPluginsSwitch $installO365pluginsSwitch $searchType $installObjectFsSwitch
+    # Set up initial LAMP dirs
+    mkdir -p /azlamp/html
+    mkdir -p /azlamp/certs
+    mkdir -p /azlamp/data
 
     # Build nginx config
     create_main_nginx_conf_on_controller $httpsTermination
-    create_per_site_nginx_conf_on_controller $siteFQDN $httpsTermination $moodleHtmlDir $moodleCertsDir
-    create_per_site_nginx_ssl_certs_on_controller $siteFQDN $moodleCertsDir $httpsTermination $thumbprintSslCert $thumbprintCaCert
 
     update_php_config_on_controller
 
@@ -207,86 +199,9 @@ set -ex
     systemctl daemon-reload
     service varnish restart
 
-    create_per_site_sql_db_from_controller $dbServerType $dbIP $dbadminloginazure $dbadminpass $moodledbname $moodledbuser $moodledbpass $mssqlDbSize $mssqlDbEdition $mssqlDbServiceObjectiveName
-
     # Master config for syslog
     config_syslog_on_controller
     service rsyslog restart
-
-    # Fire off moodle setup
-    setup_and_config_per_site_moodle_on_controller $httpsTermination $siteFQDN $dbServerType $moodleHtmlDir $moodleDataDir $dbIP $moodledbname $azuremoodledbuser $moodledbpass $adminpass
-
-    if [ "$redisAuth" != "None" ]; then
-        create_redis_configuration_in_moodledata_muc_config_php $moodleDataDir/muc/config.php
-
-        # redis configuration in $moodleHtmlDir/config.php
-        sed -i "23 a \$CFG->session_redis_lock_expire = 7200;" $configPhpPath
-        sed -i "23 a \$CFG->session_redis_acquire_lock_timeout = 120;" $configPhpPath
-        sed -i "23 a \$CFG->session_redis_prefix = 'moodle_prod'; // Optional, default is don't set one." $configPhpPath
-        sed -i "23 a \$CFG->session_redis_database = 0;  // Optional, default is db 0." $configPhpPath
-        sed -i "23 a \$CFG->session_redis_port = 6379;  // Optional." $configPhpPath
-        sed -i "23 a \$CFG->session_redis_host = '$redisDns';" $configPhpPath
-        sed -i "23 a \$CFG->session_redis_auth = '$redisAuth';" $configPhpPath
-        sed -i "23 a \$CFG->session_handler_class = '\\\core\\\session\\\redis';" $configPhpPath
-    fi
-
-    if [ "$searchType" = "elastic" ]; then
-        # Set up elasticsearch plugin
-        if [ "$tikaVmIP" = "none" ]; then
-           sed -i "23 a \$CFG->forced_plugin_settings = ['search_elastic' => ['hostname' => 'http://$elasticVm1IP']];" $configPhpPath
-        else
-           sed -i "23 a \$CFG->forced_plugin_settings = ['search_elastic' => ['hostname' => 'http://$elasticVm1IP', 'fileindexing' => 'true', 'tikahostname' => 'http://$tikaVmIP', 'tikaport' => '9998'],];" $configPhpPath
-        fi
-
-        sed -i "23 a \$CFG->searchengine = 'elastic';" $configPhpPath
-        sed -i "23 a \$CFG->enableglobalsearch = 'true';" $configPhpPath
-        # create index
-        php $moodleHtmlDir/search/cli/indexer.php --force --reindex
-
-    elif [ "$searchType" = "azure" ]; then
-        # Set up Azure Search service plugin
-        if [ "$tikaVmIP" = "none" ]; then
-           sed -i "23 a \$CFG->forced_plugin_settings = ['search_azure' => ['searchurl' => 'https://$azureSearchNameHost', 'apikey' => '$azureSearchKey']];" $configPhpPath
-        else
-           sed -i "23 a \$CFG->forced_plugin_settings = ['search_azure' => ['searchurl' => 'https://$azureSearchNameHost', 'apikey' => '$azureSearchKey', 'fileindexing' => '1', 'tikahostname' => 'http://$tikaVmIP', 'tikaport' => '9998'],];" $configPhpPath
-        fi
-
-        sed -i "23 a \$CFG->searchengine = 'azure';" $configPhpPath
-        sed -i "23 a \$CFG->enableglobalsearch = 'true';" $configPhpPath
-        # create index
-        php $moodleHtmlDir/search/cli/indexer.php --force --reindex
-
-    fi
-
-    if [ "$installObjectFsSwitch" = "true" ]; then
-        # Set the ObjectFS alternate filesystem
-        sed -i "23 a \$CFG->alternative_file_system_class = '\\\tool_objectfs\\\azure_file_system';" $configPhpPath
-        # Add the ObjectFS plugin configuration to Moodle.
-        if [ $dbServerType = "mysql" ]; then
-            mysql -h $dbIP -u $dbadminloginazure -p${dbadminpass} ${moodledbname} -e "INSERT INTO mdl_config_plugins (plugin, name, value) VALUES ('tool_objectfs', 'enabletasks', 1);"
-            mysql -h $dbIP -u $dbadminloginazure -p${dbadminpass} ${moodledbname} -e "INSERT INTO mdl_config_plugins (plugin, name, value) VALUES ('tool_objectfs', 'filesystem', '\\\tool_objectfs\\\azure_file_system');"
-            mysql -h $dbIP -u $dbadminloginazure -p${dbadminpass} ${moodledbname} -e "INSERT INTO mdl_config_plugins (plugin, name, value) VALUES ('tool_objectfs', 'azure_accountname', '${storageAccountName}');"
-            mysql -h $dbIP -u $dbadminloginazure -p${dbadminpass} ${moodledbname} -e "INSERT INTO mdl_config_plugins (plugin, name, value) VALUES ('tool_objectfs', 'azure_container', 'objectfs');"
-            mysql -h $dbIP -u $dbadminloginazure -p${dbadminpass} ${moodledbname} -e "INSERT INTO mdl_config_plugins (plugin, name, value) VALUES ('tool_objectfs', 'azure_sastoken', '${sas}');"
-        elif [ $dbServerType = "mssql" ]; then
-            /opt/mssql-tools/bin/sqlcmd -S $dbIP -U $dbadminloginazure -P ${dbadminpass} -d ${moodledbname} -Q "INSERT INTO mdl_config_plugins (plugin, name, value) VALUES ('tool_objectfs', 'enabletasks', 1)"
-            /opt/mssql-tools/bin/sqlcmd -S $dbIP -U $dbadminloginazure -P ${dbadminpass} -d ${moodledbname} -Q "INSERT INTO mdl_config_plugins (plugin, name, value) VALUES ('tool_objectfs', 'filesystem', '\\\tool_objectfs\\\azure_file_system')"
-            /opt/mssql-tools/bin/sqlcmd -S $dbIP -U $dbadminloginazure -P ${dbadminpass} -d ${moodledbname} -Q "INSERT INTO mdl_config_plugins (plugin, name, value) VALUES ('tool_objectfs', 'azure_accountname', '${storageAccountName}')"
-            /opt/mssql-tools/bin/sqlcmd -S $dbIP -U $dbadminloginazure -P ${dbadminpass} -d ${moodledbname} -Q "INSERT INTO mdl_config_plugins (plugin, name, value) VALUES ('tool_objectfs', 'azure_container', 'objectfs')"
-            /opt/mssql-tools/bin/sqlcmd -S $dbIP -U $dbadminloginazure -P ${dbadminpass} -d${moodledbname} -Q "INSERT INTO mdl_config_plugins (plugin, name, value) VALUES ('tool_objectfs', 'azure_sastoken', '${sas}')"
-        else # $dbServerType = "postgres"
-            echo "${dbIP}:5432:${moodledbname}:${azuremoodledbuser}:${moodledbpass}" > /root/.pgpass
-            chmod 600 /root/.pgpass
-            psql -h $dbIP -U $azuremoodledbuser -c "INSERT INTO mdl_config_plugins (plugin, name, value) VALUES ('tool_objectfs', 'enabletasks', 1);"$moodledbname
-            psql -h $dbIP -U $azuremoodledbuser -c "INSERT INTO mdl_config_plugins (plugin, name, value) VALUES ('tool_objectfs', 'filesystem', '\tool_objectfs\azure_file_system');" $moodledbname
-            psql -h $dbIP -U $azuremoodledbuser -c "INSERT INTO mdl_config_plugins (plugin, name, value) VALUES ('tool_objectfs', 'azure_accountname', '$storageAccountName');" $moodledbname
-            psql -h $dbIP -U $azuremoodledbuser -c "INSERT INTO mdl_config_plugins (plugin, name, value) VALUES ('tool_objectfs', 'azure_container', 'objectfs');" $moodledbname
-            psql -h $dbIP -U $azuremoodledbuser -c "INSERT INTO mdl_config_plugins (plugin, name, value) VALUES ('tool_objectfs', 'azure_sastoken', '$sas');" $moodledbname
-            rm -f /root/.pgpass
-        fi
-    fi
-
-    setup_per_site_moodle_cron_jobs_on_controller $moodleHtmlDir $siteFQDN $dbServerType $dbIP $moodledbname $azuremoodledbuser $moodledbpass
 
     # Turning off services we don't need the controller running
     service nginx stop
@@ -342,7 +257,7 @@ do
 
         #1)
         #    . /azlamp/bin/utils.sh
-        #    reset_all_sites true VMSS apache
+        #    reset_all_sites_on_vmss true VMSS apache
         #;;
 
         *)
