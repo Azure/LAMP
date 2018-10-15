@@ -2,7 +2,7 @@
 # Deploy and Manage an (empty) Scalable LAMP Cluster on Azure
 
 This repo contains guides and [Azure Resource Manager](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-overview) templates designed to help you deploy and manage a highly available and scalable
-[LAMP](https://en.wikipedia.org/wiki/LAMP_(software_bundle)) cluster on Azure. I
+[LAMP](https://en.wikipedia.org/wiki/LAMP_(software_bundle)) cluster on Azure. 
 
 If you have Azure account you can deploy LAMP via the [Azure portal](https://portal.azure.com) using the button below. Please note that while you can use an [Azure free account](https://azure.microsoft.com/en-us/free/) to get started depending on which template configuration you choose you will likely be required to upgrade to a paid account. 
 
