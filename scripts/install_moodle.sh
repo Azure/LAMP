@@ -257,7 +257,7 @@ do
 
         #1)
         #    . /azlamp/bin/utils.sh
-        #    reset_all_sites true VMSS apache
+        #    reset_all_sites_on_vmss true VMSS apache
         #;;
 
         *)
