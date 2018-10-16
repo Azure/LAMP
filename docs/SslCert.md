@@ -1,12 +1,12 @@
 # SSL Certificate Management
 
-A valid SSL (TLS) certificate should be used with your domain name for the Moodle
+A valid SSL (TLS) certificate should be used with your domain name for the Moodle/LAMP
 site to be deployed using the templates. By default, the templates will configure
 the HTTPS server with a self-signed SSL server certificate/private key, which can
 be manually changed with your own valid SSL server certificate/private key after
 the deployment.
 
-If you'd like to configure the Moodle cluster (to be deployed) with your own domain
+If you'd like to configure the Moodle/LAMP cluster (to be deployed) with your own domain
 and your valid SSL server certificate/private key, then you can do so by utilizing
 [Azure Key Vault](https://azure.microsoft.com/en-us/services/key-vault/) and
 configuring the related template parameters as described below. This support is
@@ -15,9 +15,9 @@ and adapted to our situation.
 
 ## Initial deployment
 
-To configure the Moodle cluster (to be deployed) with your purchased SSL certificate,
+To configure the Moodle/LAMP cluster (to be deployed) with your purchased SSL certificate,
 currently the related files should be stored in an Azure Key Vault as secrets, so that
-Azure Resource Manager can reference when it deploys VMs as specified in templates.
+Azure Resource Manager can retrieve them when it deploys VMs as specified in templates.
 
 You can create your own Azure Key Vault and store your purchased SSL certificate (called
 'import' in Azure Key Vault terminology) by following related documentation like
@@ -32,7 +32,7 @@ To use this script, you'll first need to upload your SSL certificate/private key
 - `key.pem`: The private key for the SSL certificate only in PEM format
 - `chain.pem`: This is optional in case your server certificate is signed by an intermediate CA (Certificate Authority) certificate, instead of a root CA certificate. Currently only one intermediate CA certificate is supported by the script.
 
-Once you updloaded the files to your deployment environment, you can run the following command
+Once you uploaded the files to your deployment environment, you can run the following command
 to create an Azure Key Vault on your subscription and store your SSL certificate, private key, and optionally
 the intermediate CA certificate:
 
@@ -68,5 +68,5 @@ HTTPS server will use this certificate and private key.
 Another important benefit of using Azure Key Vault is to handle certificate expiration/rotation automatically.
 Unfortunately, the current implementation doesn't support the auto-rotation. So when it becomes near your SSL
 certificate's expiry, you'll need to manually update the deployed certificate and private key files
-(it's in `/moodle/certs/nginx.{crt,key}` on the controller VM) and restart all the web frontend VM instances.
+(it's in `/azlamp/certs/nginx.{crt,key}` on the controller VM) and restart all the web frontend VM instances.
 We'll improve our implementation to support auto-rotation in the future.
