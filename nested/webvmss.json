@@ -1,0 +1,227 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "moodleCommon": {
+            "metadata": {
+                "description": "Common Moodle values"
+            },
+            "type": "object"
+        },
+        "subnetIdWeb": {
+            "metadata": {
+                "description": "Azure resource ID of the subnet where this VMSS is to be deployed"
+            },
+            "type": "string"
+        },
+        "vmSetupParamsObj": {
+            "metadata": {
+                "description": "JSON-structured VM setup params that'll be injected to the VM (through cloud-init) and used by the custom script (setup_webserver.sh)"
+            },
+            "type": "object"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2017-06-01",
+            "location": "[parameters('moodleCommon').location]",
+            "name": "[parameters('moodleCommon').vmssdStorageAccounttName]",
+            "kind": "Storage",
+            "sku": {
+                "name": "Standard_LRS"
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachineScaleSets",
+            "apiVersion": "2017-03-30",
+            "dependsOn": [
+                "[concat('Microsoft.Storage/storageAccounts/', parameters('moodleCommon').vmssdStorageAccounttName)]"
+            ],
+            "location": "[parameters('moodleCommon').location]",
+            "name": "[parameters('moodleCommon').vmssName]",
+            "properties": {
+                "overprovision": true,
+                "upgradePolicy": {
+                    "mode": "Manual"
+                },
+                "virtualMachineProfile": {
+                    "extensionProfile": {
+                        "extensions": [
+                            {
+                                "name": "setup_moodle",
+                                "properties": {
+                                    "autoUpgradeMinorVersion": true,
+                                    "publisher": "Microsoft.Azure.Extensions",
+                                    "settings": {
+                                        "fileUris": [
+                                            "[variables('scriptUri')]",
+                                            "[parameters('moodleCommon').commonFunctionsScriptUri]"
+                                        ]
+                                    },
+                                    "protectedSettings":{
+                                        "commandToExecute": "[concat('bash ', parameters('moodleCommon').webServerSetupScriptFilename, ' ', parameters('moodleCommon').moodleOnAzureConfigsJsonPath)]"
+                                    },
+                                    "type": "CustomScript",
+                                    "typeHandlerVersion": "2.0"
+                                }
+                            }
+                        ]
+                    },
+                    "networkProfile": {
+                        "networkInterfaceConfigurations": [
+                            {
+                                "name": "vmssnic",
+                                "properties": {
+                                    "ipConfigurations": [
+                                        {
+                                            "name": "ipcfg_lb",
+                                            "properties": {
+                                                "loadBalancerBackendAddressPools": "[take(variables('lbBePoolArray'), variables('lbBePoolArrayTakeCount'))]",
+                                                "applicationGatewayBackendAddressPools": "[take(variables('appGwBePoolArray'), variables('appGwBePoolArrayTakeCount'))]",
+                                                "subnet": {
+                                                    "id": "[parameters('subnetIdWeb')]"
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "primary": true,
+                                    "enableAcceleratedNetworking": "[parameters('moodleCommon').enableAccelNwForOtherVmsSwitch]"
+                                }
+                            }
+                        ]
+                    },
+                    "osProfile": {
+                        "adminUsername": "[parameters('moodleCommon').sshUsername]",
+                        "computerNamePrefix": "[parameters('moodleCommon').vmssName]",
+                        "customData": "[base64(concat('#cloud-config\nwrite_files:\n- encoding: b64\n  content: ', base64(string(parameters('vmSetupParamsObj'))), '\n  owner: root:root\n  path: ', parameters('moodleCommon').moodleOnAzureConfigsJsonPath, '\n  permissions: ', variables('singleQuote'), '0400', variables('singleQuote')))]",
+                        "linuxConfiguration": {
+                            "disablePasswordAuthentication": true,
+                            "ssh": {
+                                "publicKeys": [
+                                    {
+                                        "path": "[concat('/home/', parameters('moodleCommon').sshUsername, '/.ssh/authorized_keys')]",
+                                        "keyData": "[parameters('moodleCommon').sshPublicKey]"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "storageProfile": {
+                        "imageReference": "[parameters('moodleCommon').osType]",
+                        "osDisk": {
+                            "caching": "ReadOnly",
+                            "createOption": "FromImage",
+                            "managedDisk": {
+                                "storageAccountType": "[parameters('moodleCommon').osDiskStorageType]"
+                            }
+                        }
+                    }
+                }
+            },
+            "sku": {
+                "capacity": 1,
+                "name": "[parameters('moodleCommon').autoscaleVmSku]",
+                "tier": "Standard"
+            },
+            "tags": {
+                "displayName": "webfarm"
+            }
+        },
+        {
+            "type": "Microsoft.Insights/autoscaleSettings",
+            "apiVersion": "2015-04-01",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachineScaleSets/', parameters('moodleCommon').vmssName)]"
+            ],
+            "location": "[parameters('moodleCommon').location]",
+            "name": "autoscalewad",
+            "properties": {
+                "enabled": true,
+                "name": "autoscalewad",
+                "profiles": [
+                    {
+                        "capacity": {
+                            "default": "[parameters('moodleCommon').autoscaleVmCountMin]",
+                            "maximum": "[parameters('moodleCommon').autoscaleVmCountMax]",
+                            "minimum": "[parameters('moodleCommon').autoscaleVmCountMin]"
+                        },
+                        "name": "Profile1",
+                        "rules": [
+                            {
+                                "metricTrigger": {
+                                    "metricName": "Percentage CPU",
+                                    "metricNamespace": "",
+                                    "metricResourceUri": "[variables('vmssID')]",
+                                    "operator": "GreaterThan",
+                                    "statistic": "Average",
+                                    "threshold": 60,
+                                    "timeAggregation": "Average",
+                                    "timeGrain": "PT1M",
+                                    "timeWindow": "PT5M"
+                                },
+                                "scaleAction": {
+                                    "cooldown": "PT10M",
+                                    "direction": "Increase",
+                                    "type": "ChangeCount",
+                                    "value": "1"
+                                }
+                            },
+                            {
+                                "metricTrigger": {
+                                    "metricName": "Percentage CPU",
+                                    "metricNamespace": "",
+                                    "metricResourceUri": "[variables('vmssID')]",
+                                    "operator": "LessThan",
+                                    "statistic": "Average",
+                                    "threshold": 30,
+                                    "timeAggregation": "Average",
+                                    "timeGrain": "PT1M",
+                                    "timeWindow": "PT5M"
+                                },
+                                "scaleAction": {
+                                    "cooldown": "PT10M",
+                                    "direction": "Decrease",
+                                    "type": "ChangeCount",
+                                    "value": "1"
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "targetResourceUri": "[variables('vmssID')]"
+            }
+        }
+    ],
+    "variables": {
+        "singleQuote": "'",
+        "dstorID": "[resourceId('Microsoft.Storage/storageAccounts',parameters('moodleCommon').vmssdStorageAccounttName)]",
+        "extBeID": "[concat(variables('extLbID'),'/backendAddressPools/',parameters('moodleCommon').extBeName)]",
+        "extFeID": "[concat(variables('extLbID'),'/frontendIPConfigurations/',parameters('moodleCommon').extFeName)]",
+        "extLbID": "[resourceId('Microsoft.Network/loadBalancers',parameters('moodleCommon').lbName)]",
+        "pipID": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('moodleCommon').lbPipName)]",
+        "scriptUri": "[concat(parameters('moodleCommon').scriptLocation,parameters('moodleCommon').webServerSetupScriptFilename,parameters('moodleCommon').artifactsSasToken)]",
+        "vmssID": "[resourceId('Microsoft.Compute/virtualMachineScaleSets',parameters('moodleCommon').vmssName)]",
+        "webvmss1NIC": "[concat('Microsoft.Compute/virtualMachineScaleSets/', parameters('moodleCommon').vmssName, '/virtualMachines/0/networkInterfaces/vmssnic')]",
+        "appGwID": "[resourceId('Microsoft.Network/applicationGateways', parameters('moodleCommon').appGwName)]",
+        "appGwBePoolId": "[concat(variables('appGwID'), '/backendAddressPools/', parameters('moodleCommon').appGwBePoolName)]",
+        "lbBePoolArray": [
+            {
+                "id": "[variables('extBeID')]"
+            }
+        ],
+        "lbBePoolArrayTakeCount": "[if(equals(parameters('moodleCommon').httpsTermination, 'AppGw'), 0, 1)]",
+        "appGwBePoolArray": [
+            {
+                "id": "[variables('appGwBePoolId')]"
+            }
+        ],
+        "appGwBePoolArrayTakeCount": "[if(equals(parameters('moodleCommon').httpsTermination, 'AppGw'), 1, 0)]"
+    },
+    "outputs": {
+        "webvm1IP": {
+            "value": "[reference(variables('webvmss1NIC'), '2017-03-30').ipConfigurations[0].properties.privateIPAddress]",
+            "type": "string"
+        }
+    }
+}
