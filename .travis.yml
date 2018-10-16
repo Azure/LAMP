@@ -1,0 +1,29 @@
+dist: trusty
+
+language: python
+
+node_js: "0.12"
+
+python: "3.5"
+
+cache:
+  - directories: node_modules
+  - pip
+
+env:
+  - PYTHONUNBUFFERED=TRUE
+
+install:
+  - npm install # Install task runners for lint checking.
+  - pip install azure-mgmt-subscription azure-mgmt-resource keyring pycurl # Install Azure Python SDK (we only need the sub & the resource manager packages)
+
+before_script:
+  - ssh-keygen -q -f azure_moodle_id_rsa -N "" # Generate SSH keys to send to deployment
+
+script:
+  - npm test
+  - ./etc/travis.py
+
+notifications:
+
+webhooks: https://outlook.office.com/webhook/e75ee820-3466-49a6-bb0f-ecae0daf8fe1@72f988bf-86f1-41af-91ab-2d7cd011db47/TravisCI/00abc9d7ce1044818f216da49d30d54d/a38fc8f6-fb60-4169-bde6-dd2bbf01304f
