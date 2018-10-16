@@ -1,6 +1,6 @@
 # Cleanup All Resources
 
-To cleanup a Moodle deployment simply delete the Resource Group that
+To cleanup a Moodle/LAMP deployment simply delete the Resource Group that
 contains it. The commands below will iterate over your workspace
 directory and delete all deployments.
 
