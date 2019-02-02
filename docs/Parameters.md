@@ -31,7 +31,7 @@ Type: string
 
 Possible Values: null
 
-Default: https://raw.githubusercontent.com/ItalyPaleAle/LAMP/generalized/
+Default: https://raw.githubusercontent.com/ItalyPaleAle/LAMP/master/
 
 
 ### _artifactsLocationSasToken
