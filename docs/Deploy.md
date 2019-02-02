@@ -83,15 +83,14 @@ az group deployment create --name $MOODLE_DEPLOYMENT_NAME --resource-group $MOOD
 
 In testing, stacks typically took between 0.5 and 1 hour to finish,
 depending on spec. Once complete you will receive a JSON output
-containing information needed to manage your Moodle install (see
+containing information needed to manage your cluster (see
 `outputs`). You can also retrieve this infromation from the portal or
 the CLI.
-                      
-Once Moodle has been created, and (where necessary) you have
+
+Once the cluster has been created, and (where necessary) you have
 configured your custom `siteURL` DNS to point to the
 `loadBalancerDNS`, you should be able to load the `siteURL` in a
-browser and login with the username "admin" and the
-`moodleAdminPassword`. Note that the values for each of these
+browser. Note that the values for each of these
 parameters are available in the portal or the `outputs` section of the
 JSON response from the previous deploy command. See [documentation on
 how to retrieve configuration data](./Get-Install-Data.md) along

@@ -7,7 +7,7 @@
             "metadata": {
                 "description": "The base URI where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated."
             },
-            "defaultValue": "https://raw.githubusercontent.com/Azure/Moodle/master/"
+            "defaultValue": "https://raw.githubusercontent.com/ItalyPaleAle/LAMP/generalized/"
         },
         "_artifactsLocationSasToken": {
             "type": "securestring",
@@ -57,7 +57,7 @@
         "documentation01": "This wrapper template calls the main-template with bare minimum configs and the only required parameter (sshPublicKey).",
         "documentation02": "To speed up deployment and consume least resources, other parameters are fixed in this tempalte and overriden as follows:",
         "documentation03": "   - fileServerType: nfs",
-        "documentation04": "   - autoscaleVmSku: Standard_DS1_vs",
+        "documentation04": "   - autoscaleVmSku: Standard_DS1_v2",
         "documentation05": "   - fileServerDiskCount: 2",
         "documentation06": "   - dbServerType: mssql",
         "documentation07": "   - redisDeploySwitch: false"

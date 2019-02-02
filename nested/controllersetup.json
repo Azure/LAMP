@@ -2,9 +2,9 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "moodleCommon": {
+        "lampCommon": {
             "metadata": {
-                "description": "Common Moodle values"
+                "description": "Common LAMP values"
             },
             "type": "object"
         }
@@ -13,25 +13,25 @@
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2017-03-30",
-            "location": "[parameters('moodleCommon').location]",
-            "name": "[concat(parameters('moodleCommon').ctlrVmName,'/','install_moodle')]",
+            "location": "[parameters('lampCommon').location]",
+            "name": "[concat(parameters('lampCommon').ctlrVmName,'/','setup_controller')]",
             "properties": {
                 "autoUpgradeMinorVersion": true,
                 "publisher": "Microsoft.Azure.Extensions",
                 "settings": {
                     "fileUris": [
                         "[variables('scriptUri')]",
-                        "[parameters('moodleCommon').commonFunctionsScriptUri]"
+                        "[parameters('lampCommon').commonFunctionsScriptUri]"
                     ]
                 },
                 "protectedSettings":{
-                    "commandToExecute": "[concat('bash ', parameters('moodleCommon').moodleInstallScriptFilename, ' ', parameters('moodleCommon').moodleOnAzureConfigsJsonPath)]"
+                    "commandToExecute": "[concat('bash ', parameters('lampCommon').controllerInstallScriptFilename, ' ', parameters('lampCommon').lampOnAzureConfigsJsonPath)]"
                 },
                 "type": "CustomScript",
                 "typeHandlerVersion": "2.0"
             },
             "tags": {
-                "displayName": "install_moodle"
+                "displayName": "setup_controller"
             }
         }
     ],
@@ -39,19 +39,15 @@
         "documentation01": "This sub-template applies a specific post-deployment script to the controller vm",
         "documentation02": "It expects certain values in the 'common' datastructure.",
         "documentation03": "    scriptLocation              - web URI",
-        "documentation04": "    moodleInstallScriptFilename - name of script file",
+        "documentation04": "    controllerInstallScriptFilename - name of script file",
         "documentation05": "    siteURL                     - URL of the website",
         "documentation06": "    gfsNameRoot                 - nameroot of gluster farm - note that the code applies a 0 to get to the first node",
         "documentation07": "    ctlrVmName                  - name of the controller/jumpb ox VM",
         "documentation08": "    dbServerType                - postgres or mysql",
-        "documentation09": "    moodleDbName                - database name for moodle",
-        "documentation10": "    moodleDbUser                - database user for moodle",
-        "documentation11": "    moodleDbPass                - database password for moodleDbUser",
-        "documentation12": "    moodleAdminPass             - password for moodle admin user",
-        "documentation13": "    mssqlDbServiceObjectiveName - MS SQL porformance tier.",
-        "documentation14": "    mssqlDbEdition              - MS SQL edition tier",
-        "documentation15": "    mssqlDbSize                 - MS SQL database size",
+        "documentation09": "    mssqlDbServiceObjectiveName - MS SQL porformance tier.",
+        "documentation10": "    mssqlDbEdition              - MS SQL edition tier",
+        "documentation11": "    mssqlDbSize                 - MS SQL database size",
 
-        "scriptUri": "[concat(parameters('moodleCommon').scriptLocation,parameters('moodleCommon').moodleInstallScriptFilename,parameters('moodleCommon').artifactsSasToken)]"
+        "scriptUri": "[concat(parameters('lampCommon').scriptLocation,parameters('lampCommon').controllerInstallScriptFilename,parameters('lampCommon').artifactsSasToken)]"
     }
 }

@@ -2,9 +2,9 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "moodleCommon": {
+        "lampCommon": {
             "metadata": {
-                "description": "Common Moodle values"
+                "description": "Common LAMP values"
             },
             "type": "object"
         },
@@ -25,17 +25,17 @@
         {
             "type": "Microsoft.Network/ddosProtectionPlans",
             "apiVersion": "2018-02-01",
-            "condition": "[parameters('moodleCommon').ddosSwitch]",
-            "location": "[parameters('moodleCommon').location]",
-            "name": "[parameters('moodleCommon').ddosPlanName]"
+            "condition": "[parameters('lampCommon').ddosSwitch]",
+            "location": "[parameters('lampCommon').location]",
+            "name": "[parameters('lampCommon').ddosPlanName]"
         },
         {
             "type": "Microsoft.Network/virtualNetworks",
             "apiVersion": "2018-02-01",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/ddosProtectionPlans', parameters('moodleCommon').ddosPlanName)]"
+                "[resourceId('Microsoft.Network/ddosProtectionPlans', parameters('lampCommon').ddosPlanName)]"
             ],
-            "location": "[parameters('moodleCommon').location]",
+            "location": "[parameters('lampCommon').location]",
             "name": "[parameters('vnetName')]",
             "properties": {
                 "addressSpace": {
@@ -44,9 +44,9 @@
                     ]
                 },
                 "ddosProtectionPlan": {
-                    "id": "[resourceId('Microsoft.Network/ddosProtectionPlans', parameters('moodleCommon').ddosPlanName)]"
+                    "id": "[resourceId('Microsoft.Network/ddosProtectionPlans', parameters('lampCommon').ddosPlanName)]"
                 },
-                "enableDdosProtection": "[parameters('moodleCommon').ddosSwitch]"
+                "enableDdosProtection": "[parameters('lampCommon').ddosSwitch]"
             }
         }
     ],

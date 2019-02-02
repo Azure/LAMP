@@ -2,9 +2,9 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "moodleCommon": {
+        "lampCommon": {
             "metadata": {
-                "description": "Common Moodle values"
+                "description": "Common LAMP values"
             },
             "type": "object"
         },
@@ -19,8 +19,8 @@
         {
             "type": "Microsoft.Compute/availabilitySets",
             "apiVersion": "2017-03-30",
-            "location": "[parameters('moodleCommon').location]",
-            "name": "[parameters('moodleCommon').gfxAvailabilitySetName]",
+            "location": "[parameters('lampCommon').location]",
+            "name": "[parameters('lampCommon').gfsAvailabilitySetName]",
             "properties": {
                 "platformFaultDomainCount": 2,
                 "platformUpdateDomainCount": 5
@@ -36,11 +36,11 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2017-05-10",
             "copy": {
-                "count": "[parameters('moodleCommon').fileServerVmCount]",
+                "count": "[parameters('lampCommon').fileServerVmCount]",
                 "name": "vmloop"
             },
             "dependsOn": [
-                "[concat('Microsoft.Compute/availabilitySets/',parameters('moodleCommon').gfxAvailabilitySetName)]"
+                "[concat('Microsoft.Compute/availabilitySets/',parameters('lampCommon').gfsAvailabilitySetName)]"
             ],
             "name": "[concat('glustervm',copyindex())]",
             "properties": {
@@ -49,15 +49,15 @@
                     "counter": {
                         "value": "[copyindex()]"
                     },
-                    "moodleCommon": {
-                        "value": "[parameters('moodleCommon')]"
+                    "lampCommon": {
+                        "value": "[parameters('lampCommon')]"
                     },
                     "subnetIdSan": {
                         "value": "[parameters('subnetIdSan')]"
                     }
                 },
                 "templateLink": {
-                    "uri": "[concat(parameters('moodleCommon').baseTemplateUrl,'glustervm.json',parameters('moodleCommon').artifactsSasToken)]"
+                    "uri": "[concat(parameters('lampCommon').baseTemplateUrl,'glustervm.json',parameters('lampCommon').artifactsSasToken)]"
                 }
             }
         }
@@ -65,7 +65,7 @@
     "variables": {
         "documentation1": "This sub-template drives the gluster (scale-out network-attached storage file system) creation process.",
         "documentation2": "It expects certain values in the 'common' datastructure.",
-        "documentation4": "    gfxAvailabilitySetName  - name of availability set for the gluster farm",
+        "documentation4": "    gfsAvailabilitySetName  - name of availability set for the gluster farm",
         "documentation5": "    fileServerVmCount          - number of nodes to create",
         "documentation6": "This sub-template calls other sub-templates",
         "documentation7": "    glustervm - number of nodes in the gluster farm"

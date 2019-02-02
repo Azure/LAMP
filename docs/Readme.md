@@ -31,7 +31,7 @@ NOTE: Depending on the region you choose to deploy the stack in - the deployment
 ## Stack Architecture
 
 This template set deploys the following infrastructure core to your LAMP instance:
-- Autoscaling web frontend layer (Nginx for https termination, Varnish for caching, Apache/php or nginx/php-fpm)
+- Autoscaling web frontend layer (Nginx for https termination, Apache/php or nginx/php-fpm)
 - Private virtual network for frontend instances
 - Controller instance running cron and handling syslog for the autoscaled site
 - [Azure Load balancer](https://azure.microsoft.com/en-us/services/load-balancer/) to balance across the autoscaled instances

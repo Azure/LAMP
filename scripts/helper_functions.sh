@@ -4,7 +4,7 @@
 
 function get_setup_params_from_configs_json
 {
-    local configs_json_path=${1}    # E.g., /var/lib/cloud/instance/moodle_on_azure_configs.json
+    local configs_json_path=${1}    # E.g., /var/lib/cloud/instance/lamp_on_azure_configs.json
 
     (dpkg -l jq &> /dev/null) || (apt -y update; apt -y install jq)
 
@@ -20,42 +20,28 @@ function get_setup_params_from_configs_json
     done
 
     local json=$(cat $configs_json_path)
-    export moodleVersion=$(echo $json | jq -r .moodleProfile.version)
     export glusterNode=$(echo $json | jq -r .fileServerProfile.glusterVmName)
     export glusterVolume=$(echo $json | jq -r .fileServerProfile.glusterVolName)
     export siteFQDN=$(echo $json | jq -r .siteProfile.siteURL)
     export httpsTermination=$(echo $json | jq -r .siteProfile.httpsTermination)
     export dbIP=$(echo $json | jq -r .dbServerProfile.fqdn)
-    export moodledbname=$(echo $json | jq -r .moodleProfile.dbName)
-    export moodledbuser=$(echo $json | jq -r .moodleProfile.dbUser)
-    export moodledbpass=$(echo $json | jq -r .moodleProfile.dbPassword)
-    export adminpass=$(echo $json | jq -r .moodleProfile.adminPassword)
+    export adminpass=$(echo $json | jq -r .lampProfile.adminPassword)
     export dbadminlogin=$(echo $json | jq -r .dbServerProfile.adminLogin)
     export dbadminloginazure=$(echo $json | jq -r .dbServerProfile.adminLoginAzure)
     export dbadminpass=$(echo $json | jq -r .dbServerProfile.adminPassword)
-    export storageAccountName=$(echo $json | jq -r .moodleProfile.storageAccountName)
-    export storageAccountKey=$(echo $json | jq -r .moodleProfile.storageAccountKey)
-    export azuremoodledbuser=$(echo $json | jq -r .moodleProfile.dbUserAzure)
-    export redisDns=$(echo $json | jq -r .moodleProfile.redisDns)
-    export redisAuth=$(echo $json | jq -r .moodleProfile.redisKey)
-    export elasticVm1IP=$(echo $json | jq -r .moodleProfile.elasticVm1IP)
-    export installO365pluginsSwitch=$(echo $json | jq -r .moodleProfile.installO365pluginsSwitch)
+    export storageAccountName=$(echo $json | jq -r .lampProfile.storageAccountName)
+    export storageAccountKey=$(echo $json | jq -r .lampProfile.storageAccountKey)
+    export redisDns=$(echo $json | jq -r .lampProfile.redisDns)
+    export redisAuth=$(echo $json | jq -r .lampProfile.redisKey)
     export dbServerType=$(echo $json | jq -r .dbServerProfile.type)
     export fileServerType=$(echo $json | jq -r .fileServerProfile.type)
     export mssqlDbServiceObjectiveName=$(echo $json | jq -r .dbServerProfile.mssqlDbServiceObjectiveName)
     export mssqlDbEdition=$(echo $json | jq -r .dbServerProfile.mssqlDbEdition)
     export mssqlDbSize=$(echo $json | jq -r .dbServerProfile.mssqlDbSize)
-    export installObjectFsSwitch=$(echo $json | jq -r .moodleProfile.installObjectFsSwitch)
-    export installGdprPluginsSwitch=$(echo $json | jq -r .moodleProfile.installGdprPluginsSwitch)
     export thumbprintSslCert=$(echo $json | jq -r .siteProfile.thumbprintSslCert)
     export thumbprintCaCert=$(echo $json | jq -r .siteProfile.thumbprintCaCert)
-    export searchType=$(echo $json | jq -r .moodleProfile.searchType)
-    export azureSearchKey=$(echo $json | jq -r .moodleProfile.azureSearchKey)
-    export azureSearchNameHost=$(echo $json | jq -r .moodleProfile.azureSearchNameHost)
-    export tikaVmIP=$(echo $json | jq -r .moodleProfile.tikaVmIP)
-    export syslogServer=$(echo $json | jq -r .moodleProfile.syslogServer)
-    export webServerType=$(echo $json | jq -r .moodleProfile.webServerType)
-    export htmlLocalCopySwitch=$(echo $json | jq -r .moodleProfile.htmlLocalCopySwitch)
+    export syslogServer=$(echo $json | jq -r .lampProfile.syslogServer)
+    export htmlLocalCopySwitch=$(echo $json | jq -r .lampProfile.htmlLocalCopySwitch)
     export nfsVmName=$(echo $json | jq -r .fileServerProfile.nfsVmName)
     export nfsHaLbIP=$(echo $json | jq -r .fileServerProfile.nfsHaLbIP)
     export nfsHaExportPath=$(echo $json | jq -r .fileServerProfile.nfsHaExportPath)
@@ -88,8 +74,6 @@ function install_php_mssql_driver
     PHPVER=$(get_php_version)
     echo "extension=sqlsrv.so" >> /etc/php/$PHPVER/fpm/php.ini
     echo "extension=pdo_sqlsrv.so" >> /etc/php/$PHPVER/fpm/php.ini
-    echo "extension=sqlsrv.so" >> /etc/php/$PHPVER/apache2/php.ini
-    echo "extension=pdo_sqlsrv.so" >> /etc/php/$PHPVER/apache2/php.ini
     echo "extension=sqlsrv.so" >> /etc/php/$PHPVER/cli/php.ini
     echo "extension=pdo_sqlsrv.so" >> /etc/php/$PHPVER/cli/php.ini
 }
@@ -149,7 +133,7 @@ EOF
 
 function setup_azlamp_mount_dependency_for_systemd_service
 {
-  local serviceName=$1 # E.g., nginx, apache2
+  local serviceName=$1 # E.g., nginx
   if [ -z "$serviceName" ]; then
     return 1
   fi
@@ -357,7 +341,7 @@ if [ -f "$SERVER_TIMESTAMP_FULLPATH" ]; then
     mkdir -p /var/www/html
   fi
   if [ "\$SERVER_TIMESTAMP" != "\$LOCAL_TIMESTAMP" ]; then
-    logger -p local2.notice -t moodle "Server time stamp (\$SERVER_TIMESTAMP) is different from local time stamp (\$LOCAL_TIMESTAMP). Start syncing..."
+    logger -p local2.notice -t lamp "Server time stamp (\$SERVER_TIMESTAMP) is different from local time stamp (\$LOCAL_TIMESTAMP). Start syncing..."
     if [[ \$(find $SYNC_LOG_FULLPATH -type f -size +20M 2> /dev/null) ]]; then
       truncate -s 0 $SYNC_LOG_FULLPATH
     fi
@@ -389,7 +373,7 @@ LAST_MODIFIED_TIME_UPDATE_SCRIPT_FULLPATH="/usr/local/bin/update_last_modified_t
 
 # Create a script to modify the last modified timestamp file (/azlamp/html/.last_modified_time.azlamp)
 # Should be called by root and only on the controller VM.
-# The moodle admin should run the generated script everytime the /azlamp/html directory content is updated (e.g., moodle upgrade, config change or plugin install/upgrade)
+# The sysadmin should run the generated script everytime the /azlamp/html directory content is updated (e.g., app upgrade, config change or plugin install/upgrade)
 function create_last_modified_time_update_script {
   if [ "$(whoami)" != "root" ]; then
     echo "${0}: Must be run as root!"
@@ -409,38 +393,11 @@ function run_once_last_modified_time_update_script {
   $LAST_MODIFIED_TIME_UPDATE_SCRIPT_FULLPATH
 }
 
-# O365 plugins are released only for 'MOODLE_xy_STABLE',
-# whereas we want to support the Moodle tagged versions (e.g., 'v3.4.2').
-# This function helps getting the stable version # (for O365 plugin ver.)
-# from a Moodle version tag. This utility function recognizes tag names
-# of the form 'vx.y.z' only.
-function get_o365plugin_version_from_moodle_version {
-  local moodleVersion=${1}
-  if [[ "$moodleVersion" =~ v([0-9]+)\.([0-9]+)\.([0-9]+) ]]; then
-    echo "MOODLE_${BASH_REMATCH[1]}${BASH_REMATCH[2]}_STABLE"
-  else
-    echo $moodleVersion
-  fi
-}
-
-# For Moodle tags (e.g., "v3.4.2"), the unzipped Moodle dir is no longer
-# "moodle-$moodleVersion", because for tags, it's without "v". That is,
-# it's "moodle-3.4.2". Therefore, we need a separate helper function for that...
-function get_moodle_unzip_dir_from_moodle_version {
-  local moodleVersion=${1}
-  if [[ "$moodleVersion" =~ v([0-9]+)\.([0-9]+)\.([0-9]+) ]]; then
-    echo "moodle-${BASH_REMATCH[1]}.${BASH_REMATCH[2]}.${BASH_REMATCH[3]}"
-  else
-    echo "moodle-$moodleVersion"
-  fi
-}
-
 function config_one_site_on_vmss
 {
-  local siteFQDN=${1}             # E.g., "moodle.univ1.edu". Will be used as the site's HTML subdirectory name in /azlamp/html (as /azlamp/html/$siteFQDN)
+  local siteFQDN=${1}             # E.g., "www.contoso.com". Will be used as the site's HTML subdirectory name in /azlamp/html (as /azlamp/html/$siteFQDN)
   local htmlLocalCopySwitch=${2}  # "true" or anything else (don't care)
   local httpsTermination=${3}     # "VMSS" or "None"
-  local webServerType=${4}        # "apache" or "nginx"
 
   # Find the correct htmlRootDir depending on the htmlLocalCopySwitch
   if [ "$htmlLocalCopySwitch" = "true" ]; then
@@ -450,95 +407,58 @@ function config_one_site_on_vmss
   fi
 
   local certsDir="/azlamp/certs/$siteFQDN"
+  local PhpVer=$(get_php_version)
 
   if [ "$httpsTermination" = "VMSS" ]; then
     # Configure nginx/https
     cat <<EOF >> /etc/nginx/sites-enabled/${siteFQDN}.conf
 server {
-        listen 443 ssl;
-        root ${htmlRootDir};
+        listen 443 ssl http2;
         index index.php index.html index.htm;
         server_name ${siteFQDN};
 
+        # Use a higher keepalive timeout to reduce the need for repeated handshakes
+        keepalive_timeout 300s; # up from 75 secs default
         ssl on;
         ssl_certificate ${certsDir}/nginx.crt;
         ssl_certificate_key ${certsDir}/nginx.key;
 
         # Log to syslog
-        error_log syslog:server=localhost,facility=local1,severity=error,tag=moodle;
-        access_log syslog:server=localhost,facility=local1,severity=notice,tag=moodle moodle_combined;
+        error_log syslog:server=localhost,facility=local1,severity=error,tag=lamp;
+        access_log syslog:server=localhost,facility=local1,severity=notice,tag=lamp combined;
 
-        # Log XFF IP instead of varnish
-        set_real_ip_from    10.0.0.0/8;
-        set_real_ip_from    127.0.0.1;
-        set_real_ip_from    172.16.0.0/12;
-        set_real_ip_from    192.168.0.0/16;
-        real_ip_header      X-Forwarded-For;
-        real_ip_recursive   on;
-
-        location / {
-          proxy_set_header Host \$host;
-          proxy_set_header HTTP_REFERER \$http_referer;
-          proxy_set_header X-Forwarded-Host \$host;
-          proxy_set_header X-Forwarded-Server \$host;
-          proxy_set_header X-Forwarded-Proto https;
-          proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-          proxy_pass http://localhost:80;
-
-          proxy_connect_timeout       3600;
-          proxy_send_timeout          3600;
-          proxy_read_timeout          3600;
-          send_timeout                3600;
+        root ${htmlRootDir};
+        location ~* \.php$ {
+          include fastcgi_params;
+          # Remove X-Powered-By, which is an information leak
+          fastcgi_hide_header X-Powered-By;
+          fastcgi_buffers 16 16k;
+          fastcgi_buffer_size 32k;
+          fastcgi_param   SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+          fastcgi_pass unix:/run/php/php${PhpVer}-fpm.sock;
+          fastcgi_read_timeout 3600;
+          fastcgi_index index.php;
+          include fastcgi_params;
         }
 }
 EOF
   fi
 
-  if [ "$webServerType" = "nginx" ]; then
-    cat <<EOF >> /etc/nginx/sites-enabled/${siteFQDN}.conf
+  cat <<EOF >> /etc/nginx/sites-enabled/${siteFQDN}.conf
 server {
-        listen 81 default;
-        server_name ${siteFQDN};
-        root ${htmlRootDir};
+        listen 80;
 	      index index.php index.html index.htm;
+        server_name ${siteFQDN};
 
         # Log to syslog
-        error_log syslog:server=localhost,facility=local1,severity=error,tag=moodle;
-        access_log syslog:server=localhost,facility=local1,severity=notice,tag=moodle moodle_combined;
-
-        # Log XFF IP instead of varnish
-        set_real_ip_from    10.0.0.0/8;
-        set_real_ip_from    127.0.0.1;
-        set_real_ip_from    172.16.0.0/12;
-        set_real_ip_from    192.168.0.0/16;
-        real_ip_header      X-Forwarded-For;
-        real_ip_recursive   on;
-EOF
-    if [ "$httpsTermination" != "None" ]; then
-      cat <<EOF >> /etc/nginx/sites-enabled/${siteFQDN}.conf
-        # Redirect to https
-        if (\$http_x_forwarded_proto != https) {
-                return 301 https://\$server_name\$request_uri;
-        }
-        rewrite ^/(.*\.php)(/)(.*)$ /\$1?file=/\$3 last;
-EOF
-    fi
-    cat <<EOF >> /etc/nginx/sites-enabled/${siteFQDN}.conf
-        # Filter out php-fpm status page
-        location ~ ^/server-status {
-            return 404;
-        }
-
-        location / {
-          try_files \$uri \$uri/index.php?\$query_string;
-        }
+        error_log syslog:server=localhost,facility=local1,severity=error,tag=lamp;
+        access_log syslog:server=localhost,facility=local1,severity=notice,tag=lamp combined;
  
-        location ~ [^/]\.php(/|$) {
-          fastcgi_split_path_info ^(.+?\.php)(/.*)$;
-          if (!-f \$document_root\$fastcgi_script_name) {
-                  return 404;
-          }
- 
+        root ${htmlRootDir};
+        location ~* \.php$ {
+          include fastcgi_params;
+          # Remove X-Powered-By, which is an information leak
+          fastcgi_hide_header X-Powered-By;
           fastcgi_buffers 16 16k;
           fastcgi_buffer_size 32k;
           fastcgi_param   SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
@@ -550,56 +470,16 @@ EOF
 }
 
 EOF
-  fi # if [ "$webServerType" = "nginx" ];
-
-  if [ "$webServerType" = "apache" ]; then
-    # Configure Apache/php
-    cat <<EOF >> /etc/apache2/sites-enabled/${siteFQDN}.conf
-<VirtualHost *:81>
-	ServerName ${siteFQDN}
-
-	ServerAdmin webmaster@localhost
-	DocumentRoot ${htmlRootDir}
-
-	<Directory ${htmlRootDir}>
-		Options FollowSymLinks
-		AllowOverride All
-		Require all granted
-	</Directory>
-EOF
-    if [ "$httpsTermination" != "None" ]; then
-      cat <<EOF >> /etc/apache2/sites-enabled/${siteFQDN}.conf
-    # Redirect unencrypted direct connections to HTTPS
-    <IfModule mod_rewrite.c>
-      RewriteEngine on
-      RewriteCond %{HTTP:X-Forwarded-Proto} !https [NC]
-      RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [L,R=301]
-    </IFModule>
-EOF
-    fi
-    cat <<EOF >> /etc/apache2/sites-enabled/${siteFQDN}.conf
-    # Log X-Forwarded-For IP address instead of varnish (127.0.0.1)
-    SetEnvIf X-Forwarded-For "^.*\..*\..*\..*" forwarded
-    LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
-    LogFormat "%{X-Forwarded-For}i %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" forwarded
-	  ErrorLog "|/usr/bin/logger -t azlamp -p local1.error"
-    CustomLog "|/usr/bin/logger -t azlamp -p local1.notice" combined env=!forwarded
-    CustomLog "|/usr/bin/logger -t azlamp -p local1.notice" forwarded env=forwarded
-
-</VirtualHost>
-EOF
-  fi # if [ "$webServerType" = "apache" ];
 } # function config_one_site_on_vmss
 
 function config_all_sites_on_vmss
 {
   local htmlLocalCopySwitch=${1}  # "true" or anything else (don't care)
   local httpsTermination=${2}     # "VMSS" or "None"
-  local webServerType=${3}        # "apache" or "nginx"
 
   local allSites=$(ls /azlamp/html)
   for site in $allSites; do
-    config_one_site_on_vmss $site $htmlLocalCopySwitch $httpsTermination $webServerType
+    config_one_site_on_vmss $site $htmlLocalCopySwitch $httpsTermination
   done
 }
 
@@ -608,23 +488,12 @@ function reset_all_sites_on_vmss
 {
   local htmlLocalCopySwitch=${1}  # "true" or anything else (don't care)
   local httpsTermination=${2}     # "VMSS" or "None"
-  local webServerType=${3}        # "apache" or "nginx"
 
-  if [ "$webServerType" = "nginx" -o "$httpsTermination" = "VMSS" ]; then
-    rm /etc/nginx/sites-enabled/*
-  fi
-  if [ "$webServerType" = "apache" ]; then
-    rm /etc/apache2/sites-enabled/*
-  fi
+  rm /etc/nginx/sites-enabled/*
 
-  config_all_sites_on_vmss $htmlLocalCopySwitch $httpsTermination $webServerType
+  config_all_sites_on_vmss $htmlLocalCopySwitch $httpsTermination
 
-  if [ "$webServerType" = "nginx" -o "$httpsTermination" = "VMSS" ]; then
-    sudo service nginx restart 
-  fi
-  if [ "$webServerType" = "apache" ]; then
-    sudo service apache2 restart
-  fi
+  sudo systemctl restart nginx
 }
 
 function create_main_nginx_conf_on_controller
@@ -637,12 +506,12 @@ worker_processes 2;
 pid /run/nginx.pid;
 
 events {
-	worker_connections 768;
+	worker_connections 2048;
 }
 
 http {
-
   sendfile on;
+  server_tokens off;
   tcp_nopush on;
   tcp_nodelay on;
   keepalive_timeout 65;
@@ -650,7 +519,7 @@ http {
   client_max_body_size 0;
   proxy_max_temp_file_size 0;
   server_names_hash_bucket_size  128;
-  fastcgi_buffers 16 16k;
+  fastcgi_buffers 16 16k; 
   fastcgi_buffer_size 32k;
   proxy_buffering off;
   include /etc/nginx/mime.types;
@@ -671,24 +540,7 @@ http {
   gzip_comp_level 6;
   gzip_buffers 16 8k;
   gzip_http_version 1.1;
-  gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript;
-EOF
-
-    if [ "$httpsTermination" != "None" ]; then
-        cat <<EOF >> /etc/nginx/nginx.conf
-  map \$http_x_forwarded_proto \$fastcgi_https {
-    default \$https;
-    http '';
-    https on;
-  }
-EOF
-    fi
-
-    cat <<EOF >> /etc/nginx/nginx.conf
-  log_format moodle_combined '\$remote_addr - \$upstream_http_x_moodleuser [\$time_local] '
-                             '"\$request" \$status \$body_bytes_sent '
-                             '"\$http_referer" "\$http_user_agent"';
-
+  gzip_types application/atom+xml application/javascript application/json application/ld+json application/manifest+json application/rss+xml application/vnd.geo+json application/vnd.ms-fontobject application/x-font-ttf application/x-web-app-manifest+json application/xhtml+xml application/xml font/opentype image/bmp image/svg+xml image/x-icon text/cache-manifest text/css text/plain text/vcard text/vnd.rim.location.xloc text/vtt text/x-component text/x-cross-domain-policy
 
   include /etc/nginx/conf.d/*.conf;
   include /etc/nginx/sites-enabled/*;
@@ -703,96 +555,67 @@ function create_per_site_nginx_conf_on_controller
     local htmlDir=${3}          # E.g., /azlamp/html/site1.org
     local certsDir=${4}         # E.g., /azlamp/certs/site1.org
 
-    cat <<EOF > /etc/nginx/sites-enabled/${siteFQDN}.conf
-server {
-    listen 81 default;
-    server_name ${siteFQDN};
-    root ${moodleHtmlDir};
-    index index.php index.html index.htm;
-
-    # Log to syslog
-    error_log syslog:server=localhost,facility=local1,severity=error,tag=moodle;
-    access_log syslog:server=localhost,facility=local1,severity=notice,tag=moodle moodle_combined;
-
-    # Log XFF IP instead of varnish
-    set_real_ip_from    10.0.0.0/8;
-    set_real_ip_from    127.0.0.1;
-    set_real_ip_from    172.16.0.0/12;
-    set_real_ip_from    192.168.0.0/16;
-    real_ip_header      X-Forwarded-For;
-    real_ip_recursive   on;
-EOF
-    if [ "$httpsTermination" != "None" ]; then
-        cat <<EOF >> /etc/nginx/sites-enabled/${siteFQDN}.conf
-    # Redirect to https
-    if (\$http_x_forwarded_proto != https) {
-            return 301 https://\$server_name\$request_uri;
-    }
-    rewrite ^/(.*\.php)(/)(.*)$ /\$1?file=/\$3 last;
-EOF
-    fi
-
-    cat <<EOF >> /etc/nginx/sites-enabled/${siteFQDN}.conf
-    # Filter out php-fpm status page
-    location ~ ^/server-status {
-        return 404;
-    }
-
-    location / {
-        try_files \$uri \$uri/index.php?\$query_string;
-    }
-
-    location ~ [^/]\.php(/|$) {
-        fastcgi_split_path_info ^(.+?\.php)(/.*)$;
-        if (!-f \$document_root\$fastcgi_script_name) {
-                return 404;
-        }
-
-        fastcgi_buffers 16 16k;
-        fastcgi_buffer_size 32k;
-        fastcgi_param   SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-        fastcgi_pass unix:/run/php/php${PhpVer}-fpm.sock;
-        fastcgi_read_timeout 3600;
-        fastcgi_index index.php;
-        include fastcgi_params;
-    }
-}
-EOF
     if [ "$httpsTermination" = "VMSS" ]; then
-        cat <<EOF >> /etc/nginx/sites-enabled/${siteFQDN}.conf
+    # Configure nginx/https
+    cat <<EOF >> /etc/nginx/sites-enabled/${siteFQDN}.conf
 server {
-    listen 443 ssl;
-    root ${htmlDir};
-    index index.php index.html index.htm;
+        listen 443 ssl http2;
+        index index.php index.html index.htm;
+        server_name ${siteFQDN};
 
-    ssl on;
-    ssl_certificate ${certsDir}/nginx.crt;
-    ssl_certificate_key ${certsDir}/nginx.key;
+        # Use a higher keepalive timeout to reduce the need for repeated handshakes
+        keepalive_timeout 300s; # up from 75 secs default
+        ssl on;
+        ssl_certificate ${certsDir}/nginx.crt;
+        ssl_certificate_key ${certsDir}/nginx.key;
 
-    # Log to syslog
-    error_log syslog:server=localhost,facility=local1,severity=error,tag=moodle;
-    access_log syslog:server=localhost,facility=local1,severity=notice,tag=moodle moodle_combined;
+        # Log to syslog
+        error_log syslog:server=localhost,facility=local1,severity=error,tag=lamp;
+        access_log syslog:server=localhost,facility=local1,severity=notice,tag=lamp combined;
 
-    # Log XFF IP instead of varnish
-    set_real_ip_from    10.0.0.0/8;
-    set_real_ip_from    127.0.0.1;
-    set_real_ip_from    172.16.0.0/12;
-    set_real_ip_from    192.168.0.0/16;
-    real_ip_header      X-Forwarded-For;
-    real_ip_recursive   on;
-
-    location / {
-      proxy_set_header Host \$host;
-      proxy_set_header HTTP_REFERER \$http_referer;
-      proxy_set_header X-Forwarded-Host \$host;
-      proxy_set_header X-Forwarded-Server \$host;
-      proxy_set_header X-Forwarded-Proto https;
-      proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-      proxy_pass http://localhost:80;
-    }
+        root ${htmlRootDir};
+        location ~* \.php$ {
+          include fastcgi_params;
+          # Remove X-Powered-By, which is an information leak
+          fastcgi_hide_header X-Powered-By;
+          fastcgi_buffers 16 16k;
+          fastcgi_buffer_size 32k;
+          fastcgi_param   SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+          fastcgi_pass unix:/run/php/php${PhpVer}-fpm.sock;
+          fastcgi_read_timeout 3600;
+          fastcgi_index index.php;
+          include fastcgi_params;
+        }
 }
 EOF
-    fi
+  fi
+
+  cat <<EOF >> /etc/nginx/sites-enabled/${siteFQDN}.conf
+server {
+        listen 80;
+	      index index.php index.html index.htm;
+        server_name ${siteFQDN};
+
+        # Log to syslog
+        error_log syslog:server=localhost,facility=local1,severity=error,tag=lamp;
+        access_log syslog:server=localhost,facility=local1,severity=notice,tag=lamp combined;
+ 
+        root ${htmlRootDir};
+        location ~* \.php$ {
+          include fastcgi_params;
+          # Remove X-Powered-By, which is an information leak
+          fastcgi_hide_header X-Powered-By;
+          fastcgi_buffers 16 16k;
+          fastcgi_buffer_size 32k;
+          fastcgi_param   SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+          fastcgi_pass unix:/run/php/php${PhpVer}-fpm.sock;
+          fastcgi_read_timeout 3600;
+          fastcgi_index index.php;
+          include fastcgi_params;
+        }
+}
+
+EOF
 }
 
 function create_per_site_nginx_ssl_certs_on_controller
@@ -819,151 +642,6 @@ function create_per_site_nginx_ssl_certs_on_controller
         fi
         chown -R www-data:www-data $certsDir
         chmod 0400 $certsDir/*
-    fi
-}
-
-function download_and_place_per_site_moodle_and_plugins_on_controller
-{
-    local moodleVersion=${1}
-    local moodleHtmlDir=${2}
-    local installGdprPluginsSwitch=${3}
-    local installO365pluginsSwitch=${4}
-    local searchType=${5}
-    local installObjectFsSwitch=${6}
-
-    local o365pluginVersion=$(get_o365plugin_version_from_moodle_version $moodleVersion)
-    local moodleStableVersion=$o365pluginVersion  # Need Moodle stable version for GDPR plugins, and o365pluginVersion is just Moodle stable version, so reuse it.
-    local moodleUnzipDir=$(get_moodle_unzip_dir_from_moodle_version $moodleVersion)
-
-    mkdir -p /azlamp/tmp
-    cd /azlamp/tmp
-
-    if [ ! -d $moodleHtmlDir ]; then
-        # downloading moodle only if $moodleHtmlDir does not exist -- if it exists, user should populate it in advance correctly as below. This is to reduce template deployment time.
-        /usr/bin/curl -k --max-redirs 10 https://github.com/moodle/moodle/archive/$moodleVersion.zip -L -o moodle.zip
-        /usr/bin/unzip -q moodle.zip
-        /bin/mv $moodleUnzipDir $moodleHtmlDir
-    fi
-
-    if [ "$installGdprPluginsSwitch" = "true" ]; then
-        # install Moodle GDPR plugins (Note: This is only for Moodle versions 3.4.2+ or 3.3.5+ and will be included in Moodle 3.5, so no need for 3.5)
-        curl -k --max-redirs 10 https://github.com/moodlehq/moodle-tool_policy/archive/$moodleStableVersion.zip -L -o plugin-policy.zip
-        unzip -q plugin-policy.zip
-        mv moodle-tool_policy-$moodleStableVersion $moodleHtmlDir/admin/tool/policy
-
-        curl -k --max-redirs 10 https://github.com/moodlehq/moodle-tool_dataprivacy/archive/$moodleStableVersion.zip -L -o plugin-dataprivacy.zip
-        unzip -q plugin-dataprivacy.zip
-        mv moodle-tool_dataprivacy-$moodleStableVersion $moodleHtmlDir/admin/tool/dataprivacy
-    fi
-
-    if [ "$installO365pluginsSwitch" = "true" ]; then
-        # install Office 365 plugins
-        curl -k --max-redirs 10 https://github.com/Microsoft/o365-moodle/archive/$o365pluginVersion.zip -L -o o365.zip
-        unzip -q o365.zip
-        cp -r o365-moodle-$o365pluginVersion/* $moodleHtmlDir
-        rm -rf o365-moodle-$o365pluginVersion
-    fi
-
-    if [ "$searchType" = "elastic" ]; then
-        # Install ElasticSearch plugin
-        /usr/bin/curl -k --max-redirs 10 https://github.com/catalyst/moodle-search_elastic/archive/master.zip -L -o plugin-elastic.zip
-        /usr/bin/unzip -q plugin-elastic.zip
-        /bin/mv moodle-search_elastic-master $moodleHtmlDir/search/engine/elastic
-
-        # Install ElasticSearch plugin dependency
-        /usr/bin/curl -k --max-redirs 10 https://github.com/catalyst/moodle-local_aws/archive/master.zip -L -o local-aws.zip
-        /usr/bin/unzip -q local-aws.zip
-        /bin/mv moodle-local_aws-master $moodleHtmlDir/local/aws
-
-    elif [ "$searchType" = "azure" ]; then
-        # Install Azure Search service plugin
-        /usr/bin/curl -k --max-redirs 10 https://github.com/catalyst/moodle-search_azure/archive/master.zip -L -o plugin-azure-search.zip
-        /usr/bin/unzip -q plugin-azure-search.zip
-        /bin/mv moodle-search_azure-master $moodleHtmlDir/search/engine/azure
-    fi
-
-    if [ "$installObjectFsSwitch" = "true" ]; then
-        # Install the ObjectFS plugin
-        /usr/bin/curl -k --max-redirs 10 https://github.com/catalyst/moodle-tool_objectfs/archive/master.zip -L -o plugin-objectfs.zip
-        /usr/bin/unzip -q plugin-objectfs.zip
-        /bin/mv moodle-tool_objectfs-master $moodleHtmlDir/admin/tool/objectfs
-
-        # Install the ObjectFS Azure library
-        /usr/bin/curl -k --max-redirs 10 https://github.com/catalyst/moodle-local_azure_storage/archive/master.zip -L -o plugin-azurelibrary.zip
-        /usr/bin/unzip -q plugin-azurelibrary.zip
-        /bin/mv moodle-local_azure_storage-master $moodleHtmlDir/local/azure_storage
-    fi
-    cd /azlamp
-    rm -rf /azlamp/tmp
-}
-
-function setup_and_config_per_site_moodle_on_controller
-{
-    local httpsTermination=${1}
-    local siteFQDN=${2}
-    local dbServerType=${3}
-    local moodleHtmlDir=${4}
-    local moodleDataDir=${5}
-    local dbIP=${6}
-    local moodledbname=${7}
-    local azuremoodledbuser=${8}
-    local moodledbpass=${9}
-    local adminpass=${10}
-
-    if [ "$httpsTermination" = "None" ]; then
-        local siteProtocol="http"
-    else
-        local siteProtocol="https"
-    fi
-    if [ $dbServerType = "mysql" ]; then
-        local dbtype="mysqli"
-    elif [ $dbServerType = "mssql" ]; then
-        local dbtype="sqlsrv"
-    else # $dbServerType = "postgres"
-        local dbtype="pgsql"
-    fi
-    cd /tmp; /usr/bin/php $moodleHtmlDir/admin/cli/install.php --chmod=770 --lang=en_us --wwwroot=$siteProtocol://$siteFQDN   --dataroot=$moodleDataDir --dbhost=$dbIP   --dbname=$moodledbname   --dbuser=$azuremoodledbuser   --dbpass=$moodledbpass   --dbtype=$dbtype --fullname='Moodle LMS' --shortname='Moodle' --adminuser=admin --adminpass=$adminpass   --adminemail=admin@$siteFQDN   --non-interactive --agree-license --allow-unstable || true
-
-    echo -e "\n\rDone! Installation completed!\n\r"
-
-    local configPhpPath="$moodleHtmlDir/config.php"
-
-    if [ "$httpsTermination" != "None" ]; then
-        # We proxy ssl, so moodle needs to know this
-        sed -i "23 a \$CFG->sslproxy  = 'true';" $configPhpPath
-    fi
-
-    # Make sure the config.php is readable for web server process (www-data). The initial permission might be readable only for creator (root in our case).
-    chmod +r $configPhpPath
-    # Also make sure to update moodleDataDir's owner (to be writable for www-data web server process)
-    chown -R www-data.www-data $moodleDataDir
-}
-
-function setup_per_site_moodle_cron_jobs_on_controller
-{
-    local moodleHtmlDir=${1}
-    local siteFQDN=${2}
-    local dbServerType=${3}
-    local dbIP=${4}
-    local moodledbname=${5}
-    local azuremoodledbuser=${6}
-    local moodledbpass=${7}
-
-    # create cron entry
-    # It is scheduled for once per minute. It can be changed as needed.
-    echo '* * * * * www-data /usr/bin/php '$moodleHtmlDir'/admin/cli/cron.php 2>&1 | /usr/bin/logger -p local2.notice -t moodle' > /etc/cron.d/moodle-cron-$siteFQDN
-
-    # Set up cronned sql dump
-    sqlBackupCronDefPath="/etc/cron.d/moodle-sql-backup-$siteFQDN"
-    if [ "$dbServerType" = "mysql" ]; then
-        cat <<EOF > $sqlBackupCronDefPath
-  22 02 * * * root /usr/bin/mysqldump -h $dbIP -u ${azuremoodledbuser} -p'${moodledbpass}' --databases ${moodledbname} | gzip > /azlamp/data/$siteFQDN/db-backup.sql.gz
-EOF
-    elif [ "$dbServerType" = "postgres" ]; then
-        cat <<EOF > $sqlBackupCronDefPath
-  22 02 * * * root /usr/bin/pg_dump -Fc -h $dbIP -U ${azuremoodledbuser} ${moodledbname} > /azlamp/data/$siteFQDN/db-backup.sql
-EOF
-    #else # mssql. TODO It's missed earlier! Complete this!
     fi
 }
 
@@ -999,257 +677,6 @@ pm.max_children = 3000
 pm.start_servers = 20
 pm.min_spare_servers = 22
 pm.max_spare_servers = 30
-EOF
-}
-
-function configure_varnish_on_controller
-{
-    # Configure varnish startup for 16.04
-    VARNISHSTART="ExecStart=\/usr\/sbin\/varnishd -j unix,user=vcache -F -a :80 -T localhost:6082 -f \/etc\/varnish\/moodle.vcl -S \/etc\/varnish\/secret -s malloc,1024m -p thread_pool_min=200 -p thread_pool_max=4000 -p thread_pool_add_delay=2 -p timeout_linger=100 -p timeout_idle=30 -p send_timeout=1800 -p thread_pools=4 -p http_max_hdr=512 -p workspace_backend=512k"
-    sed -i "s/^ExecStart.*/${VARNISHSTART}/" /lib/systemd/system/varnish.service
-
-    # Configure varnish VCL for moodle
-    cat <<EOF >> /etc/varnish/moodle.vcl
-vcl 4.0;
-
-import std;
-import directors;
-backend default {
-    .host = "localhost";
-    .port = "81";
-    .first_byte_timeout = 3600s;
-    .connect_timeout = 600s;
-    .between_bytes_timeout = 600s;
-}
-
-sub vcl_recv {
-    # Varnish does not support SPDY or HTTP/2.0 untill we upgrade to Varnish 5.0
-    if (req.method == "PRI") {
-        return (synth(405));
-    }
-
-    if (req.restarts == 0) {
-      if (req.http.X-Forwarded-For) {
-        set req.http.X-Forwarded-For = req.http.X-Forwarded-For + ", " + client.ip;
-      } else {
-        set req.http.X-Forwarded-For = client.ip;
-      }
-    }
-
-    # Non-RFC2616 or CONNECT HTTP requests methods filtered. Pipe requests directly to backend
-    if (req.method != "GET" &&
-        req.method != "HEAD" &&
-        req.method != "PUT" &&
-        req.method != "POST" &&
-        req.method != "TRACE" &&
-        req.method != "OPTIONS" &&
-        req.method != "DELETE") {
-      return (pipe);
-    }
-
-    # Varnish don't mess with healthchecks
-    if (req.url ~ "^/admin/tool/heartbeat" || req.url ~ "^/healthcheck.php")
-    {
-        return (pass);
-    }
-
-    # Pipe requests to backup.php straight to backend - prevents problem with progress bar long polling 503 problem
-    # This is here because backup.php is POSTing to itself - Filter before !GET&&!HEAD
-    if (req.url ~ "^/backup/backup.php")
-    {
-        return (pipe);
-    }
-
-    # Varnish only deals with GET and HEAD by default. If request method is not GET or HEAD, pass request to backend
-    if (req.method != "GET" && req.method != "HEAD") {
-      return (pass);
-    }
-
-    ### Rules for Moodle and Totara sites ###
-    # Moodle doesn't require Cookie to serve following assets. Remove Cookie header from request, so it will be looked up.
-    if ( req.url ~ "^/altlogin/.+/.+\.(png|jpg|jpeg|gif|css|js|webp)$" ||
-         req.url ~ "^/pix/.+\.(png|jpg|jpeg|gif)$" ||
-         req.url ~ "^/theme/font.php" ||
-         req.url ~ "^/theme/image.php" ||
-         req.url ~ "^/theme/javascript.php" ||
-         req.url ~ "^/theme/jquery.php" ||
-         req.url ~ "^/theme/styles.php" ||
-         req.url ~ "^/theme/yui" ||
-         req.url ~ "^/lib/javascript.php/-1/" ||
-         req.url ~ "^/lib/requirejs.php/-1/"
-        )
-    {
-        set req.http.X-Long-TTL = "86400";
-        unset req.http.Cookie;
-        return(hash);
-    }
-
-    # Perform lookup for selected assets that we know are static but Moodle still needs a Cookie
-    if(  req.url ~ "^/theme/.+\.(png|jpg|jpeg|gif|css|js|webp)" ||
-         req.url ~ "^/lib/.+\.(png|jpg|jpeg|gif|css|js|webp)" ||
-         req.url ~ "^/pluginfile.php/[0-9]+/course/overviewfiles/.+\.(?i)(png|jpg)$"
-      )
-    {
-         # Set internal temporary header, based on which we will do things in vcl_backend_response
-         set req.http.X-Long-TTL = "86400";
-         return (hash);
-    }
-
-    # Serve requests to SCORM checknet.txt from varnish. Have to remove get parameters. Response body always contains "1"
-    if ( req.url ~ "^/lib/yui/build/moodle-core-checknet/assets/checknet.txt" )
-    {
-        set req.url = regsub(req.url, "(.*)\?.*", "\1");
-        unset req.http.Cookie; # Will go to hash anyway at the end of vcl_recv
-        set req.http.X-Long-TTL = "86400";
-        return(hash);
-    }
-
-    # Requests containing "Cookie" or "Authorization" headers will not be cached
-    if (req.http.Authorization || req.http.Cookie) {
-        return (pass);
-    }
-
-    # Almost everything in Moodle correctly serves Cache-Control headers, if
-    # needed, which varnish will honor, but there are some which don't. Rather
-    # than explicitly finding them all and listing them here we just fail safe
-    # and don't cache unknown urls that get this far.
-    return (pass);
-}
-
-sub vcl_backend_response {
-    # Happens after we have read the response headers from the backend.
-    # 
-    # Here you clean the response headers, removing silly Set-Cookie headers
-    # and other mistakes your backend does.
-
-    # We know these assest are static, let's set TTL >0 and allow client caching
-    if ( beresp.http.Cache-Control && bereq.http.X-Long-TTL && beresp.ttl < std.duration(bereq.http.X-Long-TTL + "s", 1s) && !beresp.http.WWW-Authenticate )
-    { # If max-age < defined in X-Long-TTL header
-        set beresp.http.X-Orig-Pragma = beresp.http.Pragma; unset beresp.http.Pragma;
-        set beresp.http.X-Orig-Cache-Control = beresp.http.Cache-Control;
-        set beresp.http.Cache-Control = "public, max-age="+bereq.http.X-Long-TTL+", no-transform";
-        set beresp.ttl = std.duration(bereq.http.X-Long-TTL + "s", 1s);
-        unset bereq.http.X-Long-TTL;
-    }
-    else if( !beresp.http.Cache-Control && bereq.http.X-Long-TTL && !beresp.http.WWW-Authenticate ) {
-        set beresp.http.X-Orig-Pragma = beresp.http.Pragma; unset beresp.http.Pragma;
-        set beresp.http.Cache-Control = "public, max-age="+bereq.http.X-Long-TTL+", no-transform";
-        set beresp.ttl = std.duration(bereq.http.X-Long-TTL + "s", 1s);
-        unset bereq.http.X-Long-TTL;
-    }
-    else { # Don't touch headers if max-age > defined in X-Long-TTL header
-        unset bereq.http.X-Long-TTL;
-    }
-
-    # Here we set X-Trace header, prepending it to X-Trace header received from backend. Useful for troubleshooting
-    if(beresp.http.x-trace && !beresp.was_304) {
-        set beresp.http.X-Trace = regsub(server.identity, "^([^.]+),?.*$", "\1")+"->"+regsub(beresp.backend.name, "^(.+)\((?:[0-9]{1,3}\.){3}([0-9]{1,3})\)","\1(\2)")+"->"+beresp.http.X-Trace;
-    }
-    else {
-        set beresp.http.X-Trace = regsub(server.identity, "^([^.]+),?.*$", "\1")+"->"+regsub(beresp.backend.name, "^(.+)\((?:[0-9]{1,3}\.){3}([0-9]{1,3})\)","\1(\2)");
-    }
-
-    # Gzip JS, CSS is done at the ngnix level doing it here dosen't respect the no buffer requsets
-    # if (beresp.http.content-type ~ "application/javascript.*" || beresp.http.content-type ~ "text") {
-    #    set beresp.do_gzip = true;
-    #}
-}
-
-sub vcl_deliver {
-
-    # Revert back to original Cache-Control header before delivery to client
-    if (resp.http.X-Orig-Cache-Control)
-    {
-        set resp.http.Cache-Control = resp.http.X-Orig-Cache-Control;
-        unset resp.http.X-Orig-Cache-Control;
-    }
-
-    # Revert back to original Pragma header before delivery to client
-    if (resp.http.X-Orig-Pragma)
-    {
-        set resp.http.Pragma = resp.http.X-Orig-Pragma;
-        unset resp.http.X-Orig-Pragma;
-    }
-
-    # (Optional) X-Cache HTTP header will be added to responce, indicating whether object was retrieved from backend, or served from cache
-    if (obj.hits > 0) {
-        set resp.http.X-Cache = "HIT";
-    } else {
-        set resp.http.X-Cache = "MISS";
-    }
-
-    # Set X-AuthOK header when totara/varnsih authentication succeeded
-    if (req.http.X-AuthOK) {
-        set resp.http.X-AuthOK = req.http.X-AuthOK;
-    }
-
-    # If desired "Via: 1.1 Varnish-v4" response header can be removed from response
-    unset resp.http.Via;
-    unset resp.http.Server;
-
-    return(deliver);
-}
-
-sub vcl_backend_error {
-    # More comprehensive varnish error page. Display time, instance hostname, host header, url for easier troubleshooting.
-    set beresp.http.Content-Type = "text/html; charset=utf-8";
-    set beresp.http.Retry-After = "5";
-    synthetic( {"
-  <!DOCTYPE html>
-  <html>
-    <head>
-      <title>"} + beresp.status + " " + beresp.reason + {"</title>
-    </head>
-    <body>
-      <h1>Error "} + beresp.status + " " + beresp.reason + {"</h1>
-      <p>"} + beresp.reason + {"</p>
-      <h3>Guru Meditation:</h3>
-      <p>Time: "} + now + {"</p>
-      <p>Node: "} + server.hostname + {"</p>
-      <p>Host: "} + bereq.http.host + {"</p>
-      <p>URL: "} + bereq.url + {"</p>
-      <p>XID: "} + bereq.xid + {"</p>
-      <hr>
-      <p>Varnish cache server
-    </body>
-  </html>
-  "} );
-   return (deliver);
-}
-
-sub vcl_synth {
-
-    #Redirect using '301 - Permanent Redirect', permanent redirect
-    if (resp.status == 851) { 
-        set resp.http.Location = req.http.x-redir;
-        set resp.http.X-Varnish-Redirect = true;
-        set resp.status = 301;
-        return (deliver);
-    }
-
-    #Redirect using '302 - Found', temporary redirect
-    if (resp.status == 852) { 
-        set resp.http.Location = req.http.x-redir;
-        set resp.http.X-Varnish-Redirect = true;
-        set resp.status = 302;
-        return (deliver);
-    }
-
-    #Redirect using '307 - Temporary Redirect', !GET&&!HEAD requests, dont change method on redirected requests
-    if (resp.status == 857) {
-        set resp.http.Location = req.http.x-redir;
-        set resp.http.X-Varnish-Redirect = true;
-        set resp.status = 307;
-        return (deliver);
-    }
-
-    #Respond with 403 - Forbidden
-    if (resp.status == 863) {
-        set resp.http.X-Varnish-Error = true;
-        set resp.status = 403;
-        return (deliver);
-    }
-}
 EOF
 }
 
@@ -1300,986 +727,6 @@ EOF
 local1.*   /var/log/sitelogs/azlamp/access.log
 local1.err   /var/log/sitelogs/azlamp/error.log
 local2.*   /var/log/sitelogs/azlamp/cron.log
-EOF
-}
-
-# A rudimentary script to add another Moodle site after initial deployment.
-# - No additional Moodle plugins are specify-able (must install separately).
-# - MSSQL DB server type not supported.
-# - There must be other restrictions...
-function add_another_moodle_site_on_controller_after_deployment
-{
-    local moodleVersion=${1}  # E.g., "MOODLE_35_STABLE"
-    local siteFQDN=${2}       # E.g., "moodle.site2.edu"
-    local httpsTermination=${3} # E.g., "VMSS" or "None"
-    local dbServerType=${4}   # E.g., "mysql" or "postgres"
-    local dbIP=${5}           # E.g., "mysql-xyz123.mysql.database.azure.com"
-    local dbadminloginazure=${6}  # E.g., "admin@mysql-xyz123"
-    local dbadminpass=${7}
-    local moodledbname=${8}   # E.g., "moodle2"
-    local moodledbuser=${9}   # E.g., "moodle2" (no "@mysql-xyz123" suffix)
-    local moodledbpass=${10}
-    local azuremoodledbuser=${11} # E.g., "moodle2@mysql-xyz123" (must be with "@mysql-xyz123" suffix)
-    local adminpass=${12}     # Moodle site admin password (not an SQL DB user password)
-
-    local moodleHtmlDir="/azlamp/html/$siteFQDN"
-    local moodleDataDir="/azlamp/data/$siteFQDN/moodledata"
-    local moodleCertsDir="/azlamp/certs/$siteFQDN"
-
-    mkdir -p $moodleDataDir
-    mkdir -p $moodleCertsDir
-
-    download_and_place_per_site_moodle_and_plugins_on_controller $moodleVersion $moodleHtmlDir false false false
-    create_per_site_nginx_conf_on_controller $siteFQDN $httpsTermination $moodleHtmlDir $moodleCertsDir
-    create_per_site_nginx_ssl_certs_on_controller $siteFQDN $moodleCertsDir $httpsTermination None None
-    create_per_site_sql_db_from_controller $dbServerType $dbIP $dbadminloginazure $dbadminpass $moodledbname $moodledbuser $moodledbpass None None None
-    setup_and_config_per_site_moodle_on_controller $httpsTermination $siteFQDN $dbServerType $moodleHtmlDir $moodleDataDir $dbIP $moodledbname $azuremoodledbuser $moodledbpass $adminpass
-    setup_per_site_moodle_cron_jobs_on_controller $moodleHtmlDir $siteFQDN $dbServerType $dbIP $moodledbname $azuremoodledbuser $moodledbpass
-}
-
-# Long Redis cache Moodle config file generation code moved here
-function create_redis_configuration_in_moodledata_muc_config_php
-{
-    local mucConfigPhpPath=$1
-
-    # create redis configuration in .../moodledata/muc/config.php
-    cat <<EOF > $mucConfigPhpPath
-<?php defined('MOODLE_INTERNAL') || die();
- \$configuration = array (
-  'siteidentifier' => '7a142be09ea65699e4a6f6ef91c0773c',
-  'stores' => 
-  array (
-    'default_application' => 
-    array (
-      'name' => 'default_application',
-      'plugin' => 'file',
-      'configuration' => 
-      array (
-      ),
-      'features' => 30,
-      'modes' => 3,
-      'default' => true,
-      'class' => 'cachestore_file',
-      'lock' => 'cachelock_file_default',
-    ),
-    'default_session' => 
-    array (
-      'name' => 'default_session',
-      'plugin' => 'session',
-      'configuration' => 
-      array (
-      ),
-      'features' => 14,
-      'modes' => 2,
-      'default' => true,
-      'class' => 'cachestore_session',
-      'lock' => 'cachelock_file_default',
-    ),
-    'default_request' => 
-    array (
-      'name' => 'default_request',
-      'plugin' => 'static',
-      'configuration' => 
-      array (
-      ),
-      'features' => 31,
-      'modes' => 4,
-      'default' => true,
-      'class' => 'cachestore_static',
-      'lock' => 'cachelock_file_default',
-    ),
-    'redis' => 
-    array (
-      'name' => 'redis',
-      'plugin' => 'redis',
-      'configuration' => 
-      array (
-        'server' => '$redisDns',
-        'prefix' => 'moodle_prod',
-        'password' => '$redisAuth',
-        'serializer' => '1',
-      ),
-      'features' => 26,
-      'modes' => 3,
-      'mappingsonly' => false,
-      'class' => 'cachestore_redis',
-      'default' => false,
-      'lock' => 'cachelock_file_default',
-    ),
-    'local_file' => 
-    array (
-      'name' => 'local_file',
-      'plugin' => 'file',
-      'configuration' => 
-      array (
-        'path' => '/tmp/muc/moodle_prod',
-        'autocreate' => 1,
-      ),
-      'features' => 30,
-      'modes' => 3,
-      'mappingsonly' => false,
-      'class' => 'cachestore_file',
-      'default' => false,
-      'lock' => 'cachelock_file_default',
-    ),
-  ),
-  'modemappings' => 
-  array (
-    0 => 
-    array (
-      'store' => 'redis',
-      'mode' => 1,
-      'sort' => 0,
-    ),
-    1 => 
-    array (
-      'store' => 'default_session',
-      'mode' => 2,
-      'sort' => 0,
-    ),
-    2 => 
-    array (
-      'store' => 'default_request',
-      'mode' => 4,
-      'sort' => 0,
-    ),
-  ),
-  'definitions' => 
-  array (
-    'core/string' => 
-    array (
-      'mode' => 1,
-      'simplekeys' => true,
-      'simpledata' => true,
-      'staticacceleration' => true,
-      'staticaccelerationsize' => 30,
-      'canuselocalstore' => true,
-      'component' => 'core',
-      'area' => 'string',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'core/langmenu' => 
-    array (
-      'mode' => 1,
-      'simplekeys' => true,
-      'simpledata' => true,
-      'staticacceleration' => true,
-      'canuselocalstore' => true,
-      'component' => 'core',
-      'area' => 'langmenu',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'core/databasemeta' => 
-    array (
-      'mode' => 1,
-      'requireidentifiers' => 
-      array (
-        0 => 'dbfamily',
-      ),
-      'simpledata' => true,
-      'staticacceleration' => true,
-      'staticaccelerationsize' => 15,
-      'component' => 'core',
-      'area' => 'databasemeta',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'core/eventinvalidation' => 
-    array (
-      'mode' => 1,
-      'staticacceleration' => true,
-      'requiredataguarantee' => true,
-      'simpledata' => true,
-      'component' => 'core',
-      'area' => 'eventinvalidation',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'core/questiondata' => 
-    array (
-      'mode' => 1,
-      'simplekeys' => true,
-      'requiredataguarantee' => false,
-      'datasource' => 'question_finder',
-      'datasourcefile' => 'question/engine/bank.php',
-      'component' => 'core',
-      'area' => 'questiondata',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'core/htmlpurifier' => 
-    array (
-      'mode' => 1,
-      'canuselocalstore' => true,
-      'component' => 'core',
-      'area' => 'htmlpurifier',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'core/config' => 
-    array (
-      'mode' => 1,
-      'staticacceleration' => true,
-      'simpledata' => true,
-      'component' => 'core',
-      'area' => 'config',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'core/groupdata' => 
-    array (
-      'mode' => 1,
-      'simplekeys' => true,
-      'simpledata' => true,
-      'staticacceleration' => true,
-      'staticaccelerationsize' => 2,
-      'component' => 'core',
-      'area' => 'groupdata',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'core/calendar_subscriptions' => 
-    array (
-      'mode' => 1,
-      'simplekeys' => true,
-      'simpledata' => true,
-      'staticacceleration' => true,
-      'component' => 'core',
-      'area' => 'calendar_subscriptions',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'core/capabilities' => 
-    array (
-      'mode' => 1,
-      'simplekeys' => true,
-      'simpledata' => true,
-      'staticacceleration' => true,
-      'staticaccelerationsize' => 1,
-      'ttl' => 3600,
-      'component' => 'core',
-      'area' => 'capabilities',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'core/yuimodules' => 
-    array (
-      'mode' => 1,
-      'component' => 'core',
-      'area' => 'yuimodules',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'core/observers' => 
-    array (
-      'mode' => 1,
-      'simplekeys' => true,
-      'simpledata' => true,
-      'staticacceleration' => true,
-      'staticaccelerationsize' => 2,
-      'component' => 'core',
-      'area' => 'observers',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'core/plugin_manager' => 
-    array (
-      'mode' => 1,
-      'simplekeys' => true,
-      'simpledata' => true,
-      'component' => 'core',
-      'area' => 'plugin_manager',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'core/coursecattree' => 
-    array (
-      'mode' => 1,
-      'staticacceleration' => true,
-      'invalidationevents' => 
-      array (
-        0 => 'changesincoursecat',
-      ),
-      'component' => 'core',
-      'area' => 'coursecattree',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'core/coursecat' => 
-    array (
-      'mode' => 2,
-      'invalidationevents' => 
-      array (
-        0 => 'changesincoursecat',
-        1 => 'changesincourse',
-      ),
-      'ttl' => 600,
-      'component' => 'core',
-      'area' => 'coursecat',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 2,
-    ),
-    'core/coursecatrecords' => 
-    array (
-      'mode' => 4,
-      'simplekeys' => true,
-      'invalidationevents' => 
-      array (
-        0 => 'changesincoursecat',
-      ),
-      'component' => 'core',
-      'area' => 'coursecatrecords',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 2,
-    ),
-    'core/coursecontacts' => 
-    array (
-      'mode' => 1,
-      'staticacceleration' => true,
-      'simplekeys' => true,
-      'ttl' => 3600,
-      'component' => 'core',
-      'area' => 'coursecontacts',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'core/repositories' => 
-    array (
-      'mode' => 4,
-      'component' => 'core',
-      'area' => 'repositories',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 2,
-    ),
-    'core/externalbadges' => 
-    array (
-      'mode' => 1,
-      'simplekeys' => true,
-      'ttl' => 3600,
-      'component' => 'core',
-      'area' => 'externalbadges',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'core/coursemodinfo' => 
-    array (
-      'mode' => 1,
-      'simplekeys' => true,
-      'canuselocalstore' => true,
-      'component' => 'core',
-      'area' => 'coursemodinfo',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'core/userselections' => 
-    array (
-      'mode' => 2,
-      'simplekeys' => true,
-      'simpledata' => true,
-      'component' => 'core',
-      'area' => 'userselections',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 2,
-    ),
-    'core/completion' => 
-    array (
-      'mode' => 1,
-      'simplekeys' => true,
-      'simpledata' => true,
-      'ttl' => 3600,
-      'staticacceleration' => true,
-      'staticaccelerationsize' => 2,
-      'component' => 'core',
-      'area' => 'completion',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'core/coursecompletion' => 
-    array (
-      'mode' => 1,
-      'simplekeys' => true,
-      'simpledata' => true,
-      'ttl' => 3600,
-      'staticacceleration' => true,
-      'staticaccelerationsize' => 30,
-      'component' => 'core',
-      'area' => 'coursecompletion',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'core/navigation_expandcourse' => 
-    array (
-      'mode' => 2,
-      'simplekeys' => true,
-      'simpledata' => true,
-      'component' => 'core',
-      'area' => 'navigation_expandcourse',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 2,
-    ),
-    'core/suspended_userids' => 
-    array (
-      'mode' => 4,
-      'simplekeys' => true,
-      'simpledata' => true,
-      'component' => 'core',
-      'area' => 'suspended_userids',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 2,
-    ),
-    'core/roledefs' => 
-    array (
-      'mode' => 1,
-      'simplekeys' => true,
-      'simpledata' => true,
-      'staticacceleration' => true,
-      'staticaccelerationsize' => 30,
-      'component' => 'core',
-      'area' => 'roledefs',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'core/plugin_functions' => 
-    array (
-      'mode' => 1,
-      'simplekeys' => true,
-      'simpledata' => true,
-      'staticacceleration' => true,
-      'staticaccelerationsize' => 5,
-      'component' => 'core',
-      'area' => 'plugin_functions',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'core/tags' => 
-    array (
-      'mode' => 4,
-      'simplekeys' => true,
-      'staticacceleration' => true,
-      'component' => 'core',
-      'area' => 'tags',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 2,
-    ),
-    'core/grade_categories' => 
-    array (
-      'mode' => 2,
-      'simplekeys' => true,
-      'invalidationevents' => 
-      array (
-        0 => 'changesingradecategories',
-      ),
-      'component' => 'core',
-      'area' => 'grade_categories',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 2,
-    ),
-    'core/temp_tables' => 
-    array (
-      'mode' => 4,
-      'simplekeys' => true,
-      'simpledata' => true,
-      'component' => 'core',
-      'area' => 'temp_tables',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 2,
-    ),
-    'core/tagindexbuilder' => 
-    array (
-      'mode' => 2,
-      'simplekeys' => true,
-      'simplevalues' => true,
-      'staticacceleration' => true,
-      'staticaccelerationsize' => 10,
-      'ttl' => 900,
-      'invalidationevents' => 
-      array (
-        0 => 'resettagindexbuilder',
-      ),
-      'component' => 'core',
-      'area' => 'tagindexbuilder',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 2,
-    ),
-    'core/contextwithinsights' => 
-    array (
-      'mode' => 1,
-      'simplekeys' => true,
-      'simpledata' => true,
-      'staticacceleration' => true,
-      'staticaccelerationsize' => 1,
-      'component' => 'core',
-      'area' => 'contextwithinsights',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'core/message_processors_enabled' => 
-    array (
-      'mode' => 1,
-      'simplekeys' => true,
-      'simpledata' => true,
-      'staticacceleration' => true,
-      'staticaccelerationsize' => 3,
-      'component' => 'core',
-      'area' => 'message_processors_enabled',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'core/message_time_last_message_between_users' => 
-    array (
-      'mode' => 1,
-      'simplekeys' => true,
-      'simplevalues' => true,
-      'datasource' => '\\core_message\\time_last_message_between_users',
-      'component' => 'core',
-      'area' => 'message_time_last_message_between_users',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'core/fontawesomeiconmapping' => 
-    array (
-      'mode' => 1,
-      'simplekeys' => true,
-      'simpledata' => true,
-      'staticacceleration' => true,
-      'staticaccelerationsize' => 1,
-      'component' => 'core',
-      'area' => 'fontawesomeiconmapping',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'core/postprocessedcss' => 
-    array (
-      'mode' => 1,
-      'simplekeys' => true,
-      'simpledata' => true,
-      'staticacceleration' => false,
-      'component' => 'core',
-      'area' => 'postprocessedcss',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'core/user_group_groupings' => 
-    array (
-      'mode' => 1,
-      'simplekeys' => true,
-      'simpledata' => true,
-      'staticacceleration' => true,
-      'component' => 'core',
-      'area' => 'user_group_groupings',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'availability_grade/scores' => 
-    array (
-      'mode' => 1,
-      'staticacceleration' => true,
-      'staticaccelerationsize' => 2,
-      'ttl' => 3600,
-      'component' => 'availability_grade',
-      'area' => 'scores',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'availability_grade/items' => 
-    array (
-      'mode' => 1,
-      'staticacceleration' => true,
-      'staticaccelerationsize' => 2,
-      'ttl' => 3600,
-      'component' => 'availability_grade',
-      'area' => 'items',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'mod_glossary/concepts' => 
-    array (
-      'mode' => 1,
-      'simplekeys' => true,
-      'simpledata' => false,
-      'staticacceleration' => true,
-      'staticaccelerationsize' => 30,
-      'component' => 'mod_glossary',
-      'area' => 'concepts',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'repository_googledocs/folder' => 
-    array (
-      'mode' => 1,
-      'simplekeys' => false,
-      'simpledata' => true,
-      'staticacceleration' => true,
-      'staticaccelerationsize' => 10,
-      'canuselocalstore' => true,
-      'component' => 'repository_googledocs',
-      'area' => 'folder',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'repository_onedrive/folder' => 
-    array (
-      'mode' => 1,
-      'simplekeys' => false,
-      'simpledata' => true,
-      'staticacceleration' => true,
-      'staticaccelerationsize' => 10,
-      'canuselocalstore' => true,
-      'component' => 'repository_onedrive',
-      'area' => 'folder',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'repository_skydrive/foldername' => 
-    array (
-      'mode' => 2,
-      'component' => 'repository_skydrive',
-      'area' => 'foldername',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 2,
-    ),
-    'tool_mobile/plugininfo' => 
-    array (
-      'mode' => 1,
-      'simplekeys' => true,
-      'staticacceleration' => true,
-      'staticaccelerationsize' => 1,
-      'component' => 'tool_mobile',
-      'area' => 'plugininfo',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'tool_monitor/eventsubscriptions' => 
-    array (
-      'mode' => 1,
-      'simplekeys' => true,
-      'simpledata' => true,
-      'staticacceleration' => true,
-      'staticaccelerationsize' => 10,
-      'component' => 'tool_monitor',
-      'area' => 'eventsubscriptions',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'tool_uploadcourse/helper' => 
-    array (
-      'mode' => 4,
-      'component' => 'tool_uploadcourse',
-      'area' => 'helper',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 2,
-    ),
-    'tool_usertours/tourdata' => 
-    array (
-      'mode' => 1,
-      'simplekeys' => true,
-      'simpledata' => true,
-      'staticacceleration' => true,
-      'staticaccelerationsize' => 1,
-      'component' => 'tool_usertours',
-      'area' => 'tourdata',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-    'tool_usertours/stepdata' => 
-    array (
-      'mode' => 1,
-      'simplekeys' => true,
-      'simpledata' => true,
-      'staticacceleration' => true,
-      'staticaccelerationsize' => 1,
-      'component' => 'tool_usertours',
-      'area' => 'stepdata',
-      'selectedsharingoption' => 2,
-      'userinputsharingkey' => '',
-      'sharingoptions' => 15,
-    ),
-  ),
-  'definitionmappings' => 
-  array (
-    0 => 
-    array (
-      'store' => 'local_file',
-      'definition' => 'core/coursemodinfo',
-      'sort' => 1,
-    ),
-    1 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'core/groupdata',
-      'sort' => 1,
-    ),
-    2 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'core/roledefs',
-      'sort' => 1,
-    ),
-    3 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'tool_usertours/tourdata',
-      'sort' => 1,
-    ),
-    4 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'repository_onedrive/folder',
-      'sort' => 1,
-    ),
-    5 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'core/message_processors_enabled',
-      'sort' => 1,
-    ),
-    6 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'core/coursecontacts',
-      'sort' => 1,
-    ),
-    7 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'repository_googledocs/folder',
-      'sort' => 1,
-    ),
-    8 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'core/questiondata',
-      'sort' => 1,
-    ),
-    9 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'core/coursecat',
-      'sort' => 1,
-    ),
-    10 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'core/databasemeta',
-      'sort' => 1,
-    ),
-    11 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'core/eventinvalidation',
-      'sort' => 1,
-    ),
-    12 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'core/coursecattree',
-      'sort' => 1,
-    ),
-    13 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'core/coursecompletion',
-      'sort' => 1,
-    ),
-    14 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'core/user_group_groupings',
-      'sort' => 1,
-    ),
-    15 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'core/capabilities',
-      'sort' => 1,
-    ),
-    16 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'core/yuimodules',
-      'sort' => 1,
-    ),
-    17 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'core/observers',
-      'sort' => 1,
-    ),
-    18 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'mod_glossary/concepts',
-      'sort' => 1,
-    ),
-    19 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'core/fontawesomeiconmapping',
-      'sort' => 1,
-    ),
-    20 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'core/config',
-      'sort' => 1,
-    ),
-    21 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'tool_mobile/plugininfo',
-      'sort' => 1,
-    ),
-    22 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'core/plugin_functions',
-      'sort' => 1,
-    ),
-    23 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'core/postprocessedcss',
-      'sort' => 1,
-    ),
-    24 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'core/plugin_manager',
-      'sort' => 1,
-    ),
-    25 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'tool_usertours/stepdata',
-      'sort' => 1,
-    ),
-    26 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'availability_grade/items',
-      'sort' => 1,
-    ),
-    27 => 
-    array (
-      'store' => 'local_file',
-      'definition' => 'core/string',
-      'sort' => 1,
-    ),
-    28 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'core/externalbadges',
-      'sort' => 1,
-    ),
-    29 => 
-    array (
-      'store' => 'local_file',
-      'definition' => 'core/langmenu',
-      'sort' => 1,
-    ),
-    30 => 
-    array (
-      'store' => 'local_file',
-      'definition' => 'core/htmlpurifier',
-      'sort' => 1,
-    ),
-    31 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'core/completion',
-      'sort' => 1,
-    ),
-    32 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'core/calendar_subscriptions',
-      'sort' => 1,
-    ),
-    33 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'core/contextwithinsights',
-      'sort' => 1,
-    ),
-    34 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'tool_monitor/eventsubscriptions',
-      'sort' => 1,
-    ),
-    35 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'core/message_time_last_message_between_users',
-      'sort' => 1,
-    ),
-    36 => 
-    array (
-      'store' => 'redis',
-      'definition' => 'availability_grade/scores',
-      'sort' => 1,
-    ),
-  ),
-  'locks' => 
-  array (
-    'cachelock_file_default' => 
-    array (
-      'name' => 'cachelock_file_default',
-      'type' => 'cachelock_file',
-      'dir' => 'filelocks',
-      'default' => true,
-    ),
-  ),
-);
 EOF
 }
 

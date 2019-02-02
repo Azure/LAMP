@@ -1,4 +1,4 @@
-# Contributing to Moodle on Azure 
+# Contributing to LAMP on Azure 
 
 The TL;DR version is:
 
@@ -11,10 +11,8 @@ The TL;DR version is:
 ## How the project is managed
 
 This project welcomes contributions and suggestions. Our goal is to
-work on Azure specific tooling for deploying and managing the open
-source [Moodle](http://moodle.org) learning management system on
-Azure. We do not work on Moodle itself here, instead we work upstream
-as appropriate.
+work on Azure specific tooling for deploying and managing PHP (LAMP)
+applications on Azure.
 
 The short version of how to contribute to this project is "just do
 it". Where "it" can be defined as any valuable contribution (and to be
@@ -126,8 +124,7 @@ where to spend their time. For example:
     Priority 0 under your leadership.
   * Wontfix items are considered out of scope for this project.
     Community members should seek to solve the problem in different
-    ways. Often this will mean contribution to Moodle itself or a
-    plugin that is external to this community.
+    ways.
 
 ## Community roles
 

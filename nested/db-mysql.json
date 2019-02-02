@@ -2,9 +2,9 @@
     "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "moodleCommon": {
+        "lampCommon": {
             "metadata": {
-                "description": "Common Moodle values"
+                "description": "Common LAMP values"
             },
             "type": "object"
         },
@@ -26,32 +26,32 @@
             "type": "Microsoft.DBforMySQL/servers",
             "apiVersion": "2017-12-01",
             "kind": "",
-            "location": "[parameters('moodleCommon').location]",
-            "name": "[parameters('moodleCommon').serverName]",
+            "location": "[parameters('lampCommon').location]",
+            "name": "[parameters('lampCommon').serverName]",
             "properties": {
-                "administratorLogin": "[parameters('moodleCommon').dbLogin]",
-                "administratorLoginPassword": "[parameters('moodleCommon').dbLoginPassword]",
-                "sslEnforcement": "[parameters('moodleCommon').sslEnforcement]",
+                "administratorLogin": "[parameters('lampCommon').dbLogin]",
+                "administratorLoginPassword": "[parameters('lampCommon').dbLoginPassword]",
+                "sslEnforcement": "[parameters('lampCommon').sslEnforcement]",
                 "storageProfile": {
-                    "storageMB": "[mul(parameters('moodleCommon').mysqlPgresStgSizeGB, 1024)]",
+                    "storageMB": "[mul(parameters('lampCommon').mysqlPgresStgSizeGB, 1024)]",
                     "backupRetentionDays": "35",
                     "geoRedundantBackup": "Enabled"
                 },
-                "version": "[parameters('moodleCommon').mysqlVersion]"
+                "version": "[parameters('lampCommon').mysqlVersion]"
             },
             "sku": {
-                "capacity": "[parameters('moodleCommon').mysqlPgresVcores]",
-                "name": "[parameters('moodleCommon').mysqlPgresSkuName]",
-                "tier": "[parameters('moodleCommon').mysqlPgresSkuTier]",
-                "family": "[parameters('moodleCommon').mysqlPgresSkuHwFamily]"
+                "capacity": "[parameters('lampCommon').mysqlPgresVcores]",
+                "name": "[parameters('lampCommon').mysqlPgresSkuName]",
+                "tier": "[parameters('lampCommon').mysqlPgresSkuTier]",
+                "family": "[parameters('lampCommon').mysqlPgresSkuHwFamily]"
             },
             "resources": [
                 {
                     "apiVersion": "2017-12-01",
                     "dependsOn": [
-                        "[concat('Microsoft.DBforMySQL/servers/', parameters('moodleCommon').serverName)]"
+                        "[concat('Microsoft.DBforMySQL/servers/', parameters('lampCommon').serverName)]"
                     ],
-                    "location": "[parameters('moodleCommon').location]",
+                    "location": "[parameters('lampCommon').location]",
                     "name": "mysql-firewall-allow-lb",
                     "properties": {
                         "startIpAddress": "[parameters('lbPubIp')]",
@@ -62,9 +62,9 @@
                 {
                     "apiVersion": "2017-12-01",
                     "dependsOn": [
-                        "[concat('Microsoft.DBforMySQL/servers/', parameters('moodleCommon').serverName)]"
+                        "[concat('Microsoft.DBforMySQL/servers/', parameters('lampCommon').serverName)]"
                     ],
-                    "location": "[parameters('moodleCommon').location]",
+                    "location": "[parameters('lampCommon').location]",
                     "name": "mysql-firewall-allow-ctlr",
                     "properties": {
                         "startIpAddress": "[parameters('ctlrPubIp')]",
@@ -78,7 +78,7 @@
     "outputs": {
         "dbFQDN": {
             "type": "string",
-            "value": "[reference(parameters('moodleCommon').serverName).fullyQualifiedDomainName]"
+            "value": "[reference(parameters('lampCommon').serverName).fullyQualifiedDomainName]"
         }
     },
     "variables": {

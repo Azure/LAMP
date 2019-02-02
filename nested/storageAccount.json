@@ -2,9 +2,9 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "moodleCommon": {
+        "lampCommon": {
             "metadata": {
-                "description": "Common Moodle values"
+                "description": "Common LAMP values"
             },
             "type": "object"
         }
@@ -13,11 +13,11 @@
         {
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2017-06-01",
-            "location": "[parameters('moodleCommon').location]",
-            "name": "[parameters('moodleCommon').storageAccountName]",
+            "location": "[parameters('lampCommon').location]",
+            "name": "[parameters('lampCommon').storageAccountName]",
             "kind": "Storage",
             "sku": {
-                "name": "[parameters('moodleCommon').storageAccountType]"
+                "name": "[parameters('lampCommon').storageAccountType]"
             },
             "properties": {
                 "encryption": {
@@ -45,7 +45,7 @@
         "documentation1": "This sub-template creates a storage account.  It expects certain values in the 'common' datastructure.",
         "documentation2": " storageAccountName - name of storage account",
         "documentation3": " storageAccountType - type of storage account",
-        "storageAccountId": "[resourceId('Microsoft.Storage/storageAccounts', parameters('moodleCommon').storageAccountName)]"
+        "storageAccountId": "[resourceId('Microsoft.Storage/storageAccounts', parameters('lampCommon').storageAccountName)]"
     },
     "outputs": {
         "storageAccountKey": {
