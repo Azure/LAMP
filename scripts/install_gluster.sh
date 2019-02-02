@@ -35,8 +35,9 @@ RAIDPARTITION="/dev/md1p1"
 BLACKLIST="/dev/sda|/dev/sdb"
 
 # make sure the system does automatic update
-sudo apt-get -y update
-sudo apt-get -y install unattended-upgrades
+# TODO: ENSURE THIS IS CONFIGURED CORRECTLY
+apt-get -y update
+apt-get -y install unattended-upgrades
 
 {
         check_os() {
@@ -74,7 +75,7 @@ sudo apt-get -y install unattended-upgrades
             if [ $_RET -eq 1 ];
             then 
                 echo "installing mdadm"
-                sudo apt-get -y -q install mdadm
+                apt-get -y -q install mdadm
             fi
             echo "Creating raid0"
             udevadm control --stop-exec-queue

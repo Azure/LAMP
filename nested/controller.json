@@ -2,9 +2,9 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "moodleCommon": {
+        "lampCommon": {
             "metadata": {
-                "description": "Common Moodle values"
+                "description": "Common LAMP values"
             },
             "type": "object"
         },
@@ -22,7 +22,7 @@
         },
         "vmSetupParamsObj": {
             "metadata": {
-                "description": "JSON-structured VM setup params that'll be injected to the VM (through cloud-init) and used by the custom script (install_moodle.sh)"
+                "description": "JSON-structured VM setup params that'll be injected to the VM (through cloud-init) and used by the custom script (setup_controller.sh)"
             },
             "type": "object"
         }
@@ -31,8 +31,8 @@
         {
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2017-10-01",
-            "location": "[parameters('moodleCommon').location]",
-            "name": "[parameters('moodleCommon').ctlrNsgName]",
+            "location": "[parameters('lampCommon').location]",
+            "name": "[parameters('lampCommon').ctlrNsgName]",
             "properties": {
                 "securityRules": [
                     {
@@ -71,10 +71,10 @@
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2017-10-01",
             "dependsOn": [
-                "[concat('Microsoft.Network/networkSecurityGroups/', parameters('moodleCommon').ctlrNsgName)]"
+                "[concat('Microsoft.Network/networkSecurityGroups/', parameters('lampCommon').ctlrNsgName)]"
             ],
-            "location": "[parameters('moodleCommon').location]",
-            "name": "[parameters('moodleCommon').ctlrNicName]",
+            "location": "[parameters('lampCommon').location]",
+            "name": "[parameters('lampCommon').ctlrNicName]",
             "properties": {
                 "networkSecurityGroup": {
                     "id": "[variables('nsgRef')]"
@@ -93,7 +93,7 @@
                         }
                     }
                 ],
-                "enableAcceleratedNetworking": "[parameters('moodleCommon').enableAccelNwForCtlrVmSwitch]"
+                "enableAcceleratedNetworking": "[parameters('lampCommon').enableAccelNwForCtlrVmSwitch]"
             },
             "tags": {
                 "displayName": "ctlrNic"
@@ -103,13 +103,13 @@
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2017-03-30",
             "dependsOn": [
-                "[concat('Microsoft.Network/networkInterfaces/', parameters('moodleCommon').ctlrNicName)]"
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('lampCommon').ctlrNicName)]"
             ],
-            "location": "[parameters('moodleCommon').location]",
-            "name": "[parameters('moodleCommon').ctlrVmName]",
+            "location": "[parameters('lampCommon').location]",
+            "name": "[parameters('lampCommon').ctlrVmName]",
             "properties": {
                 "hardwareProfile": {
-                    "vmSize": "[parameters('moodleCommon').controllerVmSku]"
+                    "vmSize": "[parameters('lampCommon').controllerVmSku]"
                 },
                 "networkProfile": {
                     "networkInterfaces": [
@@ -119,32 +119,32 @@
                     ]
                 },
                 "osProfile": {
-                    "adminUsername": "[parameters('moodleCommon').sshUsername]",
-                    "computerName": "[parameters('moodleCommon').ctlrVmName]",
-                    "secrets": "[parameters('moodleCommon').ctlrVmSecrets]",
-                    "customData": "[base64(concat('#cloud-config\nwrite_files:\n- encoding: b64\n  content: ', base64(string(parameters('vmSetupParamsObj'))), '\n  owner: root:root\n  path: ', parameters('moodleCommon').moodleOnAzureConfigsJsonPath, '\n  permissions: ', variables('singleQuote'), '0400', variables('singleQuote')))]",
+                    "adminUsername": "[parameters('lampCommon').sshUsername]",
+                    "computerName": "[parameters('lampCommon').ctlrVmName]",
+                    "secrets": "[parameters('lampCommon').ctlrVmSecrets]",
+                    "customData": "[base64(concat('#cloud-config\nwrite_files:\n- encoding: b64\n  content: ', base64(string(parameters('vmSetupParamsObj'))), '\n  owner: root:root\n  path: ', parameters('lampCommon').lampOnAzureConfigsJsonPath, '\n  permissions: ', variables('singleQuote'), '0400', variables('singleQuote')))]",
                     "linuxConfiguration": {
                         "disablePasswordAuthentication": true,
                         "ssh": {
                             "publicKeys": [
                                 {
-                                    "path": "[concat('/home/', parameters('moodleCommon').sshUsername, '/.ssh/authorized_keys')]",
-                                    "keyData": "[parameters('moodleCommon').sshPublicKey]"
+                                    "path": "[concat('/home/', parameters('lampCommon').sshUsername, '/.ssh/authorized_keys')]",
+                                    "keyData": "[parameters('lampCommon').sshPublicKey]"
                                 }
                             ]
                         }
                     }
                 },
                 "storageProfile": {
-                    "imageReference": "[parameters('moodleCommon').osType]",
+                    "imageReference": "[parameters('lampCommon').osType]",
                     "osDisk": {
                         "createOption": "FromImage",
                         "managedDisk": {
-                            "storageAccountType": "[parameters('moodleCommon').osDiskStorageType]"
+                            "storageAccountType": "[parameters('lampCommon').osDiskStorageType]"
                         },
-                        "name": "[parameters('moodleCommon').ctlrVmName]"
+                        "name": "[parameters('lampCommon').ctlrVmName]"
                     },
-                    "dataDisks": "[take(variables('nfsDiskArray'),if(equals(parameters('moodleCommon').fileServerType,'nfs'), parameters('moodleCommon').fileServerDiskCount, 0))]"
+                    "dataDisks": "[take(variables('nfsDiskArray'),if(equals(parameters('lampCommon').fileServerType,'nfs'), parameters('lampCommon').fileServerDiskCount, 0))]"
                 }
             },
             "tags": {
@@ -152,51 +152,51 @@
             }
         },
         {
-            "condition": "[parameters('moodleCommon').applyScriptsSwitch]",
+            "condition": "[parameters('lampCommon').applyScriptsSwitch]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2017-05-10",
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', parameters('moodleCommon').ctlrVmName)]"
+                "[concat('Microsoft.Compute/virtualMachines/', parameters('lampCommon').ctlrVmName)]"
             ],
-            "name": "[concat(parameters('moodleCommon').ctlrVmName,'-ScriptProcessor')]",
+            "name": "[concat(parameters('lampCommon').ctlrVmName,'-ScriptProcessor')]",
             "properties": {
                 "mode": "Incremental",
                 "parameters": {
-                    "moodleCommon": {
-                        "value": "[parameters('moodleCommon')]"
+                    "lampCommon": {
+                        "value": "[parameters('lampCommon')]"
                     }
                 },
                 "templateLink": {
-                    "uri": "[concat(parameters('moodleCommon').baseTemplateUrl, 'controllersetup.json', parameters('moodleCommon').artifactsSasToken)]"
+                    "uri": "[concat(parameters('lampCommon').baseTemplateUrl, 'controllersetup.json', parameters('lampCommon').artifactsSasToken)]"
                 }
             }
         },
         {
-            "condition": "[parameters('moodleCommon').azureBackupSwitch]",
+            "condition": "[parameters('lampCommon').azureBackupSwitch]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2017-05-10",
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/',parameters('moodleCommon').ctlrVmName)]"
+                "[concat('Microsoft.Compute/virtualMachines/',parameters('lampCommon').ctlrVmName)]"
             ],
-            "name": "[concat(parameters('moodleCommon').ctlrVmName,'-Backup')]",
+            "name": "[concat(parameters('lampCommon').ctlrVmName,'-Backup')]",
             "properties": {
                 "mode": "Incremental",
                 "parameters": {
-                    "moodleCommon": {
-                        "value": "[parameters('moodleCommon')]"
+                    "lampCommon": {
+                        "value": "[parameters('lampCommon')]"
                     },
                     "vmName": {
-                        "value": "[parameters('moodleCommon').ctlrVmName]"
+                        "value": "[parameters('lampCommon').ctlrVmName]"
                     }
                 },
                 "templateLink": {
-                    "uri": "[concat(parameters('moodleCommon').baseTemplateUrl,'recoveryservicesEnlist.json',parameters('moodleCommon').artifactsSasToken)]"
+                    "uri": "[concat(parameters('lampCommon').baseTemplateUrl,'recoveryservicesEnlist.json',parameters('lampCommon').artifactsSasToken)]"
                 }
             }
         }
     ],
     "variables": {
-        "documentation01": "This sub-template drives the controller/jump-box which is used as the access-point for other moodle VM's ",
+        "documentation01": "This sub-template drives the controller/jump-box which is used as the access-point for other VMs in the cluster",
         "documentation02": "It expects certain values in the 'common' datastructure.",
         "documentation03": "    vnetName     - name of virtual network",
         "documentation04": "    subnetWeb    - name of subnet for controller (and vm scale set)",
@@ -206,8 +206,8 @@
         "documentation09": "This sub-template calls other sub-templates",
         "documentation10": "    controllerconfig       - conditionally applies post-deployment script on the VM",
         "documentation18": "    recoveryservicesEnlist - conditionally enlists the VM into the backup regimen",
-        "nicRef": "[resourceId('Microsoft.Network/networkInterfaces', parameters('moodleCommon').ctlrNicName)]",
-        "nsgRef": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('moodleCommon').ctlrNsgName)]",
+        "nicRef": "[resourceId('Microsoft.Network/networkInterfaces', parameters('lampCommon').ctlrNicName)]",
+        "nsgRef": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('lampCommon').ctlrNsgName)]",
         "singleQuote": "'",
         "copy": [
             {
@@ -217,7 +217,7 @@
                     "managedDisk": {
                         "storageAccountType": "Premium_LRS"
                     },
-                    "diskSizeGB": "[parameters('moodleCommon').fileServerDiskSize]",
+                    "diskSizeGB": "[parameters('lampCommon').fileServerDiskSize]",
                     "lun": "[copyIndex('nfsDiskArray')]",
                     "createOption": "Empty"
                 }
@@ -226,7 +226,7 @@
     },
     "outputs": {
         "controllerIP": {
-            "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', parameters('moodleCommon').ctlrPipName), '2017-10-01').ipAddress]",
+            "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', parameters('lampCommon').ctlrPipName), '2017-10-01').ipAddress]",
             "type": "string"
         }
     }

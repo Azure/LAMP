@@ -21,8 +21,6 @@ The available output parameters are:
   - **loadBalancerDNS**: This is the DNS name of your application load
     balancer. If you provided a `siteURL` parameter when deploying
     you'll need to add a CNAME entry in your DNS zone that should point to this address.
-  - **moodleAdminPassword**: The generated password for the "admin" user
-    in your Moodle install.
   - **controllerInstanceIP**: This is the IP address of the controller
     Virtual Machine. You will need to SSH into this to make changes to
     your Moodle code or view logs.
@@ -76,23 +74,15 @@ Azure using the following command:
 MOODLE_SITE_URL="$(az group deployment show --resource-group $MOODLE_RG_NAME --name $MOODLE_DEPLOYMENT_NAME --out tsv --query *.outputs.siteURL.value)"
 ```
 
-#### Retrieving Moodle Site Load Balancer URL
+#### Retrieving Site Load Balancer URL
 
 The load balancer DNS is the publicly registered DNS name for your
-Moodle DNS. If this is different from the site URL it is important to
+cluster's DNS. If this is different from the site URL it is important to
 ensure that you configure your DNS entry for site URL to point at the
 load balancer.
 
 ```bash
 MOODLE_LOAD_BALANCER_DNS="$(az group deployment show --resource-group $MOODLE_RG_NAME --name $MOODLE_DEPLOYMENT_NAME --out tsv --query *.outputs.loadBalancerDNS.value)"
-```
-
-### Retrieving Moodle Administrator Password
-
-Moodle admin password (username is "admin"):
-
-```bash
-MOODLE_ADMIN_PASSWORD="$(az group deployment show --resource-group $MOODLE_RG_NAME --name $MOODLE_DEPLOYMENT_NAME --out tsv --query *.outputs.moodleAdminPassword.value)"
 ```
 
 ### Retriving Controller Virtual Machine Details

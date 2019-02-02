@@ -7,7 +7,7 @@
             "metadata": {
                 "description": "The base URI where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated."
             },
-            "defaultValue": "https://raw.githubusercontent.com/Azure/Moodle/master/"
+            "defaultValue": "https://raw.githubusercontent.com/ItalyPaleAle/LAMP/generalized/"
         },
         "_artifactsLocationSasToken": {
             "type": "securestring",
@@ -35,7 +35,6 @@
                     "_artifactsLocationSasToken":   { "value": "[parameters('_artifactsLocationSasToken')]" },
                     "redisDeploySwitch":            { "value": true },
                     "azureBackupSwitch":            { "value": true },
-                    "searchType":                   { "value": "elastic" },
                     "sshPublicKey":                 { "value": "[parameters('sshPublicKey')]" },
                     "mysqlPgresVcores":             { "value": 16 },
                     "mysqlPgresStgSizeGB":          { "value": 512 },
@@ -56,6 +55,6 @@
     },
     "variables": {
         "documentation01": "This wrapper template calls the main-template with maximum configs and the only required parameter (sshPublicKey).",
-        "documentation02": "For the best-possible performance, highly available, and most Moodle features, other parameters are fixed in this tempalte and overriden as above."
+        "documentation02": "For the best-possible performance, and highly available. Other parameters are fixed in this tempalte and overriden as above."
     }
 }

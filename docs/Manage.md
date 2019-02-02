@@ -71,7 +71,7 @@ web VMs through the specified file server (Gluster or NFS), and this is
 not good for web response time. Therefore, we introduced the
 `htmlLocalCopySwitch` that'll copy the `/azlamp/html` directory to
 `/var/www/html` in each autoscaled web VM and reconfigures the web
-server (apache/nginx)'s server root directory accordingly, when it's set
+server (nginx)'s server root directory accordingly, when it's set
 to true. This now requires directory sync between `/azlamp/html` and
 `/var/www/html`, and currently it's addressed by simple polling
 (minutely). Therefore, if you are going to update your Moodle
@@ -130,7 +130,7 @@ ssh azureadmin@$MOODLE_CONTROLLER_INSTANCE_IP 'mysqldump -h $mysqlIP -u ${azurem
 
 If you have set the `azureBackupSwitch` in the input parameters to `1`
 then Azure will provide VM backups of your Gluster node. This is
-recommended as it contains both your Moodle code and your sitedata.
+recommended as it contains both your PHP code and your site data.
 Restoring a backed up VM is outside the scope of this doc, but Azure's
 documentation on Recovery Services can be found here:
 https://docs.microsoft.com/en-us/azure/backup/backup-azure-vms-first-look-arm
