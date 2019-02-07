@@ -1,24 +1,17 @@
-# Moodle on Azure Parameters
+# LAMP on Azure Parameters
 
-Our goal with these templates is to make it as easy as possible to
-deploy a Moodle on Azure cluster that can be customized to your
-specific needs. To that end we provide a great manay configuration
-options. This document attempts to document all these parameters,
-however, like all documentation it can sometimes fall behind. For a
-canonical reference you should review the `azuredeploy.json` file.
+Our goal with these templates is to make it as easy as possible to deploy a LAMP on Azure cluster that can be customized to your specific needs. To that end we provide a great manay configuration options. This document attempts to document all these parameters, however, like all documentation it can sometimes fall behind. For a canonical reference you should review the `azuredeploy.json` file.
 
 ## Extracting documentation from azuredeploy.json
 
-To make it a litte easier to read `azuredeploy.json` you might want to
-run the following commands which will extract the necessary
-information and display it in a more readable form.
+To make it a litte easier to read `azuredeploy.json` you might want to run the following commands which will extract the necessary information and display it in a more readable form.
 
-```bash
+```sh
 sudp apt install jq
 ```
 
-``` bash
-jq -r '.parameters | to_entries[] | "### " + .key + "\n\n" + .value.metadata.description + "\n\nType: " + .value.type + "\n\nPossible Values: " + (.value.allowedValues | @text) + "\n\nDefault: " + (.value.defaultValue | @text) + "\n\n"' azuredeploy.json
+```sh
+jq -r '.parameters | to_entries[] | "### " + .key + "\n\n" + .value.metadata.description + "\n\nType: " + .value.type + "\n\nPossible Values: " + (.value.allowedValues | @text) + "\n\nDefault: " + (.value.defaultValue | @text) + "\n"' azuredeploy.json
 ```
 
 ## Available Parameters
@@ -33,7 +26,6 @@ Possible Values: null
 
 Default: https://raw.githubusercontent.com/Azure/LAMP/master/
 
-
 ### _artifactsLocationSasToken
 
 The sasToken required to access _artifactsLocation.  When the template is deployed using the accompanying scripts, a sasToken will be automatically generated.
@@ -42,8 +34,7 @@ Type: securestring
 
 Possible Values: null
 
-Default: 
-
+Default:
 
 ### applyScriptsSwitch
 
@@ -55,7 +46,6 @@ Possible Values: null
 
 Default: true
 
-
 ### azureBackupSwitch
 
 Switch to configure AzureBackup and enlist VM's
@@ -66,17 +56,15 @@ Possible Values: null
 
 Default: false
 
-
 ### redisDeploySwitch
 
-Switch to deploy a redis cache or not. Note that certain versions of Moodle (e.g., 3.1) don't work well with Redis, so use this only for known well-working Moodle versions (e.g., 3.4).
+Switch to deploy a Redis Cache or not.
 
 Type: bool
 
 Possible Values: null
 
 Default: false
-
 
 ### vnetGwDeploySwitch
 
@@ -88,17 +76,15 @@ Possible Values: null
 
 Default: false
 
-
 ### htmlLocalCopySwitch
 
-Switch to create a local copy of /moodle/html or not
+Switch to create a local copy of /azlamp/html or not
 
 Type: bool
 
 Possible Values: null
 
 Default: true
-
 
 ### ddosSwitch
 
@@ -110,7 +96,6 @@ Possible Values: null
 
 Default: false
 
-
 ### enableAccelNwForCtlrVmSwitch
 
 Switch to enable Azure Accelerated Networking on the controller VM. Default to false because currently the default controller VM SKU (D1) doesn't support AN. Change this to true if you set the controller VM SKU to eligibible ones (e.g., D2) for better performance.
@@ -120,7 +105,6 @@ Type: bool
 Possible Values: null
 
 Default: false
-
 
 ### enableAccelNwForOtherVmsSwitch
 
@@ -132,10 +116,9 @@ Possible Values: null
 
 Default: true
 
-
 ### httpsTermination
 
-Indicates where https termination occurs. 'VMSS' is for https termination at the VMSS instance VMs (using nginx https proxy). 'AppGw' is for https termination with an Azure Application Gateway. When selecting this, you need to specify all appGw* parameters. 'None' is for testing only with no https. 'None' may not be used with a separately configured https termination layer. If you want to use the 'None' option with your separately configured https termination layer, you'll need to update your Moodle config.php manually for $cfg->wwwroot and $cfg->sslproxy.
+Indicates where https termination occurs. 'VMSS' is for https termination at the VMSS instance VMs (using nginx https proxy). 'AppGw' is for https termination with an Azure Application Gateway. When selecting this, you need to specify all appGw* parameters. 'None' is for testing only with no https. 'None' may not be used with a separately configured https termination layer.
 
 Type: string
 
@@ -143,17 +126,15 @@ Possible Values: ["VMSS","AppGw","None"]
 
 Default: VMSS
 
-
 ### siteURL
 
-URL for Moodle site
+URL for LAMP site
 
 Type: string
 
 Possible Values: null
 
 Default: www.example.org
-
 
 ### sshPublicKey
 
@@ -165,7 +146,6 @@ Possible Values: null
 
 Default: null
 
-
 ### sshUsername
 
 ssh user name
@@ -175,7 +155,6 @@ Type: string
 Possible Values: null
 
 Default: azureadmin
-
 
 ### controllerVmSku
 
@@ -187,7 +166,6 @@ Possible Values: null
 
 Default: Standard_DS1_v2
 
-
 ### autoscaleVmSku
 
 VM size for autoscaled web VMs
@@ -197,7 +175,6 @@ Type: string
 Possible Values: null
 
 Default: Standard_DS2_v2
-
 
 ### autoscaleVmCountMax
 
@@ -209,7 +186,6 @@ Possible Values: null
 
 Default: 10
 
-
 ### autoscaleVmCountMin
 
 Minimum (also initial) number of autoscaled web VMs
@@ -219,7 +195,6 @@ Type: int
 Possible Values: null
 
 Default: 1
-
 
 ### osDiskStorageType
 
@@ -231,7 +206,6 @@ Possible Values: ["Premium_LRS","Standard_LRS"]
 
 Default: Premium_LRS
 
-
 ### dbServerType
 
 Database type
@@ -241,7 +215,6 @@ Type: string
 Possible Values: ["postgres","mysql","mssql"]
 
 Default: mysql
-
 
 ### dbLogin
 
@@ -253,7 +226,6 @@ Possible Values: null
 
 Default: dbadmin
 
-
 ### mysqlPgresVcores
 
 MySql/Postgresql vCores. For Basic tier, only 1 & 2 are allowed. For GeneralPurpose tier, 2, 4, 8, 16, 32 are allowed. For MemoryOptimized, 2, 4, 8, 16 are allowed.
@@ -263,7 +235,6 @@ Type: int
 Possible Values: [1,2,4,8,16,32]
 
 Default: 2
-
 
 ### mysqlPgresStgSizeGB
 
@@ -275,7 +246,6 @@ Possible Values: null
 
 Default: 125
 
-
 ### mysqlPgresSkuTier
 
 MySql/Postgresql sku tier
@@ -285,7 +255,6 @@ Type: string
 Possible Values: ["Basic","GeneralPurpose","MemoryOptimized"]
 
 Default: GeneralPurpose
-
 
 ### mysqlPgresSkuHwFamily
 
@@ -297,7 +266,6 @@ Possible Values: ["Gen4","Gen5"]
 
 Default: Gen5
 
-
 ### mysqlVersion
 
 Mysql version
@@ -307,7 +275,6 @@ Type: string
 Possible Values: ["5.6","5.7"]
 
 Default: 5.7
-
 
 ### postgresVersion
 
@@ -319,7 +286,6 @@ Possible Values: ["9.5","9.6"]
 
 Default: 9.6
 
-
 ### sslEnforcement
 
 MySql/Postgresql SSL connection
@@ -329,7 +295,6 @@ Type: string
 Possible Values: ["Disabled","Enabled"]
 
 Default: Disabled
-
 
 ### mssqlDbServiceObjectiveName
 
@@ -341,7 +306,6 @@ Possible Values: ["S1","S2","S3","S4","S5","S6","S7","S9"]
 
 Default: S1
 
-
 ### mssqlDbSize
 
 MS SQL database size
@@ -351,7 +315,6 @@ Type: string
 Possible Values: ["100MB","250MB","500MB","1GB","2GB","5GB","10GB","20GB","30GB","40GB","50GB","100GB","250GB","300GB","400GB","500GB","750GB","1024GB"]
 
 Default: 250GB
-
 
 ### mssqlDbEdition
 
@@ -363,7 +326,6 @@ Possible Values: ["Basic","Standard"]
 
 Default: Standard
 
-
 ### mssqlVersion
 
 Mssql version
@@ -373,7 +335,6 @@ Type: string
 Possible Values: ["12.0"]
 
 Default: 12.0
-
 
 ### fileServerType
 
@@ -385,7 +346,6 @@ Possible Values: ["gluster","nfs","nfs-ha","nfs-byo"]
 
 Default: nfs
 
-
 ### nfsByoIpExportPath
 
 IP address and export path of the BYO-NFS share when fileServerType == nfs-byo. E.g., 172.16.1.8:/msazure
@@ -394,8 +354,7 @@ Type: string
 
 Possible Values: null
 
-Default: 
-
+Default:
 
 ### fileServerDiskSize
 
@@ -407,7 +366,6 @@ Possible Values: null
 
 Default: 127
 
-
 ### fileServerDiskCount
 
 Number of disks in raid0 per gluster node or nfs server
@@ -417,7 +375,6 @@ Type: int
 Possible Values: null
 
 Default: 4
-
 
 ### fileServerVmSku
 
@@ -429,7 +386,6 @@ Possible Values: null
 
 Default: Standard_DS2_v2
 
-
 ### keyVaultResourceId
 
 (VMSS https termination only) Azure Resource Manager resource ID of the Key Vault in case you stored your SSL cert in an Azure Key Vault (Note that this Key Vault must have been pre-created on the same Azure region where this template is being deployed). Leave this blank if you didn't. Resource ID example: /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/xxx/providers/Microsoft.KeyVault/vaults/yyy. This value can be obtained from keyvault.sh output if you used the script to store your SSL cert in your Key Vault.
@@ -438,8 +394,7 @@ Type: string
 
 Possible Values: null
 
-Default: 
-
+Default:
 
 ### sslCertKeyVaultURL
 
@@ -449,8 +404,7 @@ Type: string
 
 Possible Values: null
 
-Default: 
-
+Default:
 
 ### sslCertThumbprint
 
@@ -460,8 +414,7 @@ Type: string
 
 Possible Values: null
 
-Default: 
-
+Default:
 
 ### caCertKeyVaultURL
 
@@ -471,8 +424,7 @@ Type: string
 
 Possible Values: null
 
-Default: 
-
+Default:
 
 ### caCertThumbprint
 
@@ -482,8 +434,7 @@ Type: string
 
 Possible Values: null
 
-Default: 
-
+Default:
 
 ### appGwSslCertKeyVaultResourceId
 
@@ -493,8 +444,7 @@ Type: string
 
 Possible Values: null
 
-Default: 
-
+Default:
 
 ### appGwSslCertKeyVaultSecretName
 
@@ -504,8 +454,7 @@ Type: string
 
 Possible Values: null
 
-Default: 
-
+Default:
 
 ### appGwSkuName
 
@@ -517,7 +466,6 @@ Possible Values: ["Standard_Small","Standard_Medium","Standard_Large","WAF_Mediu
 
 Default: Standard_Medium
 
-
 ### appGwSkuTier
 
 (App Gateway https termination only) Tier of the Applicate Gateway
@@ -527,7 +475,6 @@ Type: string
 Possible Values: ["Standard","WAF"]
 
 Default: Standard
-
 
 ### appGwSkuCapacity
 
@@ -539,10 +486,9 @@ Possible Values: null
 
 Default: 2
 
-
 ### storageAccountType
 
-Storage Account type. This storage account is only for the Moodle ObjectFS plugin and/or the (currently disabled) Azure Files file share option
+Storage Account type. This storage account is only for the (currently disabled) Azure Files file share option
 
 Type: string
 
@@ -550,28 +496,25 @@ Possible Values: ["Standard_LRS","Standard_GRS","Standard_ZRS"]
 
 Default: Standard_LRS
 
-
 ### customVnetId
 
-Azure Resource ID of the Azure virtual network where you want to deploy your Moodle resources. A vnet resource ID is of the following format: /subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxxxxxx/resourceGroups/gggg/providers/Microsoft.Network/virtualNetworks/vvvv. Note that this virtual network must be on the same Azure location as this template deployment location. If this parameter is blank, a new Azure virtual network will be created and used. In that case, the address space of the newly created virtual network will be */16 of the following vNetAddressSpace parameter value below.
+Azure Resource ID of the Azure virtual network where you want to deploy your LAMP resources. A vnet resource ID is of the following format: /subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxxxxxx/resourceGroups/gggg/providers/Microsoft.Network/virtualNetworks/vvvv. Note that this virtual network must be on the same Azure location as this template deployment location. If this parameter is blank, a new Azure virtual network will be created and used. In that case, the address space of the newly created virtual network will be */16 of the following vNetAddressSpace parameter value below.
 
 Type: string
 
 Possible Values: null
 
-Default: 
-
+Default:
 
 ### vNetAddressSpace
 
-Address range for the Moodle virtual network and various subnets - presumed /16 for a newly created vnet in case customVnetId is blank. Further subneting (a number of */24 subnets starting from the xxx.yyy.zzz.0/24 will be created on a newly created vnet or your BYO-vnet (specified in customVnetId parameter).
+Address range for the LAMP virtual network and various subnets - presumed /16 for a newly created vnet in case customVnetId is blank. Further subneting (a number of */24 subnets starting from the xxx.yyy.zzz.0/24 will be created on a newly created vnet or your BYO-vnet (specified in customVnetId parameter).
 
 Type: string
 
 Possible Values: null
 
 Default: 172.31.0.0
-
 
 ### gatewayType
 
@@ -583,7 +526,6 @@ Possible Values: ["Vpn","ER"]
 
 Default: Vpn
 
-
 ### vpnType
 
 Virtual network gateway vpn type
@@ -593,7 +535,6 @@ Type: string
 Possible Values: ["RouteBased","PolicyBased"]
 
 Default: RouteBased
-
 
 ### loadBalancerSku
 
@@ -605,7 +546,6 @@ Possible Values: ["Basic","Standard"]
 
 Default: Basic
 
-
 ### location
 
 Azure Location for all resources.
@@ -615,5 +555,3 @@ Type: string
 Possible Values: null
 
 Default: [resourceGroup().location]
-
-

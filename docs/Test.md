@@ -1,8 +1,8 @@
-# Test a Moodle Instance
+# Test a LAMP Instance
 
 ## Prerequisites
 
-It is obviously necessary to have a [Moodle cluster up and running](./Deploy.md).
+It is obviously necessary to have a [LAMP cluster up and running](./Deploy.md).
 
 ## Next Steps
 
