@@ -2,9 +2,9 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "moodleCommon": {
+        "lampCommon": {
             "metadata": {
-                "description": "Common Moodle values"
+                "description": "Common LAMP values"
             },
             "type": "object"
         },
@@ -19,10 +19,10 @@
         {
             "type": "Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems",
             "apiVersion": "2016-06-01",
-            "location": "[parameters('moodleCommon').location]",
-            "name": "[concat(parameters('moodleCommon').vaultName, '/', variables('backupFabric'), '/', variables('v2VmContainer'), concat(resourceGroup().name,';',parameters('vmName')), '/', variables('v2Vm'), concat(resourceGroup().name,';',parameters('vmName')))]",
+            "location": "[parameters('lampCommon').location]",
+            "name": "[concat(parameters('lampCommon').vaultName, '/', variables('backupFabric'), '/', variables('v2VmContainer'), concat(resourceGroup().name,';',parameters('vmName')), '/', variables('v2Vm'), concat(resourceGroup().name,';',parameters('vmName')))]",
             "properties": {
-                "policyId": "[resourceId('Microsoft.RecoveryServices/vaults/backupPolicies',parameters('moodleCommon').vaultName,parameters('moodleCommon').policyName )]",
+                "policyId": "[resourceId('Microsoft.RecoveryServices/vaults/backupPolicies',parameters('lampCommon').vaultName,parameters('lampCommon').policyName )]",
                 "protectedItemType": "[variables('v2VmType')]",
                 "sourceResourceId": "[resourceId(subscription().subscriptionId,resourceGroup().name,'Microsoft.Compute/virtualMachines',parameters('vmName'))]"
             }

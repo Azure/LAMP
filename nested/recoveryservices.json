@@ -2,9 +2,9 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "moodleCommon": {
+        "lampCommon": {
             "metadata": {
-                "description": "Common Moodle values"
+                "description": "Common LAMP values"
             },
             "type": "object"
         }
@@ -13,8 +13,8 @@
         {
             "type": "Microsoft.RecoveryServices/vaults",
             "apiVersion": "2016-06-01",
-            "location": "[parameters('moodleCommon').location]",
-            "name": "[parameters('moodleCommon').vaultName]",
+            "location": "[parameters('lampCommon').location]",
+            "name": "[parameters('lampCommon').vaultName]",
             "properties": {},
             "sku": {
                 "name": "RS0",
@@ -25,10 +25,10 @@
             "type": "Microsoft.RecoveryServices/vaults/backupPolicies",
             "apiVersion": "2017-07-01",
             "dependsOn": [
-                "[concat('Microsoft.RecoveryServices/vaults/', parameters('moodleCommon').vaultName)]"
+                "[concat('Microsoft.RecoveryServices/vaults/', parameters('lampCommon').vaultName)]"
             ],
-            "location": "[parameters('moodleCommon').location]",
-            "name": "[concat(parameters('moodleCommon').vaultName, '/', parameters('moodleCommon').policyName)]",
+            "location": "[parameters('lampCommon').location]",
+            "name": "[concat(parameters('lampCommon').vaultName, '/', parameters('lampCommon').policyName)]",
             "properties": {
                 "backupManagementType": "AzureIaasVM",
                 "retentionPolicy": {

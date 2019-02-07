@@ -2,9 +2,9 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "moodleCommon": {
+        "lampCommon": {
             "metadata": {
-                "description": "Common Moodle values"
+                "description": "Common LAMP values"
             },
             "type": "object"
         },
@@ -19,83 +19,59 @@
         {
             "type": "Microsoft.Network/virtualNetworks/subnets",
             "apiVersion": "2017-10-01",
-            "name": "[concat(parameters('vnetName'), '/', parameters('moodleCommon').subnetWeb)]",
-            "location": "[parameters('moodleCommon').location]",
+            "name": "[concat(parameters('vnetName'), '/', parameters('lampCommon').subnetWeb)]",
+            "location": "[parameters('lampCommon').location]",
             "properties": {
-                "addressPrefix": "[parameters('moodleCommon').subnetWebRange]"
+                "addressPrefix": "[parameters('lampCommon').subnetWebRange]"
             }
         },
         {
             "type": "Microsoft.Network/virtualNetworks/subnets",
             "apiVersion": "2017-10-01",
-            "name": "[concat(parameters('vnetName'), '/', parameters('moodleCommon').subnetSan)]",
-            "location": "[parameters('moodleCommon').location]",
+            "name": "[concat(parameters('vnetName'), '/', parameters('lampCommon').subnetSan)]",
+            "location": "[parameters('lampCommon').location]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('moodleCommon').subnetWeb)]"
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('lampCommon').subnetWeb)]"
             ],
             "properties": {
-                "addressPrefix": "[parameters('moodleCommon').subnetSanRange]"
+                "addressPrefix": "[parameters('lampCommon').subnetSanRange]"
             }
         },
         {
             "type": "Microsoft.Network/virtualNetworks/subnets",
             "apiVersion": "2017-10-01",
-            "name": "[concat(parameters('vnetName'), '/', parameters('moodleCommon').subnetRedis)]",
-            "location": "[parameters('moodleCommon').location]",
+            "name": "[concat(parameters('vnetName'), '/', parameters('lampCommon').subnetRedis)]",
+            "location": "[parameters('lampCommon').location]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('moodleCommon').subnetSan)]"
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('lampCommon').subnetSan)]"
             ],
             "properties": {
-                "addressPrefix": "[parameters('moodleCommon').subnetRedisRange]"
+                "addressPrefix": "[parameters('lampCommon').subnetRedisRange]"
+            }
+        },
+        {
+            "condition": "[parameters('lampCommon').vnetGwDeploySwitch]",
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "2017-10-01",
+            "name": "[concat(parameters('vnetName'), '/', parameters('lampCommon').subnetGateway)]",
+            "location": "[parameters('lampCommon').location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('lampCommon').subnetRedis)]"
+            ],
+            "properties": {
+                "addressPrefix": "[parameters('lampCommon').subnetGatewayRange]"
             }
         },
         {
             "type": "Microsoft.Network/virtualNetworks/subnets",
             "apiVersion": "2017-10-01",
-            "name": "[concat(parameters('vnetName'), '/', parameters('moodleCommon').subnetElastic)]",
-            "location": "[parameters('moodleCommon').location]",
+            "name": "[concat(parameters('vnetName'), '/', parameters('lampCommon').subnetAppGw)]",
+            "location": "[parameters('lampCommon').location]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('moodleCommon').subnetRedis)]"
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('lampCommon').subnetGateway)]"
             ],
             "properties": {
-                "addressPrefix": "[parameters('moodleCommon').subnetElasticRange]"
-            }
-        },
-        {
-            "type": "Microsoft.Network/virtualNetworks/subnets",
-            "apiVersion": "2017-10-01",
-            "name": "[concat(parameters('vnetName'), '/', parameters('moodleCommon').subnetTika)]",
-            "location": "[parameters('moodleCommon').location]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('moodleCommon').subnetElastic)]"
-            ],
-            "properties": {
-                "addressPrefix": "[parameters('moodleCommon').subnetTikaRange]"
-            }
-        },
-        {
-            "condition": "[parameters('moodleCommon').vnetGwDeploySwitch]",
-            "type": "Microsoft.Network/virtualNetworks/subnets",
-            "apiVersion": "2017-10-01",
-            "name": "[concat(parameters('vnetName'), '/', parameters('moodleCommon').subnetGateway)]",
-            "location": "[parameters('moodleCommon').location]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('moodleCommon').subnetTika)]"
-            ],
-            "properties": {
-                "addressPrefix": "[parameters('moodleCommon').subnetGatewayRange]"
-            }
-        },
-        {
-            "type": "Microsoft.Network/virtualNetworks/subnets",
-            "apiVersion": "2017-10-01",
-            "name": "[concat(parameters('vnetName'), '/', parameters('moodleCommon').subnetAppGw)]",
-            "location": "[parameters('moodleCommon').location]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('moodleCommon').subnetGateway)]"
-            ],
-            "properties": {
-                "addressPrefix": "[parameters('moodleCommon').subnetAppGwRange]"
+                "addressPrefix": "[parameters('lampCommon').subnetAppGwRange]"
             }
         }
     ],

@@ -2,9 +2,9 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "moodleCommon": {
+        "lampCommon": {
             "metadata": {
-                "description": "Common Moodle values"
+                "description": "Common LAMP values"
             },
             "type": "object"
         },
@@ -19,8 +19,8 @@
         {
             "type": "Microsoft.Cache/Redis",
             "apiVersion": "2016-04-01",
-            "location": "[parameters('moodleCommon').location]",
-            "name": "[parameters('moodleCommon').redisCacheName]",
+            "location": "[parameters('lampCommon').location]",
+            "name": "[parameters('lampCommon').redisCacheName]",
             "properties": {
                 "enableNonSslPort": true,
                 "sku": {
@@ -35,7 +35,7 @@
     "variables": {
         "documentation1": "This sub-template creates a redis cache.  It expects certain values in the 'common' datastructure.",
         "documentation2": " redisCacheName - name of cache",
-        "redisResourceId": "[resourceId('Microsoft.Cache/Redis', parameters('moodleCommon').redisCacheName)]"
+        "redisResourceId": "[resourceId('Microsoft.Cache/Redis', parameters('lampCommon').redisCacheName)]"
     },
     "outputs": {
         "redisKey": {
