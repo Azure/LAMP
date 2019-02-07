@@ -2,9 +2,9 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "moodleCommon": {
+        "lampCommon": {
             "metadata": {
-                "description": "Common Moodle values"
+                "description": "Common LAMP values"
             },
             "type": "object"
         },
@@ -24,14 +24,14 @@
     "resources": [
         {
             "type": "Microsoft.Network/applicationGateways",
-            "name": "[parameters('moodleCommon').appGwName]",
-            "location": "[parameters('moodleCommon').location]",
+            "name": "[parameters('lampCommon').appGwName]",
+            "location": "[parameters('lampCommon').location]",
             "apiVersion": "2018-02-01",
             "properties": {
                 "sku": {
-                    "name": "[parameters('moodleCommon').appGwSkuName]",
-                    "tier": "[parameters('moodleCommon').appGwSkuTier]",
-                    "capacity": "[parameters('moodleCommon').appGwSkuCapacity]"
+                    "name": "[parameters('lampCommon').appGwSkuName]",
+                    "tier": "[parameters('lampCommon').appGwSkuTier]",
+                    "capacity": "[parameters('lampCommon').appGwSkuCapacity]"
                 },
                 "gatewayIPConfigurations": [
                     {
@@ -123,8 +123,8 @@
     ],
     "variables": {
         "documentation1": "This sub-template creates an Azure Application Gateway for SSL offloading. It expects certain values in the 'common' datastructure.",
-        "appGwBePoolName": "[parameters('moodleCommon').appGwBePoolName]",
-        "appGwPublicIPAddressID": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('moodleCommon').appGwPipName)]",
-        "appGwID": "[resourceId('Microsoft.Network/applicationGateways', parameters('moodleCommon').appGwName)]"
+        "appGwBePoolName": "[parameters('lampCommon').appGwBePoolName]",
+        "appGwPublicIPAddressID": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('lampCommon').appGwPipName)]",
+        "appGwID": "[resourceId('Microsoft.Network/applicationGateways', parameters('lampCommon').appGwName)]"
     }
 }

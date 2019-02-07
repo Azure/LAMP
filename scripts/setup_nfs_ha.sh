@@ -141,7 +141,7 @@ function setup_corosync_and_pacemaker_for_nfs
     local drbd_resource_name=$3     # E.g., azmdlr0
     local drbd_device_path=$4       # E.g., /dev/drbd0
     local drbd_mount_point=$5       # E.g., /drbd
-    local nfs_export_path=$6        # E.g., /drbd/moodle
+    local nfs_export_path=$6        # E.g., /drbd/lamp
     local nfs_client_spec=$7        # E.g., * or 10.11.22.0/24
 
     mv /etc/corosync/corosync.conf /etc/corosync/corosync.conf.orig || true
