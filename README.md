@@ -12,10 +12,6 @@ The following button will allow you to specify various configurations for your L
 
 [![Deploy to Azure Fully Configurable](http://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FLAMP%2Fmaster%2Fazuredeploy.json)  [![Visualize](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/visualizebutton.png)](http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FLAMP%2Fmaster%2Fazuredeploy.json)
 
-### Note on SSH keys
-
-All of the deployment options require you to provide a valid SSH protocol 2 (SSH-2) RSA public-private key pair, with a minimum length of 2048 bits. Other key formats such as ED25519 and ECDSA are not supported. If you are unfamiliar with SSH then you should read this [article](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/mac-create-ssh-keys) which will explain how to generate a key using the Windows Subsystem for Linux, or a Mac or Linux laptop (it's easy and takes only a few minutes). If you are new to SSH, remember SSH is a key pair-based solution. What this means is that you have a public key and a private key, and the one you will be using to deploy your template is the public key.
-
 ## Predefined deployment options
 
 Below are a list of pre-defined/restricted deployment options based on typical deployment scenarios (i.e. dev/test, production etc.) All configurations are fixed and you just need to pass your SSH public key to the template for logging in to the deployed VMs. Please note that the actual cost will be bigger with potentially autoscaled VMs, backups and network cost.
@@ -161,37 +157,6 @@ At this point, your app is setup to use in the LAMP cluster. If you'd like to in
 Once you completed the steps above and you can see your WordPress website running in the browser, please follow the instructions here to complete configuring a database and finishing a [WordPress install](https://codex.wordpress.org/Installing_WordPress#Famous_5-Minute_Installation).
 
 If you chose `true` for the `htmlLocalCopy` switch, WordPress will be running from a read-only directory, so the installer won't be able to create a `wp-config.php` file for you. However, the installer will provide you with the full content of the required config file. On the controller VM, copy that content into the file `/azlamp/html/wpsitename.mydomain.com/wp-config.php`. You then need to trigger a replication of the data, by running the script `/usr/local/bin/update_last_modified_time.azlamp.sh` again from the controller VM, as root. Data will be replicated in around one minute.
-
-### SSH Access to other VMs in the cluster
-
-By default, only the Controller VM has port 22 open to accept connections from external clients. The LAMP cluster is designed to be fully automated and self-healing, and all of the webservers' logs are sent to the Controller VM.
-
-In the rare case you need to connect to another VM inside the cluster (e.g. one of the web servers in the VMSS cluster, or a GlusterFS node), you can use the controller VM as jumpbox, and connect using SSH agent forwarding.
-
-First, identify the private IP of the VM you want to connect to inside the cluster. By default, VMs are in the `172.31.0.0/16` address space (configurable with the `vNetAddressSpace` property), and you can see the list of VMs connected to a Virtual Network by looking at the VNet on the Azure Portal.
-
-The next step is to enable SSH agent forwarding **on your laptop**. On Linux, macOS and on Windows 10 using the Windows Subsystem for Linux, assuming your SSH private key is in `~/.ssh/id_rsa`, first add the private key to your SSH agent with:
-
-```sh
-# On your laptop:
-ssh-add ~/.ssh/id_rsa
-# If the private key has a password, you'll be asked to type it
-```
-
-Connect to the public IP or DNS name of the controller VM, making sure to specify the `-A` switch to enable forwarding of your SSH agent:
-
-```sh
-# On your laptop:
-ssh -A user@ip-or-dns
-```
-
-Once you're connected via SSH to the controller, you can jump to other nodes connecting via SSH to their private IPs. For example:
-
-```sh
-# From the controller (connected via SSH)
-# "private-ip" is something like 172.31.0.5
-ssh private-ip
-```
 
 ## Code of Conduct
 
