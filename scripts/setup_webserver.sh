@@ -186,7 +186,7 @@ EOF
   # Redis for sessions
   if [ "$redisDeploySwitch" = "true" ]; then
     sed -i "s/session.save_handler.*/session.save_handler = redis/" $PhpIni
-    sed -i "s/;session.save_path.*/session.save_path = \"tcp://$redisDns:6379?auth=$redisAuth\"/" $PhpIni
+    sed -i "s/;session.save_path.*/session.save_path = \"tcp:\/\/$redisDns:6379?auth=$redisAuth\"/" $PhpIni
   fi
     
   # Remove the default nginx site
