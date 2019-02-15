@@ -31,6 +31,7 @@ function get_setup_params_from_configs_json
     export dbadminpass=$(echo $json | jq -r .dbServerProfile.adminPassword)
     export storageAccountName=$(echo $json | jq -r .lampProfile.storageAccountName)
     export storageAccountKey=$(echo $json | jq -r .lampProfile.storageAccountKey)
+    export redisDeploySwitch=$(echo $json | jq -r .lampProfile.redisDeploySwitch)
     export redisDns=$(echo $json | jq -r .lampProfile.redisDns)
     export redisAuth=$(echo $json | jq -r .lampProfile.redisKey)
     export dbServerType=$(echo $json | jq -r .dbServerProfile.type)

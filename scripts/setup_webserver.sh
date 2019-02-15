@@ -28,18 +28,21 @@ lamp_on_azure_configs_json_path=${1}
 
 get_setup_params_from_configs_json $lamp_on_azure_configs_json_path || exit 99
 
-echo $glusterNode    >> /tmp/vars.txt
-echo $glusterVolume  >> /tmp/vars.txt
-echo $siteFQDN >> /tmp/vars.txt
-echo $httpsTermination >> /tmp/vars.txt
-echo $syslogServer >> /tmp/vars.txt
-echo $dbServerType >> /tmp/vars.txt
-echo $fileServerType >> /tmp/vars.txt
-echo $storageAccountName >> /tmp/vars.txt
-echo $storageAccountKey >> /tmp/vars.txt
-echo $nfsVmName >> /tmp/vars.txt
-echo $nfsByoIpExportPath >> /tmp/vars.txt
+echo $glusterNode         >> /tmp/vars.txt
+echo $glusterVolume       >> /tmp/vars.txt
+echo $siteFQDN            >> /tmp/vars.txt
+echo $httpsTermination    >> /tmp/vars.txt
+echo $syslogServer        >> /tmp/vars.txt
+echo $dbServerType        >> /tmp/vars.txt
+echo $fileServerType      >> /tmp/vars.txt
+echo $storageAccountName  >> /tmp/vars.txt
+echo $storageAccountKey   >> /tmp/vars.txt
+echo $nfsVmName           >> /tmp/vars.txt
+echo $nfsByoIpExportPath  >> /tmp/vars.txt
 echo $htmlLocalCopySwitch >> /tmp/vars.txt
+echo $redisDeploySwitch   >> /tmp/vars.txt
+echo $redisDns            >> /tmp/vars.txt
+echo $redisAuth           >> /tmp/vars.txt
 
 check_fileServerType_param $fileServerType
 
@@ -180,6 +183,11 @@ EOF
   sed -i "s/;opcache.enable.*/opcache.enable = 1/" $PhpIni
   sed -i "s/;opcache.memory_consumption.*/opcache.memory_consumption = 256/" $PhpIni
   sed -i "s/;opcache.max_accelerated_files.*/opcache.max_accelerated_files = 8000/" $PhpIni
+  # Redis for sessions
+  if [ "$redisDeploySwitch" = "true" ]; then
+    sed -i "s/session.save_handler.*/session.save_handler = redis/" $PhpIni
+    sed -i "s/;session.save_path.*/session.save_path = \"tcp:\/\/$redisDns:6379?auth=$redisAuth\"/" $PhpIni
+  fi
     
   # Remove the default nginx site
   rm -f /etc/nginx/sites-enabled/default
