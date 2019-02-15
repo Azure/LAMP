@@ -40,6 +40,7 @@
             "lampProfile": {
                 "storageAccountName": "[parameters('lampCommon').storageAccountName]",
                 "storageAccountKey": "[parameters('storageAccountKey')]",
+                "redisDeploySwitch": "[parameters('lampCommon').redisDeploySwitch]",
                 "redisDns": "[parameters('lampCommon').redisDns]",
                 "redisKey": "[parameters('redisKey')]",
                 "syslogServer": "[parameters('lampCommon').ctlrVmName]",
