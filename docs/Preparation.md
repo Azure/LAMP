@@ -57,7 +57,7 @@ The LAMP Azure Resource Manager template is hosted on GitHub. We'll
 checkout the template into our workspace.
 
 ```sh
-git clone git@github.com:Azure/LAMP.git $LAMP_AZURE_WORKSPACE/arm_template
+git clone https://github.com/Azure/LAMP.git $LAMP_AZURE_WORKSPACE/arm_template
 ```
 
 ## Validation
