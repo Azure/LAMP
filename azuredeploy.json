@@ -1,5 +1,5 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "_artifactsLocation": {
@@ -503,7 +503,7 @@
     "resources": [
         {
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2017-05-10",
+            "apiVersion": "latest",
             "name": "pid-e9147f02-a219-433d-8d7a-e3f2c14abd09",
             "properties": {
                 "mode": "Incremental",
@@ -516,7 +516,7 @@
         },
         {
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2017-05-10",
+            "apiVersion": "latest",
             "name": "networkTemplate",
             "properties": {
                 "mode": "Incremental",
@@ -532,7 +532,7 @@
         },
         {
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2017-05-10",
+            "apiVersion": "latest",
             "name": "storageAccountTemplate",
             "properties": {
                 "mode": "Incremental",
@@ -548,7 +548,7 @@
         },
         {
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2017-05-10",
+            "apiVersion": "latest",
             "dependsOn": [
                 "Microsoft.Resources/deployments/networkTemplate"
             ],
@@ -574,7 +574,7 @@
         {
             "condition": "[parameters('azureBackupSwitch')]",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2017-05-10",
+            "apiVersion": "latest",
             "name": "recoveryTemplate",
             "properties": {
                 "mode": "Incremental",
@@ -591,7 +591,7 @@
         {
             "condition": "[parameters('redisDeploySwitch')]",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2017-05-10",
+            "apiVersion": "latest",
             "name": "redisTemplate",
             "dependsOn": [
                 "Microsoft.Resources/deployments/networkTemplate"
@@ -614,7 +614,7 @@
         {
             "condition": "[equals(parameters('fileServerType'),'gluster')]",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2017-05-10",
+            "apiVersion": "latest",
             "dependsOn": [
                 "Microsoft.Resources/deployments/networkTemplate",
                 "Microsoft.Resources/deployments/recoveryTemplate"
@@ -638,7 +638,7 @@
         {
             "condition": "[equals(parameters('fileServerType'),'nfs-ha')]",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2017-05-10",
+            "apiVersion": "latest",
             "dependsOn": [
                 "Microsoft.Resources/deployments/networkTemplate",
                 "Microsoft.Resources/deployments/recoveryTemplate"
@@ -706,7 +706,7 @@
         },
         {
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2017-05-10",
+            "apiVersion": "latest",
             "dependsOn": [
                 "Microsoft.Resources/deployments/networkTemplate",
                 "Microsoft.Resources/deployments/dbTemplate",
@@ -737,7 +737,7 @@
         },
         {
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2017-05-10",
+            "apiVersion": "latest",
             "dependsOn": [
                 "Microsoft.Resources/deployments/vmSetupParamsTemplate",
                 "Microsoft.Resources/deployments/glusterTemplate",
@@ -772,7 +772,7 @@
         },
         {
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2017-05-10",
+            "apiVersion": "latest",
             "dependsOn": [
                 "Microsoft.Resources/deployments/vmSetupParamsTemplate",
                 "Microsoft.Resources/deployments/controllerTemplate",
