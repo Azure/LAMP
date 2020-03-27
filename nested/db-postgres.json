@@ -24,7 +24,7 @@
     "resources": [
         {
             "type": "Microsoft.DBforPostgreSQL/servers",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "kind": "",
             "location": "[parameters('lampCommon').location]",
             "name": "[parameters('lampCommon').serverName]",
@@ -47,7 +47,7 @@
             },
             "resources": [
                 {
-                    "apiVersion": "latest",
+                    "apiVersion": "2020-01-01",
                     "dependsOn": [
                         "[concat('Microsoft.DBforPostgreSQL/servers/', parameters('lampCommon').serverName)]"
                     ],
@@ -60,7 +60,7 @@
                     "type": "firewallRules"
                 },
                 {
-                    "apiVersion": "latest",
+                    "apiVersion": "2020-01-01",
                     "dependsOn": [
                         "[concat('Microsoft.DBforPostgreSQL/servers/', parameters('lampCommon').serverName)]"
                     ],

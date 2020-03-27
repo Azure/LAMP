@@ -24,7 +24,7 @@
     "resources": [
         {
             "type": "Microsoft.Network/networkInterfaces",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "location": "[parameters('lampCommon').location]",
             "name": "[variables('nicName')]",
             "properties": {
@@ -47,7 +47,7 @@
         },
         {
             "type": "Microsoft.Compute/virtualMachines",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "dependsOn": [
                 "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
             ],
@@ -114,7 +114,7 @@
         {
             "condition": "[parameters('lampCommon').applyScriptsSwitch]",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "dependsOn": [
                 "[concat('Microsoft.Compute/virtualMachines/',variables('vmName'))]"
             ],
@@ -140,7 +140,7 @@
         {
             "condition": "[parameters('lampCommon').azureBackupSwitch]",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "dependsOn": [
                 "[concat('Microsoft.Compute/virtualMachines/',variables('vmName'))]"
             ],

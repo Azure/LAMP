@@ -26,7 +26,7 @@
             "type": "Microsoft.Network/applicationGateways",
             "name": "[parameters('lampCommon').appGwName]",
             "location": "[parameters('lampCommon').location]",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "properties": {
                 "sku": {
                     "name": "[parameters('lampCommon').appGwSkuName]",
