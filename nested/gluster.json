@@ -18,7 +18,7 @@
     "resources": [
         {
             "type": "Microsoft.Compute/availabilitySets",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "location": "[parameters('lampCommon').location]",
             "name": "[parameters('lampCommon').gfsAvailabilitySetName]",
             "properties": {
@@ -34,7 +34,7 @@
         },
         {
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "copy": {
                 "count": "[parameters('lampCommon').fileServerVmCount]",
                 "name": "vmloop"
