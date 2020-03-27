@@ -1,5 +1,5 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "_artifactsLocation": {
@@ -26,7 +26,7 @@
     "resources": [
         {
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2017-05-10",
+            "apiVersion": "latest",
             "name": "mainTemplate",
             "properties": {
                 "mode": "Incremental",
@@ -59,7 +59,7 @@
         "documentation03": "   - fileServerType: nfs",
         "documentation04": "   - autoscaleVmSku: Standard_DS1_v2",
         "documentation05": "   - fileServerDiskCount: 2",
-        "documentation06": "   - dbServerType: mssql",
+        "documentation06": "   - dbServerType: mysql",
         "documentation07": "   - redisDeploySwitch: false"
     }
 }
