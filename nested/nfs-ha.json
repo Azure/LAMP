@@ -129,7 +129,7 @@
     "resources": [
         {
             "type": "Microsoft.Compute/availabilitySets",
-            "apiVersion": "2020-01-01",
+            "apiVersion": "2019-07-01",
             "location": "[parameters('location')]",
             "name": "[variables('availSetName')]",
             "properties": {
@@ -148,7 +148,7 @@
             "sku": {
                 "name": "Basic"
             },
-            "apiVersion": "2020-01-01",
+            "apiVersion": "2019-11-01",
             "location": "[parameters('location')]",
             "name": "[variables('nfsHaLbName')]",
             "properties": {
@@ -490,7 +490,7 @@
         },
         {
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2020-01-01",
+            "apiVersion": "2019-10-01",
             "copy": {
                 "count": 2,
                 "name": "nfs-ha-vm-loop"
