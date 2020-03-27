@@ -18,7 +18,7 @@
     "resources": [
         {
             "type": "Microsoft.Network/virtualNetworks/subnets",
-            "apiVersion": "2020-01-01",
+            "apiVersion": "2019-11-01",
             "name": "[concat(parameters('vnetName'), '/', parameters('lampCommon').subnetWeb)]",
             "location": "[parameters('lampCommon').location]",
             "properties": {
@@ -27,7 +27,7 @@
         },
         {
             "type": "Microsoft.Network/virtualNetworks/subnets",
-            "apiVersion": "2020-01-01",
+            "apiVersion": "2019-11-01",
             "name": "[concat(parameters('vnetName'), '/', parameters('lampCommon').subnetSan)]",
             "location": "[parameters('lampCommon').location]",
             "dependsOn": [
@@ -39,7 +39,7 @@
         },
         {
             "type": "Microsoft.Network/virtualNetworks/subnets",
-            "apiVersion": "2020-01-01",
+            "apiVersion": "2019-11-01",
             "name": "[concat(parameters('vnetName'), '/', parameters('lampCommon').subnetRedis)]",
             "location": "[parameters('lampCommon').location]",
             "dependsOn": [
@@ -52,7 +52,7 @@
         {
             "condition": "[parameters('lampCommon').vnetGwDeploySwitch]",
             "type": "Microsoft.Network/virtualNetworks/subnets",
-            "apiVersion": "2020-01-01",
+            "apiVersion": "2019-11-01",
             "name": "[concat(parameters('vnetName'), '/', parameters('lampCommon').subnetGateway)]",
             "location": "[parameters('lampCommon').location]",
             "dependsOn": [
@@ -64,7 +64,7 @@
         },
         {
             "type": "Microsoft.Network/virtualNetworks/subnets",
-            "apiVersion": "2020-01-01",
+            "apiVersion": "2019-11-01",
             "name": "[concat(parameters('vnetName'), '/', parameters('lampCommon').subnetAppGw)]",
             "location": "[parameters('lampCommon').location]",
             "dependsOn": [

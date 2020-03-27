@@ -12,7 +12,7 @@
     "resources": [
         {
             "type": "Microsoft.RecoveryServices/vaults",
-            "apiVersion": "2020-01-01",
+            "apiVersion": "2016-06-01",
             "location": "[parameters('lampCommon').location]",
             "name": "[parameters('lampCommon').vaultName]",
             "properties": {},
@@ -23,7 +23,7 @@
         },
         {
             "type": "Microsoft.RecoveryServices/vaults/backupPolicies",
-            "apiVersion": "2020-01-01",
+            "apiVersion": "2016-12-01",
             "dependsOn": [
                 "[concat('Microsoft.RecoveryServices/vaults/', parameters('lampCommon').vaultName)]"
             ],
