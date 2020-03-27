@@ -928,7 +928,7 @@
                 "offer": "UbuntuServer",
                 "publisher": "Canonical",
                 "sku": "16.04-LTS",
-                "version": "2019-10-01"
+                "version": "latest"
             },
             "policyName": "[concat('policy-',variables('resourceprefix'))]",
             "postgresVersion": "[parameters('postgresVersion')]",
