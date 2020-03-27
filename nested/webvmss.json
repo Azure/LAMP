@@ -1,5 +1,5 @@
 {
-    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "lampCommon": {
@@ -24,7 +24,7 @@
     "resources": [
         {
             "type": "Microsoft.Storage/storageAccounts",
-            "apiVersion": "2017-06-01",
+            "apiVersion": "latest",
             "location": "[parameters('lampCommon').location]",
             "name": "[parameters('lampCommon').vmssdStorageAccounttName]",
             "kind": "Storage",
@@ -34,7 +34,7 @@
         },
         {
             "type": "Microsoft.Compute/virtualMachineScaleSets",
-            "apiVersion": "2017-03-30",
+            "apiVersion": "latest",
             "dependsOn": [
                 "[concat('Microsoft.Storage/storageAccounts/', parameters('lampCommon').vmssdStorageAccounttName)]"
             ],
@@ -130,7 +130,7 @@
         },
         {
             "type": "Microsoft.Insights/autoscaleSettings",
-            "apiVersion": "2015-04-01",
+            "apiVersion": "latest",
             "dependsOn": [
                 "[concat('Microsoft.Compute/virtualMachineScaleSets/', parameters('lampCommon').vmssName)]"
             ],
