@@ -176,7 +176,7 @@
                 "description": "MySql/Postgresql vCores. For Basic tier, only 1 & 2 are allowed. For GeneralPurpose tier, 2, 4, 8, 16, 32 are allowed. For MemoryOptimized, 2, 4, 8, 16 are allowed."
             },
             "type": "int"
-        },
+        }, 
         "mysqlPgresStgSizeGB": {
             "defaultValue": 125,
             "minValue": 5,
@@ -221,7 +221,7 @@
             },
             "type": "string"
         },
-        "postgresVersion": {
+       "postgresVersion": {
             "allowedValues": [
                 "9.5",
                 "9.6",
