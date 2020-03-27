@@ -18,7 +18,7 @@
     "resources": [
         {
             "type": "Microsoft.Cache/Redis",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "location": "[parameters('lampCommon').location]",
             "name": "[parameters('lampCommon').redisCacheName]",
             "properties": {

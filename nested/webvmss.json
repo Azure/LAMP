@@ -24,7 +24,7 @@
     "resources": [
         {
             "type": "Microsoft.Storage/storageAccounts",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "location": "[parameters('lampCommon').location]",
             "name": "[parameters('lampCommon').vmssdStorageAccounttName]",
             "kind": "Storage",
@@ -34,7 +34,7 @@
         },
         {
             "type": "Microsoft.Compute/virtualMachineScaleSets",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "dependsOn": [
                 "[concat('Microsoft.Storage/storageAccounts/', parameters('lampCommon').vmssdStorageAccounttName)]"
             ],
@@ -130,7 +130,7 @@
         },
         {
             "type": "Microsoft.Insights/autoscaleSettings",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "dependsOn": [
                 "[concat('Microsoft.Compute/virtualMachineScaleSets/', parameters('lampCommon').vmssName)]"
             ],

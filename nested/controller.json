@@ -30,7 +30,7 @@
     "resources": [
         {
             "type": "Microsoft.Network/networkSecurityGroups",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "location": "[parameters('lampCommon').location]",
             "name": "[parameters('lampCommon').ctlrNsgName]",
             "properties": {
@@ -69,7 +69,7 @@
         },
         {
             "type": "Microsoft.Network/networkInterfaces",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "dependsOn": [
                 "[concat('Microsoft.Network/networkSecurityGroups/', parameters('lampCommon').ctlrNsgName)]"
             ],
@@ -101,7 +101,7 @@
         },
         {
             "type": "Microsoft.Compute/virtualMachines",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "dependsOn": [
                 "[concat('Microsoft.Network/networkInterfaces/', parameters('lampCommon').ctlrNicName)]"
             ],
@@ -154,7 +154,7 @@
         {
             "condition": "[parameters('lampCommon').applyScriptsSwitch]",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "dependsOn": [
                 "[concat('Microsoft.Compute/virtualMachines/', parameters('lampCommon').ctlrVmName)]"
             ],
@@ -174,7 +174,7 @@
         {
             "condition": "[parameters('lampCommon').azureBackupSwitch]",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "dependsOn": [
                 "[concat('Microsoft.Compute/virtualMachines/',parameters('lampCommon').ctlrVmName)]"
             ],
