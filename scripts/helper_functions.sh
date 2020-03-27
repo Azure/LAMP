@@ -425,8 +425,12 @@ server {
         ssl_certificate_key ${certsDir}/nginx.key;
 
         # Log to syslog
-        error_log syslog:server=localhost,facility=local1,severity=error,tag=lamp;
-        access_log syslog:server=localhost,facility=local1,severity=notice,tag=lamp combined;
+        # error_log syslog:server=localhost,facility=local1,severity=error,tag=lamp;
+        # access_log syslog:server=localhost,facility=local1,severity=notice,tag=lamp combined;
+		
+		# Server Logs
+		access_log /var/log/nginx/access.log;
+        error_log /var/log/nginx/error.log;
 
         root ${htmlRootDir};
         location ~* \.php$ {
@@ -452,8 +456,12 @@ server {
         server_name ${siteFQDN};
 
         # Log to syslog
-        error_log syslog:server=localhost,facility=local1,severity=error,tag=lamp;
-        access_log syslog:server=localhost,facility=local1,severity=notice,tag=lamp combined;
+        # error_log syslog:server=localhost,facility=local1,severity=error,tag=lamp;
+        # access_log syslog:server=localhost,facility=local1,severity=notice,tag=lamp combined;
+		
+		# Server Logs
+		access_log /var/log/nginx/access.log;
+        error_log /var/log/nginx/error.log;
  
         root ${htmlRootDir};
         location ~* \.php$ {
@@ -571,8 +579,12 @@ server {
         ssl_certificate_key ${certsDir}/nginx.key;
 
         # Log to syslog
-        error_log syslog:server=localhost,facility=local1,severity=error,tag=lamp;
-        access_log syslog:server=localhost,facility=local1,severity=notice,tag=lamp combined;
+        # error_log syslog:server=localhost,facility=local1,severity=error,tag=lamp;
+        # access_log syslog:server=localhost,facility=local1,severity=notice,tag=lamp combined;
+		
+		# Server Logs
+		access_log /var/log/nginx/access.log;
+        error_log /var/log/nginx/error.log;
 
         root ${htmlRootDir};
         location ~* \.php$ {
@@ -598,8 +610,12 @@ server {
         server_name ${siteFQDN};
 
         # Log to syslog
-        error_log syslog:server=localhost,facility=local1,severity=error,tag=lamp;
-        access_log syslog:server=localhost,facility=local1,severity=notice,tag=lamp combined;
+        # error_log syslog:server=localhost,facility=local1,severity=error,tag=lamp;
+        # access_log syslog:server=localhost,facility=local1,severity=notice,tag=lamp combined;
+		
+		# Server Logs
+		access_log /var/log/nginx/access.log;
+        error_log /var/log/nginx/error.log;
  
         root ${htmlRootDir};
         location ~* \.php$ {
