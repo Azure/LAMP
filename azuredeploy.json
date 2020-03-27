@@ -507,7 +507,7 @@
     "resources": [
         {
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "name": "pid-e9147f02-a219-433d-8d7a-e3f2c14abd09",
             "properties": {
                 "mode": "Incremental",
@@ -520,7 +520,7 @@
         },
         {
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "name": "networkTemplate",
             "properties": {
                 "mode": "Incremental",
@@ -536,7 +536,7 @@
         },
         {
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "name": "storageAccountTemplate",
             "properties": {
                 "mode": "Incremental",
@@ -552,7 +552,7 @@
         },
         {
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "dependsOn": [
                 "Microsoft.Resources/deployments/networkTemplate"
             ],
@@ -578,7 +578,7 @@
         {
             "condition": "[parameters('azureBackupSwitch')]",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "name": "recoveryTemplate",
             "properties": {
                 "mode": "Incremental",
@@ -595,7 +595,7 @@
         {
             "condition": "[parameters('redisDeploySwitch')]",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "name": "redisTemplate",
             "dependsOn": [
                 "Microsoft.Resources/deployments/networkTemplate"
@@ -618,7 +618,7 @@
         {
             "condition": "[equals(parameters('fileServerType'),'gluster')]",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "dependsOn": [
                 "Microsoft.Resources/deployments/networkTemplate",
                 "Microsoft.Resources/deployments/recoveryTemplate"
@@ -642,7 +642,7 @@
         {
             "condition": "[equals(parameters('fileServerType'),'nfs-ha')]",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "dependsOn": [
                 "Microsoft.Resources/deployments/networkTemplate",
                 "Microsoft.Resources/deployments/recoveryTemplate"
@@ -710,7 +710,7 @@
         },
         {
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "dependsOn": [
                 "Microsoft.Resources/deployments/networkTemplate",
                 "Microsoft.Resources/deployments/dbTemplate",
@@ -741,7 +741,7 @@
         },
         {
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "dependsOn": [
                 "Microsoft.Resources/deployments/vmSetupParamsTemplate",
                 "Microsoft.Resources/deployments/glusterTemplate",
@@ -776,7 +776,7 @@
         },
         {
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "dependsOn": [
                 "Microsoft.Resources/deployments/vmSetupParamsTemplate",
                 "Microsoft.Resources/deployments/controllerTemplate",
@@ -928,7 +928,7 @@
                 "offer": "UbuntuServer",
                 "publisher": "Canonical",
                 "sku": "16.04-LTS",
-                "version": "latest"
+                "version": "2020-01-01"
             },
             "policyName": "[concat('policy-',variables('resourceprefix'))]",
             "postgresVersion": "[parameters('postgresVersion')]",

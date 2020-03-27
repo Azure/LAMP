@@ -13,7 +13,7 @@
         {
             "condition": "[equals(parameters('lampCommon').customVnetId, '')]",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "name": "vnetTemplate",
             "properties": {
                 "mode": "Incremental",
@@ -28,7 +28,7 @@
             }
         },
         {
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "condition": "[parameters('lampCommon').ddosSwitch]",
             "dependsOn": [
                 "Microsoft.Resources/deployments/vnetTemplate"
@@ -57,7 +57,7 @@
         },
         {
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "dependsOn": [
                 "Microsoft.Resources/deployments/vnetTemplate",
                 "Microsoft.Resources/deployments/ddosTemplate"
@@ -83,7 +83,7 @@
         {
             "condition": "[parameters('lampCommon').vnetGwDeploySwitch]",
             "type": "Microsoft.Network/publicIPAddresses",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "location": "[parameters('lampCommon').location]",
             "name": "[parameters('lampCommon').gatewayPublicIPName]",
             "properties": {
@@ -96,7 +96,7 @@
         {
             "condition": "[parameters('lampCommon').vnetGwDeploySwitch]",
             "type": "Microsoft.Network/virtualNetworkGateways",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/publicIPAddresses', parameters('lampCommon').gatewayPublicIPName)]",
                 "Microsoft.Resources/deployments/subnetTemplate"
@@ -135,7 +135,7 @@
             "sku": {
                 "name": "[parameters('lampCommon').lbSku]"
             },
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "location": "[parameters('lampCommon').location]",
             "name": "[parameters('lampCommon').lbPipName]",
             "properties": {
@@ -151,7 +151,7 @@
         {
             "condition": "[equals(parameters('lampCommon').httpsTermination, 'AppGw')]",
             "type": "Microsoft.Network/publicIPAddresses",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "location": "[parameters('lampCommon').location]",
             "name": "[parameters('lampCommon').appGwPipName]",
             "properties": {
@@ -166,7 +166,7 @@
         },
         {
             "type": "Microsoft.Network/publicIPAddresses",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "location": "[parameters('lampCommon').location]",
             "name": "[parameters('lampCommon').ctlrPipName]",
             "properties": {
@@ -185,7 +185,7 @@
             "sku": {
                 "name": "[parameters('lampCommon').lbSku]"
             },
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "dependsOn": [
                 "[concat('Microsoft.Network/publicIPAddresses/',parameters('lampCommon').lbPipName)]"
             ],
@@ -272,7 +272,7 @@
         {
             "condition": "[equals(parameters('lampCommon').httpsTermination, 'AppGw')]",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "latest",
+            "apiVersion": "2020-01-01",
             "dependsOn": [
                 "Microsoft.Resources/deployments/subnetTemplate",
                 "[concat('Microsoft.Network/publicIPAddresses/',parameters('lampCommon').lbPipName)]"
