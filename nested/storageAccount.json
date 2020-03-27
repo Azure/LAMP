@@ -12,7 +12,7 @@
     "resources": [
         {
             "type": "Microsoft.Storage/storageAccounts",
-            "apiVersion": "2017-12-01",
+            "apiVersion": "2019-06-01",
             "location": "[parameters('lampCommon').location]",
             "name": "[parameters('lampCommon').storageAccountName]",
             "kind": "Storage",
