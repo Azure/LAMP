@@ -1,5 +1,5 @@
 {
-    "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "lampCommon": {
@@ -24,7 +24,7 @@
     "resources": [
         {
             "type": "Microsoft.DBforPostgreSQL/servers",
-            "apiVersion": "2017-12-01",
+            "apiVersion": "latest",
             "kind": "",
             "location": "[parameters('lampCommon').location]",
             "name": "[parameters('lampCommon').serverName]",
@@ -47,7 +47,7 @@
             },
             "resources": [
                 {
-                    "apiVersion": "2017-12-01",
+                    "apiVersion": "latest",
                     "dependsOn": [
                         "[concat('Microsoft.DBforPostgreSQL/servers/', parameters('lampCommon').serverName)]"
                     ],
@@ -60,7 +60,7 @@
                     "type": "firewallRules"
                 },
                 {
-                    "apiVersion": "2017-12-01",
+                    "apiVersion": "latest",
                     "dependsOn": [
                         "[concat('Microsoft.DBforPostgreSQL/servers/', parameters('lampCommon').serverName)]"
                     ],

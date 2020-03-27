@@ -1,5 +1,5 @@
 {
-    "$schema": "http://schema.management.azure.com/schemas/2015-01-01-preview/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "lampCommon": {
@@ -24,7 +24,7 @@
     "resources": [
         {
             "type": "Microsoft.Sql/servers",
-            "apiVersion": "2015-05-01-preview",
+            "apiVersion": "latest",
             "kind": "",
             "location": "[parameters('lampCommon').location]",
             "name": "[parameters('lampCommon').serverName]",
@@ -35,7 +35,7 @@
             },
             "resources": [
                 {
-                    "apiVersion": "2014-04-01",
+                    "apiVersion": "latest",
                     "dependsOn": [
                         "[concat('Microsoft.Sql/servers/', parameters('lampCommon').serverName)]"
                     ],
@@ -48,7 +48,7 @@
                     "type": "firewallRules"
                 },
                 {
-                    "apiVersion": "2014-04-01",
+                    "apiVersion": "latest",
                     "dependsOn": [
                         "[concat('Microsoft.Sql/servers/', parameters('lampCommon').serverName)]"
                     ],
