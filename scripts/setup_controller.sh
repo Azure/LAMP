@@ -56,6 +56,13 @@ set -ex
 
     check_fileServerType_param $fileServerType
 
+    #Updating php sources
+    sudo chmod 777 /etc/apt/sources.list
+    sudo echo 'deb http://ppa.launchpad.net/ondrej/php/ubuntu xenial main' >> /etc/apt/sources.list
+    sudo echo 'deb-src http://ppa.launchpad.net/ondrej/php/ubuntu xenial main' >> /etc/apt/sources.list
+    suo chmod 644 /etc/apt/sources.list
+    apt-get -y update
+
     # make sure system does automatic updates and fail2ban
     export DEBIAN_FRONTEND=noninteractive
     apt-get -y update
@@ -116,19 +123,19 @@ set -ex
     apt-get install -y --fix-missing python-software-properties unzip
 
     # install the entire stack
-    apt-get -y --force-yes install nginx php-fpm php$phpVersion php-cli php-curl php-zip >> /tmp/apt5.log
+    apt-get -y --force-yes install nginx php$phpVersion-fpm php$phpVersion php$phpVersion-cli php$phpVersion-curl php$phpVersion-zip >> /tmp/apt5.log
 
     # LAMP requirements
     apt-get -y update > /dev/null
-    apt-get install -y --force-yes php-common php-soap php-json php-redis php-bcmath php-gd php-xmlrpc php-intl php-xml php-bz2 php-pear php-mbstring php-dev mcrypt >> /tmp/apt6.log
+    apt-get install -y --force-yes php$phpVersion-common php$phpVersion-soap php$phpVersion-json php$phpVersion-redis php$phpVersion-bcmath php$phpVersion-gd php$phpVersion-xmlrpc php$phpVersion-intl php$phpVersion-xml php$phpVersion-bz2 php$phpVersion-pear php$phpVersion-mbstring php$phpVersion-dev mcrypt >> /tmp/apt6.log
     PhpVer=$(get_php_version)
     if [ $dbServerType = "mysql" ]; then
-        apt-get install -y --force-yes php-mysql
+        apt-get install -y --force-yes php$phpVersion-mysql
     elif [ $dbServerType = "mssql" ]; then
-        apt-get install -y libapache2-mod-php  # Need this because install_php_mssql_driver tries to update apache2-mod-php settings always (which will fail without this)
+        apt-get install -y libapache2-mod-php$phpVersion  # Need this because install_php_mssql_driver tries to update apache2-mod-php settings always (which will fail without this)
         install_php_mssql_driver
     else
-        apt-get install -y --force-yes php-pgsql
+        apt-get install -y --force-yes php$phpVersion-pgsql
     fi
 
     # Set up initial LAMP dirs
