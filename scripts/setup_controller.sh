@@ -60,7 +60,7 @@ set -ex
     sudo chmod 777 /etc/apt/sources.list
     sudo echo 'deb http://ppa.launchpad.net/ondrej/php/ubuntu xenial main' >> /etc/apt/sources.list
     sudo echo 'deb-src http://ppa.launchpad.net/ondrej/php/ubuntu xenial main' >> /etc/apt/sources.list
-    suo chmod 644 /etc/apt/sources.list
+    sudo chmod 644 /etc/apt/sources.list
     apt-get -y update
 
     # make sure system does automatic updates and fail2ban
