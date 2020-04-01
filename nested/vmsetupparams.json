@@ -44,7 +44,8 @@
                 "redisDns": "[parameters('lampCommon').redisDns]",
                 "redisKey": "[parameters('redisKey')]",
                 "syslogServer": "[parameters('lampCommon').ctlrVmName]",
-                "htmlLocalCopySwitch": "[parameters('lampCommon').htmlLocalCopySwitch]"
+                "htmlLocalCopySwitch": "[parameters('lampCommon').htmlLocalCopySwitch]",
+                "phpVersion": "[parameters('lampCommon').phpVersion]"
             },
             "dbServerProfile": {
                 "type": "[parameters('lampCommon').dbServerType]",
