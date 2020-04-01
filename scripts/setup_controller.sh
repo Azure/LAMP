@@ -52,6 +52,7 @@ set -ex
     echo $thumbprintSslCert >> /tmp/vars.txt
     echo $thumbprintCaCert >> /tmp/vars.txt
     echo $nfsByoIpExportPath >> /tmp/vars.txt
+    echo $phpVersion >> /tmp/vars.txt
 
     check_fileServerType_param $fileServerType
 
@@ -115,7 +116,7 @@ set -ex
     apt-get install -y --fix-missing python-software-properties unzip
 
     # install the entire stack
-    apt-get -y --force-yes install nginx php-fpm php php-cli php-curl php-zip >> /tmp/apt5.log
+    apt-get -y --force-yes install nginx php-fpm php$phpVersion php-cli php-curl php-zip >> /tmp/apt5.log
 
     # LAMP requirements
     apt-get -y update > /dev/null
