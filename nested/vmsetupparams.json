@@ -44,8 +44,7 @@
                 "redisDns": "[parameters('lampCommon').redisDns]",
                 "redisKey": "[parameters('redisKey')]",
                 "syslogServer": "[parameters('lampCommon').ctlrVmName]",
-                "htmlLocalCopySwitch": "[parameters('lampCommon').htmlLocalCopySwitch]",
-                "phpVersion": "[parameters('lampCommon').phpVersion]"
+                "htmlLocalCopySwitch": "[parameters('lampCommon').htmlLocalCopySwitch]"
             },
             "dbServerProfile": {
                 "type": "[parameters('lampCommon').dbServerType]",
@@ -65,6 +64,9 @@
                 "nfsByoIpExportPath": "[parameters('lampCommon').nfsByoIpExportPath]",
                 "nfsHaLbIP": "[parameters('lampCommon').nfsHaLbIP]",
                 "nfsHaExportPath": "[parameters('lampCommon').nfsHaExportPath]"
+            },
+            "phpProfile": {
+                "phpVersion": "[parameters('lampCommon').phpVersion]"
             }
         }
     },
