@@ -43,6 +43,11 @@ echo $htmlLocalCopySwitch >> /tmp/vars.txt
 echo $redisDeploySwitch   >> /tmp/vars.txt
 echo $redisDns            >> /tmp/vars.txt
 echo $redisAuth           >> /tmp/vars.txt
+echo $phpVersion          >> /tmp/vars.txt
+
+
+  sudo add-apt-repository ppa:ondrej/php -y
+  sudo apt-get update
 
 check_fileServerType_param $fileServerType
 
@@ -67,7 +72,7 @@ check_fileServerType_param $fileServerType
   fi
 
   # install the base stack
-  apt-get -y install nginx php php-fpm php-cli php-curl php-zip php-pear php-mbstring php-dev mcrypt php-soap php-json php-redis php-bcmath php-gd php-pgsql php-mysql php-xmlrpc php-intl php-xml php-bz2
+  apt-get -y install nginx php$phpVersion php$phpVersion-fpm php$phpVersion-cli php$phpVersion-curl php$phpVersion-zip php-pear php$phpVersion-mbstring php$phpVersion-dev mcrypt php$phpVersion-soap php$phpVersion-json php$phpVersion-redis php$phpVersion-bcmath php$phpVersion-gd php$phpVersion-pgsql php$phpVersion-mysql php$phpVersion-xmlrpc php$phpVersion-intl php$phpVersion-xml php$phpVersion-bz2
 
   # MSSQL
   if [ "$dbServerType" = "mssql" ]; then
