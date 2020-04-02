@@ -61,7 +61,7 @@ set -ex
     sudo echo 'deb http://ppa.launchpad.net/ondrej/php/ubuntu xenial main' >> /etc/apt/sources.list
     sudo echo 'deb-src http://ppa.launchpad.net/ondrej/php/ubuntu xenial main' >> /etc/apt/sources.list
     sudo chmod 644 /etc/apt/sources.list
-    apt-get -y update
+    sudo apt-get update
 
     # make sure system does automatic updates and fail2ban
     export DEBIAN_FRONTEND=noninteractive
