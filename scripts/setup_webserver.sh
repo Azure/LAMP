@@ -147,8 +147,11 @@ http {
 
   set_real_ip_from   127.0.0.1;
   real_ip_header      X-Forwarded-For;
-  ssl_protocols TLSv1 TLSv1.1 TLSv1.2; # Dropping SSLv3, ref: POODLE
-  ssl_prefer_server_ciphers on;
+  #ssl_protocols TLSv1 TLSv1.1 TLSv1.2; # Dropping SSLv3, ref: POODLE
+  #upgrading to 1.2 and droping 1 & 1.1
+  ssl_protocols TLSv1.2;
+  #ssl_prefer_server_ciphers on;
+  ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384;
 
   gzip on;
   gzip_disable "msie6";
