@@ -2,6 +2,10 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "TypeOfTemplate":{
+            "defaultValue":"LAMP ARM TEMPLATE",
+            "type":"string"
+        },
         "_artifactsLocation": {
             "type": "string",
             "metadata": {
@@ -952,7 +956,7 @@
                 "offer": "UbuntuServer",
                 "publisher": "Canonical",
                 "sku": "[parameters('UbuntuVersion')]", 
-                //commented hot coded "16.04-LTS", and given dropdown entry for ubuntu version.
+                
                 "version": "latest"
             },
             "phpVersion": "[parameters('phpVersion')]",
