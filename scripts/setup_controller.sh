@@ -125,6 +125,7 @@ set -ex
     apt-get install -y --fix-missing python-software-properties unzip
 
     # install the entire stack
+    # passing php versions $phpVersion
     apt-get -y --force-yes install nginx php$phpVersion-fpm php$phpVersion php$phpVersion-cli php$phpVersion-curl php$phpVersion-zip >> /tmp/apt5.log
 
     # LAMP requirements
