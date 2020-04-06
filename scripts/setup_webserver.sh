@@ -45,7 +45,7 @@ echo $redisDns            >> /tmp/vars.txt
 echo $redisAuth           >> /tmp/vars.txt
 echo $phpVersion          >> /tmp/vars.txt
 
-
+# downloading and updating php packages from the repository 
   sudo add-apt-repository ppa:ondrej/php -y
   sudo apt-get update
 
@@ -72,6 +72,7 @@ check_fileServerType_param $fileServerType
   fi
 
   # install the base stack
+  # passing php versions $phpVersion
   apt-get -y install nginx php$phpVersion php$phpVersion-fpm php$phpVersion-cli php$phpVersion-curl php$phpVersion-zip php-pear php$phpVersion-mbstring php$phpVersion-dev mcrypt php$phpVersion-soap php$phpVersion-json php$phpVersion-redis php$phpVersion-bcmath php$phpVersion-gd php$phpVersion-pgsql php$phpVersion-mysql php$phpVersion-xmlrpc php$phpVersion-intl php$phpVersion-xml php$phpVersion-bz2
 
   # MSSQL
@@ -148,9 +149,10 @@ http {
   set_real_ip_from   127.0.0.1;
   real_ip_header      X-Forwarded-For;
   #ssl_protocols TLSv1 TLSv1.1 TLSv1.2; # Dropping SSLv3, ref: POODLE
-  #upgrading to 1.2 and droping 1 & 1.1
-  ssl_protocols TLSv1.2;
+  #upgrading to TLSv1.2, TLSv1.3 and droping 1 & 1.1
+  ssl_protocols TLSv1.2 TLSv1.3;
   #ssl_prefer_server_ciphers on;
+  #adding ssl ciphers
   ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384;
 
   gzip on;
