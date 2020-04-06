@@ -2,6 +2,7 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+       
         "_artifactsLocation": {
             "type": "string",
             "metadata": {
@@ -15,6 +16,10 @@
                 "description": "The sasToken required to access _artifactsLocation.  When the template is deployed using the accompanying scripts, a sasToken will be automatically generated."
             },
             "defaultValue": ""
+        },
+         "TypeOfTemplate":{
+            "defaultValue":"LAMP ARM TEMPLATE",
+            "type":"string"
         },
         "applyScriptsSwitch": {
             "defaultValue": true,
