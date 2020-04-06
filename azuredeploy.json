@@ -2,6 +2,10 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "TypeOfTemplate":{
+            "defaultValue":"LAMP ARM TEMPLATE",
+            "type":"string"
+        },
         "_artifactsLocation": {
             "type": "string",
             "metadata": {
@@ -142,6 +146,18 @@
                 "description": "Azure storage type for all VMs' OS disks. With htmlLocalCopySwith true, Premium_LRS (SSD) is strongly recommended, as PHP files will be served from OS disks."
             },
             "type": "string"
+        },
+        "UbuntuVersion": {
+            "defaultValue": "16.04-LTS",
+            "allowedValues":[
+                "16.04-LTS",
+                "18.04-LTS"
+            ],
+            "type": "string",
+            "metadata":{
+                "description": "Select Ubuntu version. By default it will take 16.04-LTS"
+            }
+
         },
         "phpVersion": {
             "allowedValues": [
@@ -939,7 +955,8 @@
             "osType": {
                 "offer": "UbuntuServer",
                 "publisher": "Canonical",
-                "sku": "16.04-LTS",
+                "sku": "[parameters('UbuntuVersion')]", 
+                //commented hot coded "16.04-LTS", and given dropdown entry for ubuntu version.
                 "version": "latest"
             },
             "phpVersion": "[parameters('phpVersion')]",
