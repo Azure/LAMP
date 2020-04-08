@@ -275,7 +275,7 @@
             "apiVersion": "2019-10-01",
             "dependsOn": [
                 "Microsoft.Resources/deployments/subnetTemplate",
-                "[concat('Microsoft.Network/publicIPAddresses/',parameters('lampCommon').lbPipName)]"
+                "[concat('Microsoft.Network/publicIPAddresses/',parameters('lampCommon').appGwPipName)]"
             ],
             "name": "appGwTemplate",
             "properties": {
