@@ -83,7 +83,7 @@
         {
             "condition": "[parameters('lampCommon').vnetGwDeploySwitch]",
             "type": "Microsoft.Network/publicIPAddresses",
-            "apiVersion": "2019-09-01",
+            "apiVersion": "2019-11-01",
             "location": "[parameters('lampCommon').location]",
             "name": "[parameters('lampCommon').gatewayPublicIPName]",
             "properties": {
@@ -135,7 +135,7 @@
             "sku": {
                 "name": "[parameters('lampCommon').lbSku]"
             },
-            "apiVersion": "2019-09-01",
+            "apiVersion": "2019-11-01",
             "location": "[parameters('lampCommon').location]",
             "name": "[parameters('lampCommon').lbPipName]",
             "properties": {
@@ -151,22 +151,22 @@
         {
             "condition": "[equals(parameters('lampCommon').httpsTermination, 'AppGw')]",
             "type": "Microsoft.Network/publicIPAddresses",
-            "apiVersion": "2019-09-01",
+            "apiVersion": "2019-11-01",
             "location": "[parameters('lampCommon').location]",
             "name": "[parameters('lampCommon').appGwPipName]",
+            "sku" : {
+                "name" : "[if(endswith(parameters('lampCommon').appGwSkuName,'v2'),'Standard','Basic')]"
+            },
             "properties": {
                 "dnsSettings": {
                     "domainNameLabel": "[parameters('lampCommon').appGwName]"
                 },
-                "publicIPAllocationMethod": "Dynamic"
-            },
-            "tags": {
-                "displayName": "App Gateway Public IP (must be dynamic)"
+                "publicIPAllocationMethod": "[if(endswith(parameters('lampCommon').appGwSkuName,'v2'),'Static','Dynamic')]"
             }
         },
         {
             "type": "Microsoft.Network/publicIPAddresses",
-            "apiVersion": "2019-09-01",
+            "apiVersion": "2019-11-01",
             "location": "[parameters('lampCommon').location]",
             "name": "[parameters('lampCommon').ctlrPipName]",
             "properties": {
