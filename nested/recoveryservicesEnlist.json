@@ -18,7 +18,7 @@
     "resources": [
         {
             "type": "Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems",
-            "apiVersion": "2016-12-01 ",
+            "apiVersion": "2016-06-01 ",
             "location": "[parameters('lampCommon').location]",
             "name": "[concat(parameters('lampCommon').vaultName, '/', variables('backupFabric'), '/', variables('v2VmContainer'), concat(resourceGroup().name,';',parameters('vmName')), '/', variables('v2Vm'), concat(resourceGroup().name,';',parameters('vmName')))]",
             "properties": {
