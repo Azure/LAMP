@@ -64,6 +64,9 @@
                 "nfsByoIpExportPath": "[parameters('lampCommon').nfsByoIpExportPath]",
                 "nfsHaLbIP": "[parameters('lampCommon').nfsHaLbIP]",
                 "nfsHaExportPath": "[parameters('lampCommon').nfsHaExportPath]"
+            },
+            "phpProfile": {
+                "phpVersion": "[parameters('lampCommon').phpVersion]"
             }
         }
     },
