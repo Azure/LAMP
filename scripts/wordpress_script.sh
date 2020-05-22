@@ -2,7 +2,7 @@
 
 log_path=/home/${3}/var.txt
 home_path=/home/${3}
-vars_path=/home/${3}/wordpress_ansible_playbook/group_vars/all
+vars_path=/home/${3}/wordpress/group_vars/all
 
 echo "Public Ip is : ${1}" >> ${log_path}
 echo "Password is : ${2}" >> ${log_path}
@@ -33,7 +33,6 @@ wordpress_install() {
 cd /home/${1}
 # the below command will download ansible playbook folder form the github repo. 
 # the ansible folder must be in master to download. 
-svn checkout https://github.com/sayosh0512/playbook/trunk/MAT-32-wordpress/wordpress_ansible_playbook
 echo "username is : ${1}" >> ${log_path}
 echo "dbservername is : ${2}" ${log_path}
 echo "dbusername is : ${3}" >> ${log_path}
@@ -52,7 +51,7 @@ sudo sed -i "s~vm_password: password~vm_password: ${6}~" ${vars_path}
 sudo sed -i "s~vm_ip: IP~vm_ip: ${7}~" ${vars_path}
 
 
-ansible-playbook /home/${1}/wordpress_ansible_playbook/playbook.yml -i /etc/ansible/hosts -u ${1}
+ansible-playbook /home/${1}/wordpress/playbook.yml -i /etc/ansible/hosts -u ${1}
 }
 
 sudo sed -i "s~#   StrictHostKeyChecking ask~   StrictHostKeyChecking no~" /etc/ssh/ssh_config 
