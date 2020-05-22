@@ -8,7 +8,7 @@ echo "decoded text : ${decotext}" >> /home/"${1}"/log.txt
 
 clonerepo(){
   cd /home/"${1}"/ 
-  wget https://raw.githubusercontent.com/sayosh0512/LAMP/MAT-32-wordpress/scripts/wordpress_script.sh
+  wget https://raw.githubusercontent.com/ummadisudhakar/LAMP/ansible_playbook_mat32/scripts/wordpress_script.sh
   sudo chown -R "${1}":"${1}" /home/"${1}"/wordpress_script.sh
 }
 clonerepo ${1} >> /home/"${1}"/log.txt
