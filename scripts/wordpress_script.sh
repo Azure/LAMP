@@ -31,8 +31,8 @@ sudo apt-get install -y subversion
 
 wordpress_install() {
 cd /home/${1}
-# the below command will download ansible playbook folder form the github repo. 
-# the ansible folder must be in master to download. 
+svn checkout https://github.com/ummadisudhakar/LAMP/trunk/scripts/ansiblePlaybook/wordpress
+
 echo "username is : ${1}" >> ${log_path}
 echo "dbservername is : ${2}" ${log_path}
 echo "dbusername is : ${3}" >> ${log_path}
