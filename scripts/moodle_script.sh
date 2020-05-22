@@ -1,6 +1,6 @@
 #!/bin/bash
 log_path=/home/${3}/var.txt
-vars_path=/home/${3}/ansible_playbook/group_vars/all
+vars_path=/home/${3}/moodle/group_vars/all
 
 setup_ansible() {
     sudo apt-add-repository ppa:ansible/ansible -y
@@ -17,14 +17,7 @@ install_svn() {
 }
 moodle_install() {
     cd /home/${3}
-    #git clone https://github.com/asift91/ansible_playbook.git
-    
-    # the below command will download ansible playbook folder form the github repo. 
-    # the ansible folder must be in master to download. 
-    #svn checkout https://github.com/ummadisudhakar/LAMP/trunk/moodle_ansible_playbook
-
-    svn checkout https://github.com/asift91/moodle_ansible_playbook/trunk/MAT-32/ansible_playbook
-    #chmod 755 ansible_playbook/
+    svn checkout https://github.com/ummadisudhakar/LAMP/trunk/scripts/ansiblePlaybook/moodle
 
     echo "vm_ip is : ${1}" >>${log_path}
     echo "vm_password is : ${2}" >>${log_path}
@@ -44,7 +37,7 @@ moodle_install() {
     sudo sed -i "s~domain_name: domain~domain_name: ${7}~" ${vars_path}
     sudo sed -i "s~lbip: ip~lbip: ${8}~" ${vars_path}
 
-    ansible-playbook /home/${3}/ansible_playbook/playbook.yml -i /etc/ansible/hosts -u ${3}
+    ansible-playbook /home/${3}/moodle/playbook.yml -i /etc/ansible/hosts -u ${3}
 }
 
 sudo sed -i "s~#   StrictHostKeyChecking ask~   StrictHostKeyChecking no~" /etc/ssh/ssh_config >>${log_path}
