@@ -22,7 +22,7 @@ linking_data_location() {
     echo "linking func"
     sudo mkdir -p ${repli_data}/wp-content/uploads
     sudo ln -s ${repli_data}/wp-content/uploads ${repli_path}/wp-content/uploads
-    sudo chmod 0777 ${repli_data}/wp-content/uploads
+    sudo chmod 0755 ${repli_data}/wp-content/uploads
 }
 update_nginx_configuration() {
     echo "update nginx"
@@ -37,7 +37,7 @@ update_nginx_configuration() {
 create_moodledata(){
     sudo mkdir ${moodledata_path}
     sudo mkdir ${moodledata_path}/moodledata
-    sudo chmod 777 ${moodledata_path}/
+    sudo chmod 755 ${moodledata_path}/
     sudo chown www-data:www-data -R ${moodledata_path}/
 }
 replication() {
