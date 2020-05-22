@@ -1,0 +1,44 @@
+# WordPress database settings
+# Database details are taken input from user
+# Below wordpress values are updated runtime
+wp_db_server_name: wordpress
+wp_db_user: wordpress
+wp_db_password: password
+wp_db_name: wordpress
+
+# Disable All Updates
+# By default automatic updates are enabled, set this value to true to disable all automatic updates
+auto_up_disable: true
+
+# user_name and domain_name values are updated at runtime with user input
+server_hostname: wordpress
+domain_name: domain
+user_name: azusername
+vm_password: password
+vm_ip: IP
+
+# WordPress Latest Version
+#if you want to update wordpress to latest version then update sha1sum value from https://wordpress.org/download/releases/
+wp_version: 5.4.1
+wp_sha1sum: 9800c231828eb5cd76ba0b8aa6c1a74dfca2daff
+
+
+#Define Core Update Level
+#true  = Development, minor, and major updates are all enabled
+#false = Development, minor, and major updates are all disabled
+#minor = Minor updates are enabled, development, and major updates are disabled
+core_update_level: true
+
+
+#defaultpath
+
+default_permission: www-data
+webroot: /var/www/html
+wordpress_url: https://wordpress.org/wordpress
+wordpress_path: /tmp/wordpress
+wp_salt_path: https://api.wordpress.org/secret-key/1.1/salt/
+woocommerce_url: https://raw.githubusercontent.com/asift91/ansiblewp/master/woocommerce.sh
+woocommerce_name: woocommerce.sh
+replication_url: https://raw.githubusercontent.com/asift91/ansiblewp/master/replication.sh
+replication_name: replication.sh
+
