@@ -22,7 +22,7 @@ $CFG->wwwroot   = 'http://{{lbip}}';
 $CFG->dataroot  = '{{moodle_data_par_path}}';
 $CFG->admin     = 'admin';
 
-$CFG->directorypermissions = 0777;
+$CFG->directorypermissions = 0770;
 
 require_once(__DIR__ . '/lib/setup.php');
 
