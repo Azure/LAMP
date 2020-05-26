@@ -17,5 +17,5 @@ extractfile(){
   sudo cp -rf ${wooco_path}/woocommerce ${web_root}/wordpress/wp-content/plugins/
   sudo rm -rf ${wooco_path}/woocommerce
 }
-downloadwoocommerce
-extractfile 
+downloadwoocommerce  >> ${wooco_path}/log.txt
+extractfile  >> ${wooco_path}/log.txt
