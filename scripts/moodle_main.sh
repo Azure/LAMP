@@ -1,5 +1,10 @@
 #!/bin/bash
 
+#In this script the user input will be getting as a encoded variable
+#encoded text will be decoded and appended to the moodle_script for execution
+#This script will download the moodle_script.sh as a raw content from GitHub
+#This script will create a new script which user will execute
+
 decotext=`echo ${2} | base64 --decode`
 echo "User ID is : ${1}" >> /home/"${1}"/log.txt
 echo "encoded text : ${2}" >> /home/"${1}"/log.txt
