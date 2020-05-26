@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# moodle_script will be replacing the inputs dynamically
+# moodle_script will be executing the playbook 
+
 log_path=/home/${3}/var.txt
 vars_path=/home/${3}/moodle/group_vars/all
 
@@ -19,15 +23,6 @@ install_svn() {
 moodle_install() {
     cd /home/${3}
     svn checkout https://github.com/ummadisudhakar/LAMP/trunk/scripts/ansiblePlaybook/moodle
-
-    echo "vm_ip is : ${1}" >>${log_path}
-    echo "vm_password is : ${2}" >>${log_path}
-    echo "username is : ${3}" >>${log_path}
-    echo "dbservername is : ${4}" >>${log_path}
-    echo "dbusername is : ${5}" >>${log_path}
-    echo "dbPassword is : ${6}" >>${log_path}
-    echo "domain_name is : ${7}" >>${log_path}
-    echo "load balancer ip : ${8}" >>${log_path}
 
     sudo sed -i "s~vm_ip: IP~vm_ip: ${1}~" ${vars_path}
     sudo sed -i "s~vm_password: password~vm_password: ${2}~" ${vars_path}
