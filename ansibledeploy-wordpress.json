@@ -35,13 +35,13 @@
                 "description": "SSH Key or password for the Virtual Machine. SSH key is recommended."
             }
         },
-        "WordpressRemoteVMIP": {
+        "WordpressRemoteVMIP(Controller VM)": {
             "type": "string",
             "metadata": {
                 "description": "Provide Controller VM IP to install ansible"
             }
         },
-        "remoteVMPassword": {
+        "remoteVMPassword(Controller VM)": {
             "type": "securestring",
             "metadata": {
                 "description": "Provide Controller VM IP password."
