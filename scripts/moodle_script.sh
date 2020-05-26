@@ -10,6 +10,7 @@ setup_ansible() {
 configure_ansible_inventory() {
     sudo chmod 777 /etc/ansible/hosts
     echo -e "[webservers]\n${1}" >>/etc/ansible/hosts
+    sudo chmod 755 /etc/ansible/hosts
 }
 install_svn() {
     sudo apt-get update -y
