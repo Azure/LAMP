@@ -31,13 +31,13 @@
                 "description": "Provide Load Balancer IP to install ansible"
             }
         },
-        "MoodleRemoteVMIP": {
+        "MoodleRemoteVMIP(ControllerVM)": {
             "type": "string",
             "metadata": {
                 "description": "Provide Controller VM IP to install ansible"
             }
         },
-        "remoteVMPassword": {
+        "remoteVMPassword(ControllerVM)": {
             "type": "securestring",
             "metadata": {
                 "description": "Provide Controller VM IP password."
