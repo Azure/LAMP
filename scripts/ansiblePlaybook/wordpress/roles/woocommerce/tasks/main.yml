@@ -9,6 +9,6 @@
   name: "Download woocommerce script using get_url"
 -
   name: "Run a woocommerce script with arguments (using 'cmd' parameter)"
-  shell: /home/{{user_name | quote }}/{{woocommerce_name}} {{woocommerce_plugin_url | quote }} {{user_name |quote }}
+  shell: /home/{{user_name | quote }}/{{woocommerce_name}} {{woocommerce_plugin_url}} {{user_name |quote }}
   args:
     executable: /bin/bash
