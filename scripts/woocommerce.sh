@@ -4,8 +4,8 @@ wooco_URL: ${1}
 wooco_path=/home/${2}
 web_root=/var/www/html
 
-echo "woocommerce url : ${wooco_URL} " >> wooco_path/log1.txt
-echo "path : /home/${wooco_path}" >> wooco_path/log1.txt
+echo "woocommerce url : ${wooco_URL} " >> ${wooco_path}/log.txt
+echo "path : /home/${wooco_path}" >> ${wooco_path}/log.txt
 
 echo "domain_name ${1}" >>${wooco_path}/log.txt
 echo "user_name ${2}" >>${wooco_path}/log.txt
