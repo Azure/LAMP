@@ -21,7 +21,7 @@ vm_ip: IP
 #if you want to update wordpress to latest version then update sha1sum value from https://wordpress.org/download/releases/
 wp_version: 5.4.1
 wp_sha1sum: 9800c231828eb5cd76ba0b8aa6c1a74dfca2daff
-woocommerce_version: woocommerce.4.0.1.zip
+woocommerce_version: 4.0.1.zip
 
 
 #Define Core Update Level
@@ -38,7 +38,8 @@ webroot: /var/www/html
 wordpress_url: https://wordpress.org/wordpress
 wordpress_path: /tmp/wordpress
 wp_salt_path: https://api.wordpress.org/secret-key/1.1/salt/
-woocommerce_plugin_url: https://downloads.wordpress.org/plugin/woocommerce.4.0.1.zip
+
+woocommerce_plugin_url: https://downloads.wordpress.org/plugin/woocommerce.
 woocommerce_url: https://raw.githubusercontent.com/ummadisudhakar/LAMP/ansible_playbook_mat32/scripts/woocommerce.sh
 woocommerce_name: woocommerce.sh
 replication_url: https://raw.githubusercontent.com/ummadisudhakar/LAMP/ansible_playbook_mat32/scripts/wordpress_replication.sh
