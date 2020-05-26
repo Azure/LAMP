@@ -1,10 +1,11 @@
 #!/bin/bash
 
 webroot=/var/www/html
-repli_path=/azlamp/html/${1}
-repli_certs=/azlamp/certs/${1}
-repli_data=/azlamp/data/${1}
-repli_bin=/azlamp/bin
+replica_path=/azlamp/html/${1}
+replica_certs=/azlamp/certs/${1}
+replica_data=/azlamp/data/${1}
+replica_bin=/azlamp/bin
+wp_content=wp-content/uploads
 
 change_location() {
     echo "change locationfunction"
@@ -21,9 +22,9 @@ configuring_certs() {
 }
 linking_data_location() {
     echo "linking func"
-    sudo mkdir -p ${repli_data}/wp-content/uploads
-    sudo ln -s ${repli_data}/wp-content/uploads ${repli_path}/wp-content/uploads
-    sudo chmod 0777 ${repli_data}/wp-content/uploads
+    sudo mkdir -p ${repli_data}/${wp_content}
+    sudo ln -s ${repli_data}/${wp_content} ${repli_path}/${wp_content}
+    sudo chmod 0755 ${repli_data}/${wp_content}
 }
 update_nginx_configuration() {
     echo "update nginx"
