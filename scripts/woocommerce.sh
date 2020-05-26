@@ -1,6 +1,6 @@
 #!/bin/bash
 
-wooco_URL: ${1} 
+wooco_URL=${1} 
 wooco_path=/home/${2}
 web_root=/var/www/html
 
