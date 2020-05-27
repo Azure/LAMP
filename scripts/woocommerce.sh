@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#Woocommerce plugin will be downloaded and copied to plugins directory of wordpress
+
 wooco_URL=${1} 
 wooco_path=/home/${2}
 web_root=/var/www/html
