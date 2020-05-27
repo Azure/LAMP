@@ -1,10 +1,6 @@
 #!/bin/bash
 
 decotext=`echo ${2} | base64 --decode`
-  
-echo "user id: ${1}" >> /home/"${1}"/log.txt
-echo "encoded text: ${2}" >> /home/"${1}"/log.txt
-echo "decoded text: ${decotext}" >> /home/"${1}"/log.txt
 
 clonerepo(){
   cd /home/"${1}"/ 
