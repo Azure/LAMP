@@ -42,7 +42,6 @@ create_moodledata(){
     sudo chown www-data:www-data -R ${moodledata_path}/
 }
 replication() {
-    echo "replication func"
     cd /usr/local/bin/
     sudo bash update_last_modified_time.azlamp.sh
 }
