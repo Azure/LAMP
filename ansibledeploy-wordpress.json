@@ -35,27 +35,16 @@
                 "description": "SSH Key or password for the Virtual Machine. SSH key is recommended."
             }
         },
-        "WordpressRemoteVMIP(Controller VM)": {
+        "WordpressRemoteVMIP(ControllerVM)": {
             "type": "string",
             "metadata": {
                 "description": "Provide Controller VM IP to install ansible"
             }
         },
-        "remoteVMPassword(Controller VM)": {
+        "remoteVMPassword(ControllerVM)": {
             "type": "securestring",
             "metadata": {
                 "description": "Provide Controller VM IP password."
-            }
-        },
-        "ubuntuOSVersion": {
-            "defaultValue": "16.04.0-LTS",
-            "allowedValues": [
-                "16.04.0-LTS",
-                "18.04-LTS"
-            ],
-            "type": "String",
-            "metadata": {
-                "description": "The Ubuntu version for the VM. This will pick a fully patched image of this given Ubuntu version."
             }
         },
         "AnsibleVmSku": {
@@ -98,8 +87,8 @@
         }
     },
     "variables": {
-        "scriptinput": "[concat(parameters('WordpressRemoteVMIP(Controller VM)'), ' ',parameters('remoteVMPassword(Controller VM)'), ' ', parameters('adminUsername'), ' ', parameters('databaseServerName'), ' ', parameters('ServerAdminLoginName'), ' ', parameters('ServerAdminLoginPassword'), ' ', parameters('wordPressDomainName'))]",
-        "base64String": "[base64(variables('scriptinput'))]",
+        "scriptinput": "[concat(parameters('WordpressRemoteVMIP(ControllerVM)'), ' ',parameters('remoteVMPassword(ControllerVM)'), ' ', parameters('adminUsername'), ' ', parameters('databaseServerName'), ' ', parameters('ServerAdminLoginName'), ' ', parameters('ServerAdminLoginPassword'), ' ', parameters('wordPressDomainName'))]",
+        "base64String": "[base64(variables('scriptinput'))]", 
         "resourceprefix": "[substring(uniqueString(resourceGroup().id, deployment().name), 3, 6)]",
         "ansibleVmSku": "[parameters('ansibleVmSku')]",
         "ansibleNicName": "[concat('ansible-nic-',variables('resourceprefix'))]",
@@ -113,6 +102,7 @@
         "osDiskType": "Standard_LRS",
         "subnetAddressPrefix": "172.31.0.0/24",
         "addressPrefix": "172.31.0.0/16",
+        "ubuntuOSVersion": "16.04.0-LTS",
         "linuxConfiguration": {
             "disablePasswordAuthentication": true,
             "ssh": {
@@ -281,7 +271,7 @@
                     "imageReference": {
                         "publisher": "Canonical",
                         "offer": "UbuntuServer",
-                        "sku": "[parameters('ubuntuOSVersion')]",
+                        "sku": "[variables('ubuntuOSVersion')]",
                         "version": "latest"
                     }
                 },
@@ -336,18 +326,6 @@
         "sshCommand": {
             "type": "String",
             "value": "[concat('ssh ', parameters('adminUsername'), '@', reference(variables('publicIPAddressName')).dnsSettings.fqdn)]"
-        },
-        "scriptCommand": {
-            "type": "string",
-            "value": "[concat('bash ansiblemain.sh ', parameters('adminUsername'), ' ', variables('scriptinput'))]"
-        },
-        "base64Output": {
-            "type": "string",
-            "value": "[variables('base64String')]"
-        },
-        "toStringOutput": {
-            "type": "string",
-            "value": "[base64ToString(variables('base64String'))]"
         }
     }
 }
