@@ -25,7 +25,7 @@
                 "description": "SSH Key or password for the Virtual Machine. SSH key is recommended."
             }
         },
-        "loadBalancerIP": {
+        "loadBalancerIP(ControllerVM)": {
             "type": "string",
             "metadata": {
                 "description": "Provide Load Balancer IP to install ansible"
@@ -83,7 +83,7 @@
         }
     },
     "variables": {
-        "scriptinput": "[concat(parameters('MoodleRemoteVMIP'), ' ',parameters('remoteVMPassword'), ' ', parameters('adminUsername'), ' ', parameters('databaseServerName'), ' ', parameters('databaseServerAdminLoginName'), ' ', parameters('databaseServerAdminLoginPassword'), ' ', parameters('MoodleDomainName'),' ', parameters('loadBalancerIP'))]",
+        "scriptinput": "[concat(parameters('MoodleRemoteVMIP(ControllerVM)'), ' ',parameters('remoteVMPassword(ControllerVM)'), ' ', parameters('adminUsername'), ' ', parameters('databaseServerName'), ' ', parameters('databaseServerAdminLoginName'), ' ', parameters('databaseServerAdminLoginPassword'), ' ', parameters('MoodleDomainName'),' ', parameters('loadBalancerIP(ControllerVM)'))]",
         "base64String": "[base64(variables('scriptinput'))]",
         "resourceprefix": "[substring(uniqueString(resourceGroup().id, deployment().name), 3, 6)]",
         "ansibleVmSku": "[parameters('ansibleVmSku')]",
