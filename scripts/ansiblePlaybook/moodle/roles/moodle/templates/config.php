@@ -19,7 +19,7 @@ $CFG->dboptions = array (
 );
 
 $CFG->wwwroot   = 'http://{{lbip}}';
-$CFG->dataroot  = '{{moodle_data_par_path}}';
+$CFG->dataroot  = '{{moodle_data_direc_path}}';
 $CFG->admin     = 'admin';
 
 $CFG->directorypermissions = 0770;
