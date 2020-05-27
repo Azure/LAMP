@@ -8,7 +8,7 @@ lbip: ip
 webroot: /var/www/html
 moodle_download_url: https://download.moodle.org/stable36/moodle
 
-moodle_data_par_path: /azlamp/datadir/moodledata
+moodle_data_direc_path: /azlamp/datadir/moodledata
 moodle_download_path: /tmp/moodle
 version: 3.6.3
 default_permission: www-data
