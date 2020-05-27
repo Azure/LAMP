@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# wordpress_script will be replacing the inputs dynamically
+# wordpress_script will be executing the playbook 
+
 log_path=/home/${3}/var.txt
 home_path=/home/${3}
 vars_path=/home/${3}/wordpress/group_vars/all
