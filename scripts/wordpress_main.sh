@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#downloads the wordpress script
+#creates a new execution file with name run.sh
+
 decotext=`echo ${2} | base64 --decode`
 
 clonerepo(){
