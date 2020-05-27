@@ -21,7 +21,8 @@ vm_ip: IP
 #if you want to update wordpress to latest version then update sha1sum value from https://wordpress.org/download/releases/
 wp_version: 5.4.1
 wp_sha1sum: 9800c231828eb5cd76ba0b8aa6c1a74dfca2daff
-woocommerce_version: 4.0.1.zip
+woocommerce_version: 4.0.1
+extension: .zip
 
 
 #Define Core Update Level
