@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #moodle replication script will replicating the moodle folder to virtual machine scaleset
-#this script will create a moodledata directory which is required for the moodle
-#this script will update the nginx configuration by the help of cron job
+#create a moodledata directory which is required for the moodle
+#update the nginx configuration with the help of cron job
 
 webroot=/var/www/html
 replica_path=/azlamp/html/${1}
