@@ -20,7 +20,7 @@ install_svn() {
     sudo apt-get update -y
     sudo apt-get install -y subversion
 }
-moodle_install() {
+run_moodle_playbook() {
     cd /home/${3}
     svn checkout https://github.com/ummadisudhakar/LAMP/trunk/scripts/ansiblePlaybook/moodle
 
@@ -41,6 +41,6 @@ sudo systemctl restart ssh
 setup_ansible
 configure_ansible_inventory ${1} ${4}
 install_svn
-moodle_install ${1} ${2} ${3} ${4} ${5} ${6} ${7} ${8} ${log_path} >>${log_path}
+run_moodle_playbook ${1} ${2} ${3} ${4} ${5} ${6} ${7} ${8} ${log_path} >>${log_path}
 sudo sed -i "s~   StrictHostKeyChecking no~#   StrictHostKeyChecking ask~" /etc/ssh/ssh_config >>${log_path}
 sudo systemctl restart ssh
