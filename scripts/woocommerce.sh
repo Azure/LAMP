@@ -4,9 +4,6 @@ wooco_URL=${1}
 wooco_path=/home/${2}
 web_root=/var/www/html
 
-echo "woocommerce url : ${wooco_URL} " >> ${wooco_path}/log.txt
-echo "path : ${wooco_path}" >> ${wooco_path}/log.txt
-
 downloadwoocommerce(){
   wget -p ${wooco_URL} ${wooco_path}/
 }
