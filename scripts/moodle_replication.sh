@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#moodle replication script will replicating the moodle folder to virtual machine scaleset
+#moodle replication script will be replicating the moodle folder to virtual machine scaleset
 #create a moodledata directory which is required for the moodle
 #update the nginx configuration with the help of cron job
 
