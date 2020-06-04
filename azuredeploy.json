@@ -20,7 +20,6 @@
             },
             "defaultValue": ""
         },
-        
         "applyScriptsSwitch": {
             "defaultValue": true,
             "metadata": {
@@ -158,7 +157,6 @@
             "metadata":{
                 "description": "Select Ubuntu version. By default it will take 16.04-LTS"
             }
-
         },
         "phpVersion": {
             "allowedValues": [
@@ -960,8 +958,7 @@
             "osType": {
                 "offer": "UbuntuServer",
                 "publisher": "Canonical",
-                "sku": "[parameters('UbuntuVersion')]", 
-                
+                "sku": "[parameters('UbuntuVersion')]",
                 "version": "latest"
             },
             "phpVersion": "[parameters('phpVersion')]",
