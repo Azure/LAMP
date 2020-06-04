@@ -200,7 +200,7 @@ EOF
   fi
     
   # Remove the default nginx site
-  # rm -f /etc/nginx/sites-enabled/default
+  rm -f /etc/nginx/sites-enabled/default
 
   # update startup script to wait for certificate in /azlamp mount
   setup_azlamp_mount_dependency_for_systemd_service nginx || exit 1
