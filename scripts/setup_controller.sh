@@ -57,13 +57,8 @@ set -ex
     check_fileServerType_param $fileServerType
 
     #Updating php sources
-    #sudo chmod 777 /etc/apt/sources.list
-    #sudo echo 'deb http://ppa.launchpad.net/ondrej/php/ubuntu xenial main' >> /etc/apt/sources.list
-    #sudo echo 'deb-src http://ppa.launchpad.net/ondrej/php/ubuntu xenial main' >> /etc/apt/sources.list
-    #sudo chmod 644 /etc/apt/sources.list
     sudo add-apt-repository ppa:ondrej/php -y
     sudo apt-get update
-
 
     # make sure system does automatic updates and fail2ban
     export DEBIAN_FRONTEND=noninteractive
