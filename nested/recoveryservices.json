@@ -23,7 +23,7 @@
         },
         {
             "type": "Microsoft.RecoveryServices/vaults/backupPolicies",
-            "apiVersion": "2019-05-13",
+            "apiVersion": "2016-12-01",
             "dependsOn": [
                 "[concat('Microsoft.RecoveryServices/vaults/', parameters('lampCommon').vaultName)]"
             ],
