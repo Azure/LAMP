@@ -88,7 +88,7 @@
                 "offer": "UbuntuServer",
                 "publisher": "Canonical",
                 "sku": "16.04-LTS",
-                "version": "2020-01-01"
+                "version": "latest"
             }
         },
         "osDiskStorageType": {
