@@ -43,6 +43,11 @@ echo $htmlLocalCopySwitch >> /tmp/vars.txt
 echo $redisDeploySwitch   >> /tmp/vars.txt
 echo $redisDns            >> /tmp/vars.txt
 echo $redisAuth           >> /tmp/vars.txt
+echo $phpVersion          >> /tmp/vars.txt
+
+# downloading and updating php packages from the repository 
+  sudo add-apt-repository ppa:ondrej/php -y
+  sudo apt-get update
 
 check_fileServerType_param $fileServerType
 
@@ -67,7 +72,8 @@ check_fileServerType_param $fileServerType
   fi
 
   # install the base stack
-  apt-get -y install nginx php php-fpm php-cli php-curl php-zip php-pear php-mbstring php-dev mcrypt php-soap php-json php-redis php-bcmath php-gd php-pgsql php-mysql php-xmlrpc php-intl php-xml php-bz2
+  # passing php versions $phpVersion
+  apt-get -y install nginx php$phpVersion php$phpVersion-fpm php$phpVersion-cli php$phpVersion-curl php$phpVersion-zip php-pear php$phpVersion-mbstring php$phpVersion-dev mcrypt php$phpVersion-soap php$phpVersion-json php$phpVersion-redis php$phpVersion-bcmath php$phpVersion-gd php$phpVersion-pgsql php$phpVersion-mysql php$phpVersion-xmlrpc php$phpVersion-intl php$phpVersion-xml php$phpVersion-bz2
 
   # MSSQL
   if [ "$dbServerType" = "mssql" ]; then
@@ -142,8 +148,12 @@ http {
 
   set_real_ip_from   127.0.0.1;
   real_ip_header      X-Forwarded-For;
-  ssl_protocols TLSv1 TLSv1.1 TLSv1.2; # Dropping SSLv3, ref: POODLE
-  ssl_prefer_server_ciphers on;
+  #ssl_protocols TLSv1 TLSv1.1 TLSv1.2; # Dropping SSLv3, ref: POODLE
+  #upgrading to TLSv1.2 and droping 1 & 1.1
+  ssl_protocols TLSv1.2;
+  #ssl_prefer_server_ciphers on;
+  #adding ssl ciphers
+  ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384;
 
   gzip on;
   gzip_disable "msie6";

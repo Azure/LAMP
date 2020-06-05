@@ -1,7 +1,11 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "TypeOfTemplate":{
+            "defaultValue":"LAMP ARM TEMPLATE",
+            "type":"string"
+        },
         "_artifactsLocation": {
             "type": "string",
             "metadata": {
@@ -143,6 +147,29 @@
             },
             "type": "string"
         },
+        "UbuntuVersion": {
+            "defaultValue": "16.04-LTS",
+            "allowedValues":[
+                "16.04-LTS",
+                "18.04-LTS"
+            ],
+            "type": "string",
+            "metadata":{
+                "description": "Select Ubuntu version. By default it will take 16.04-LTS"
+            }
+        },
+        "phpVersion": {
+            "allowedValues": [
+                "7.2",
+                "7.3",
+                "7.4"
+            ],
+            "defaultValue": "7.4",
+            "metadata": {
+                "description": "php version"
+            },
+            "type": "string"
+        },
         "dbServerType": {
             "defaultValue": "mysql",
             "allowedValues": [
@@ -212,7 +239,8 @@
         "mysqlVersion": {
             "allowedValues": [
                 "5.6",
-                "5.7"
+                "5.7",
+                "8.0"
             ],
             "defaultValue": "5.7",
             "metadata": {
@@ -223,7 +251,9 @@
         "postgresVersion": {
             "allowedValues": [
                 "9.5",
-                "9.6"
+                "9.6",
+                "10.0",
+                "11.0"
             ],
             "defaultValue": "9.6",
             "metadata": {
@@ -289,7 +319,8 @@
         "mssqlDbEdition": {
             "allowedValues": [
                 "Basic",
-                "Standard"
+                "Standard",
+                "Premium"
             ],
             "defaultValue": "Standard",
             "metadata": {
@@ -400,13 +431,15 @@
             "type": "string"
         },
         "appGwSkuName": {
-            "defaultValue": "Standard_Medium",
+            "defaultValue": "Standard_v2",
             "allowedValues": [
                 "Standard_Small",
                 "Standard_Medium",
                 "Standard_Large",
+                "Standard_v2",
                 "WAF_Medium",
-                "WAF_Large"
+                "WAF_Large",
+                "WAF_v2"
             ],
             "metadata": {
                 "description": "(App Gateway https termination only) Name of the Applicate Gateway SKU"
@@ -414,10 +447,12 @@
             "type": "string"
         },
         "appGwSkuTier": {
-            "defaultValue": "Standard",
+            "defaultValue": "Standard_v2",
             "allowedValues": [
                 "Standard",
-                "WAF"
+                "Standard_v2",
+                "WAF",
+                "WAF_v2"
             ],
             "metadata": {
                 "description": "(App Gateway https termination only) Tier of the Applicate Gateway"
@@ -503,7 +538,7 @@
     "resources": [
         {
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2017-05-10",
+            "apiVersion": "2019-10-01",
             "name": "pid-e9147f02-a219-433d-8d7a-e3f2c14abd09",
             "properties": {
                 "mode": "Incremental",
@@ -516,7 +551,7 @@
         },
         {
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2017-05-10",
+            "apiVersion": "2019-10-01",
             "name": "networkTemplate",
             "properties": {
                 "mode": "Incremental",
@@ -532,7 +567,7 @@
         },
         {
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2017-05-10",
+            "apiVersion": "2019-10-01",
             "name": "storageAccountTemplate",
             "properties": {
                 "mode": "Incremental",
@@ -548,7 +583,7 @@
         },
         {
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2017-05-10",
+            "apiVersion": "2019-10-01",
             "dependsOn": [
                 "Microsoft.Resources/deployments/networkTemplate"
             ],
@@ -574,7 +609,7 @@
         {
             "condition": "[parameters('azureBackupSwitch')]",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2017-05-10",
+            "apiVersion": "2019-10-01",
             "name": "recoveryTemplate",
             "properties": {
                 "mode": "Incremental",
@@ -591,7 +626,7 @@
         {
             "condition": "[parameters('redisDeploySwitch')]",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2017-05-10",
+            "apiVersion": "2019-10-01",
             "name": "redisTemplate",
             "dependsOn": [
                 "Microsoft.Resources/deployments/networkTemplate"
@@ -614,7 +649,7 @@
         {
             "condition": "[equals(parameters('fileServerType'),'gluster')]",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2017-05-10",
+            "apiVersion": "2019-10-01",
             "dependsOn": [
                 "Microsoft.Resources/deployments/networkTemplate",
                 "Microsoft.Resources/deployments/recoveryTemplate"
@@ -638,7 +673,7 @@
         {
             "condition": "[equals(parameters('fileServerType'),'nfs-ha')]",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2017-05-10",
+            "apiVersion": "2019-10-01",
             "dependsOn": [
                 "Microsoft.Resources/deployments/networkTemplate",
                 "Microsoft.Resources/deployments/recoveryTemplate"
@@ -706,7 +741,7 @@
         },
         {
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2017-05-10",
+            "apiVersion": "2019-10-01",
             "dependsOn": [
                 "Microsoft.Resources/deployments/networkTemplate",
                 "Microsoft.Resources/deployments/dbTemplate",
@@ -737,7 +772,7 @@
         },
         {
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2017-05-10",
+            "apiVersion": "2019-10-01",
             "dependsOn": [
                 "Microsoft.Resources/deployments/vmSetupParamsTemplate",
                 "Microsoft.Resources/deployments/glusterTemplate",
@@ -772,7 +807,7 @@
         },
         {
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2017-05-10",
+            "apiVersion": "2019-10-01",
             "dependsOn": [
                 "Microsoft.Resources/deployments/vmSetupParamsTemplate",
                 "Microsoft.Resources/deployments/controllerTemplate",
@@ -923,9 +958,10 @@
             "osType": {
                 "offer": "UbuntuServer",
                 "publisher": "Canonical",
-                "sku": "16.04-LTS",
+                "sku": "[parameters('UbuntuVersion')]",
                 "version": "latest"
             },
+            "phpVersion": "[parameters('phpVersion')]",
             "policyName": "[concat('policy-',variables('resourceprefix'))]",
             "postgresVersion": "[parameters('postgresVersion')]",
             "redisCacheName": "[concat('redis-',variables('resourceprefix'))]",

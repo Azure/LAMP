@@ -47,6 +47,8 @@ function get_setup_params_from_configs_json
     export nfsHaLbIP=$(echo $json | jq -r .fileServerProfile.nfsHaLbIP)
     export nfsHaExportPath=$(echo $json | jq -r .fileServerProfile.nfsHaExportPath)
     export nfsByoIpExportPath=$(echo $json | jq -r .fileServerProfile.nfsByoIpExportPath)
+    # passing php versions $phpVersion from UI
+    export phpVersion=$(echo $json | jq -r .phpProfile.phpVersion)
 }
 
 function get_php_version {
@@ -425,8 +427,12 @@ server {
         ssl_certificate_key ${certsDir}/nginx.key;
 
         # Log to syslog
-        error_log syslog:server=localhost,facility=local1,severity=error,tag=lamp;
-        access_log syslog:server=localhost,facility=local1,severity=notice,tag=lamp combined;
+        # error_log syslog:server=localhost,facility=local1,severity=error,tag=lamp;
+        # access_log syslog:server=localhost,facility=local1,severity=notice,tag=lamp combined;
+        
+        # Server Logs
+        access_log /var/log/nginx/access.log;
+        error_log /var/log/nginx/error.log;
 
         root ${htmlRootDir};
         location ~* \.php$ {
@@ -452,8 +458,12 @@ server {
         server_name ${siteFQDN};
 
         # Log to syslog
-        error_log syslog:server=localhost,facility=local1,severity=error,tag=lamp;
-        access_log syslog:server=localhost,facility=local1,severity=notice,tag=lamp combined;
+        # error_log syslog:server=localhost,facility=local1,severity=error,tag=lamp;
+        # access_log syslog:server=localhost,facility=local1,severity=notice,tag=lamp combined;
+        
+        # Server Logs
+        access_log /var/log/nginx/access.log;
+        error_log /var/log/nginx/error.log;
  
         root ${htmlRootDir};
         location ~* \.php$ {
@@ -531,9 +541,13 @@ http {
 
   set_real_ip_from   127.0.0.1;
   real_ip_header      X-Forwarded-For;
-  ssl_protocols TLSv1 TLSv1.1 TLSv1.2; # Dropping SSLv3, ref: POODLE
-  ssl_prefer_server_ciphers on;
-
+  #ssl_protocols TLSv1 TLSv1.1 TLSv1.2; # Dropping SSLv3, ref: POODLE
+  #upgrading to TLSv1.2 and droping 1 & 1.1
+  ssl_protocols TLSv1.2;
+  #ssl_prefer_server_ciphers on;
+  #adding ssl ciphers
+  ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384;
+  
   gzip on;
   gzip_disable "msie6";
   gzip_vary on;
@@ -571,8 +585,12 @@ server {
         ssl_certificate_key ${certsDir}/nginx.key;
 
         # Log to syslog
-        error_log syslog:server=localhost,facility=local1,severity=error,tag=lamp;
-        access_log syslog:server=localhost,facility=local1,severity=notice,tag=lamp combined;
+        # error_log syslog:server=localhost,facility=local1,severity=error,tag=lamp;
+        # access_log syslog:server=localhost,facility=local1,severity=notice,tag=lamp combined;
+        
+        # Server Logs
+        access_log /var/log/nginx/access.log;
+        error_log /var/log/nginx/error.log;
 
         root ${htmlRootDir};
         location ~* \.php$ {
@@ -598,8 +616,12 @@ server {
         server_name ${siteFQDN};
 
         # Log to syslog
-        error_log syslog:server=localhost,facility=local1,severity=error,tag=lamp;
-        access_log syslog:server=localhost,facility=local1,severity=notice,tag=lamp combined;
+        # error_log syslog:server=localhost,facility=local1,severity=error,tag=lamp;
+        # access_log syslog:server=localhost,facility=local1,severity=notice,tag=lamp combined;
+        
+        # Server Logs
+        access_log /var/log/nginx/access.log;
+        error_log /var/log/nginx/error.log;
  
         root ${htmlRootDir};
         location ~* \.php$ {

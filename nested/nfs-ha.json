@@ -1,5 +1,5 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "_artifactsLocation": {
@@ -129,7 +129,7 @@
     "resources": [
         {
             "type": "Microsoft.Compute/availabilitySets",
-            "apiVersion": "2017-03-30",
+            "apiVersion": "2019-07-01",
             "location": "[parameters('location')]",
             "name": "[variables('availSetName')]",
             "properties": {
@@ -148,7 +148,7 @@
             "sku": {
                 "name": "Basic"
             },
-            "apiVersion": "2017-10-01",
+            "apiVersion": "2019-11-01",
             "location": "[parameters('location')]",
             "name": "[variables('nfsHaLbName')]",
             "properties": {
@@ -490,7 +490,7 @@
         },
         {
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2017-05-10",
+            "apiVersion": "2019-10-01",
             "copy": {
                 "count": 2,
                 "name": "nfs-ha-vm-loop"

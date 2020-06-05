@@ -1,5 +1,5 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "counter": {
@@ -24,7 +24,7 @@
     "resources": [
         {
             "type": "Microsoft.Network/networkInterfaces",
-            "apiVersion": "2017-10-01",
+            "apiVersion": "2019-11-01",
             "location": "[parameters('lampCommon').location]",
             "name": "[variables('nicName')]",
             "properties": {
@@ -114,7 +114,7 @@
         {
             "condition": "[parameters('lampCommon').applyScriptsSwitch]",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2017-05-10",
+            "apiVersion": "2019-10-01",
             "dependsOn": [
                 "[concat('Microsoft.Compute/virtualMachines/',variables('vmName'))]"
             ],
@@ -140,7 +140,7 @@
         {
             "condition": "[parameters('lampCommon').azureBackupSwitch]",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2017-05-10",
+            "apiVersion": "2019-10-01",
             "dependsOn": [
                 "[concat('Microsoft.Compute/virtualMachines/',variables('vmName'))]"
             ],

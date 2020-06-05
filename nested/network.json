@@ -1,5 +1,5 @@
 {
-    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "lampCommon": {
@@ -13,7 +13,7 @@
         {
             "condition": "[equals(parameters('lampCommon').customVnetId, '')]",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2017-05-10",
+            "apiVersion": "2019-10-01",
             "name": "vnetTemplate",
             "properties": {
                 "mode": "Incremental",
@@ -28,7 +28,7 @@
             }
         },
         {
-            "apiVersion": "2018-02-01",
+            "apiVersion": "2019-10-01",
             "condition": "[parameters('lampCommon').ddosSwitch]",
             "dependsOn": [
                 "Microsoft.Resources/deployments/vnetTemplate"
@@ -57,7 +57,7 @@
         },
         {
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2017-05-10",
+            "apiVersion": "2019-10-01",
             "dependsOn": [
                 "Microsoft.Resources/deployments/vnetTemplate",
                 "Microsoft.Resources/deployments/ddosTemplate"
@@ -83,7 +83,7 @@
         {
             "condition": "[parameters('lampCommon').vnetGwDeploySwitch]",
             "type": "Microsoft.Network/publicIPAddresses",
-            "apiVersion": "2017-10-01",
+            "apiVersion": "2019-11-01",
             "location": "[parameters('lampCommon').location]",
             "name": "[parameters('lampCommon').gatewayPublicIPName]",
             "properties": {
@@ -96,7 +96,7 @@
         {
             "condition": "[parameters('lampCommon').vnetGwDeploySwitch]",
             "type": "Microsoft.Network/virtualNetworkGateways",
-            "apiVersion": "2017-10-01",
+            "apiVersion": "2019-04-01",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/publicIPAddresses', parameters('lampCommon').gatewayPublicIPName)]",
                 "Microsoft.Resources/deployments/subnetTemplate"
@@ -135,7 +135,7 @@
             "sku": {
                 "name": "[parameters('lampCommon').lbSku]"
             },
-            "apiVersion": "2017-10-01",
+            "apiVersion": "2019-11-01",
             "location": "[parameters('lampCommon').location]",
             "name": "[parameters('lampCommon').lbPipName]",
             "properties": {
@@ -151,22 +151,22 @@
         {
             "condition": "[equals(parameters('lampCommon').httpsTermination, 'AppGw')]",
             "type": "Microsoft.Network/publicIPAddresses",
-            "apiVersion": "2017-10-01",
+            "apiVersion": "2019-11-01",
             "location": "[parameters('lampCommon').location]",
             "name": "[parameters('lampCommon').appGwPipName]",
+            "sku" : {
+                "name" : "[if(endswith(parameters('lampCommon').appGwSkuName,'v2'),'Standard','Basic')]"
+            },
             "properties": {
                 "dnsSettings": {
                     "domainNameLabel": "[parameters('lampCommon').appGwName]"
                 },
-                "publicIPAllocationMethod": "Dynamic"
-            },
-            "tags": {
-                "displayName": "App Gateway Public IP (must be dynamic)"
+                "publicIPAllocationMethod": "[if(endswith(parameters('lampCommon').appGwSkuName,'v2'),'Static','Dynamic')]"
             }
         },
         {
             "type": "Microsoft.Network/publicIPAddresses",
-            "apiVersion": "2017-10-01",
+            "apiVersion": "2019-11-01",
             "location": "[parameters('lampCommon').location]",
             "name": "[parameters('lampCommon').ctlrPipName]",
             "properties": {
@@ -185,7 +185,7 @@
             "sku": {
                 "name": "[parameters('lampCommon').lbSku]"
             },
-            "apiVersion": "2017-10-01",
+            "apiVersion": "2019-11-01",
             "dependsOn": [
                 "[concat('Microsoft.Network/publicIPAddresses/',parameters('lampCommon').lbPipName)]"
             ],
@@ -272,10 +272,10 @@
         {
             "condition": "[equals(parameters('lampCommon').httpsTermination, 'AppGw')]",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2017-05-10",
+            "apiVersion": "2019-10-01",
             "dependsOn": [
                 "Microsoft.Resources/deployments/subnetTemplate",
-                "[concat('Microsoft.Network/publicIPAddresses/',parameters('lampCommon').lbPipName)]"
+                "[concat('Microsoft.Network/publicIPAddresses/',parameters('lampCommon').appGwPipName)]"
             ],
             "name": "appGwTemplate",
             "properties": {
