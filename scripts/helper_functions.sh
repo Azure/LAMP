@@ -435,7 +435,14 @@ server {
         error_log /var/log/nginx/error.log;
 
         root ${htmlRootDir};
-        location ~* \.php$ {
+        #location ~* \.php$ {
+	#above line is replaced with below line according to moodle docs http://docs.moodle.org/38/en/Nginx
+	#location ~ ^(.+\.php)(.*)$ {  - This line also works fine
+	
+	location ~ [^/]\.php(/|$) {
+          fastcgi_split_path_info  ^(.+\.php)(.*)$;
+          fastcgi_param   PATH_INFO       $fastcgi_path_info;
+	
           include fastcgi_params;
           # Remove X-Powered-By, which is an information leak
           fastcgi_hide_header X-Powered-By;
@@ -466,7 +473,14 @@ server {
         error_log /var/log/nginx/error.log;
  
         root ${htmlRootDir};
-        location ~* \.php$ {
+        #location ~* \.php$ {
+	#above line is replaced with below line according to moodle docs http://docs.moodle.org/38/en/Nginx
+	#location ~ ^(.+\.php)(.*)$ {  - This line also works fine
+	
+	location ~ [^/]\.php(/|$) {
+          fastcgi_split_path_info  ^(.+\.php)(.*)$;
+          fastcgi_param   PATH_INFO       $fastcgi_path_info;
+	  
           include fastcgi_params;
           # Remove X-Powered-By, which is an information leak
           fastcgi_hide_header X-Powered-By;
@@ -593,7 +607,14 @@ server {
         error_log /var/log/nginx/error.log;
 
         root ${htmlRootDir};
-        location ~* \.php$ {
+        #location ~* \.php$ {
+	#above line is replaced with below line according to moodle docs http://docs.moodle.org/38/en/Nginx
+	#location ~ ^(.+\.php)(.*)$ {  - This line also works fine
+	
+	location ~ [^/]\.php(/|$) {
+          fastcgi_split_path_info  ^(.+\.php)(.*)$;
+          fastcgi_param   PATH_INFO       $fastcgi_path_info;
+	  
           include fastcgi_params;
           # Remove X-Powered-By, which is an information leak
           fastcgi_hide_header X-Powered-By;
@@ -624,7 +645,14 @@ server {
         error_log /var/log/nginx/error.log;
  
         root ${htmlRootDir};
-        location ~* \.php$ {
+        #location ~* \.php$ {
+	#above line is replaced with below line according to moodle docs http://docs.moodle.org/38/en/Nginx
+	#location ~ ^(.+\.php)(.*)$ {  - This line also works fine
+	
+	location ~ [^/]\.php(/|$) {
+          fastcgi_split_path_info  ^(.+\.php)(.*)$;
+          fastcgi_param   PATH_INFO       $fastcgi_path_info;
+	  
           include fastcgi_params;
           # Remove X-Powered-By, which is an information leak
           fastcgi_hide_header X-Powered-By;
