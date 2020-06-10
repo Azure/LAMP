@@ -1,0 +1,326 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "ansibleVmName": {
+            "defaultValue": "ansible-vm",
+            "minLength": 8,
+            "maxLength": 12,
+            "type": "String",
+            "metadata": {
+                "description": "The name of you Virtual Machine."
+            }
+        },
+        "adminUsername": {
+            "defaultValue": "azureadmin",
+            "type": "String",
+            "metadata": {
+                "description": "Username for the Virtual Machine."
+            }
+        },
+        
+        "sshPublicKey": {
+            "type": "SecureString",
+            "metadata": {
+                "description": "SSH Key for the Virtual Machine. SSH key is recommended."
+            }
+        },
+        "loadBalancerIP(ControllerVM)": {
+            "type": "string",
+            "metadata": {
+                "description": "Provide Load Balancer IP to install ansible"
+            }
+        },
+        "MoodleRemoteVMIP(ControllerVM)": {
+            "type": "string",
+            "metadata": {
+                "description": "Provide Controller VM IP to install ansible"
+            }
+        },
+        "remoteVMPassword(ControllerVM)": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Provide Controller VM IP password."
+            }
+        },
+        "AnsibleVmSku": {
+            "defaultValue": "Standard_DS1_v2",
+            "type": "String",
+            "metadata": {
+                "description": "The size of the VM (DS1_v2, 1vcpu, 3.5GB)."
+            }
+        },
+        "databaseServerName": {
+            "type": "string",
+            "metadata": {
+                "description": "Database server name of Remote VM."
+            }
+        },
+        "databaseServerAdminLoginName": {
+            "type": "string",
+            "metadata": {
+                "description": "Database server Admin login name."
+            }
+        },
+        "databaseServerAdminLoginPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Database server Admin login Password."
+            }
+        },
+        "newDatabaseName": {
+            "type": "string",
+            "metadata": {
+                "description": "Create new database with the provided name."
+            }
+        },
+        "MoodleDomainName": {
+            "type": "string",
+            "metadata": {
+                "description": "Domain for Moodle"
+            }
+        }
+    },
+    "variables": {
+        "location": "[resourceGroup().location]",
+        "scriptinput": "[concat(parameters('MoodleRemoteVMIP(ControllerVM)'), ' ',parameters('remoteVMPassword(ControllerVM)'), ' ', parameters('adminUsername'), ' ', parameters('databaseServerName'), ' ', parameters('databaseServerAdminLoginName'), ' ', parameters('databaseServerAdminLoginPassword'), ' ', parameters('MoodleDomainName'),' ', parameters('loadBalancerIP(ControllerVM)'), ' ', parameters('newDatabaseName'))]",
+        "base64String": "[base64(variables('scriptinput'))]",
+        "resourceprefix": "[substring(uniqueString(resourceGroup().id, deployment().name), 3, 6)]",
+        "ansibleVmSku": "[parameters('ansibleVmSku')]",
+        "ansibleNicName": "[concat('ansible-nic-',variables('resourceprefix'))]",
+        "ansibleNsgName": "[concat('ansible-nsg-',variables('resourceprefix'))]",
+        "ansibleVnet": "[concat('ansible-vnet-',variables('resourceprefix'))]",
+        "ansibleSubnet": "[concat('ansible-subnet-',variables('resourceprefix'))]",
+        "ansibleVmName": "[concat(parameters('ansibleVmName'),'-',variables('resourceprefix'))]",
+        "publicIpAddressName": "[concat(parameters('ansibleVmName'), '-publicIp-', variables('resourceprefix'))]",
+        "networkInterfaceName": "[variables('ansibleNicName')]",
+        "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('ansibleVnet'), variables('ansibleSubnet'))]",
+        "osDiskType": "Standard_LRS",
+        "subnetAddressPrefix": "172.31.0.0/24",
+        "addressPrefix": "172.31.0.0/16",
+        "ubuntuOSVersion": "16.04.0-LTS",
+        "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+                "publicKeys": [
+                    {
+                        "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
+                        "keyData": "[parameters('sshPublicKey')]"
+                    }
+                ]
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2018-10-01",
+            "name": "[variables('networkInterfaceName')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups/', variables('ansibleNsgName'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/', variables('ansibleVnet'))]",
+                "[resourceId('Microsoft.Network/publicIpAddresses/', variables('publicIpAddressName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[variables('subnetRef')]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIpAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]"
+                            }
+                        }
+                    }
+                ],
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups',variables('ansibleNsgName'))]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2019-02-01",
+            "name": "[variables('ansibleNsgName')]",
+            "location": "[variables('location')]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "SSH",
+                        "properties": {
+                            "priority": 1000,
+                            "protocol": "TCP",
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "sourceAddressPrefix": "*",
+                            "sourcePortRange": "*",
+                            "destinationAddressPrefix": "*",
+                            "destinationPortRange": "22"
+                        }
+                    },
+                    {
+                        "name": "HTTP",
+                        "properties": {
+                            "priority": 1001,
+                            "protocol": "TCP",
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "sourceAddressPrefix": "*",
+                            "sourcePortRange": "*",
+                            "destinationAddressPrefix": "*",
+                            "destinationPortRange": "80"
+                        }
+                    },
+                    {
+                        "name": "HTTPS",
+                        "properties": {
+                            "priority": 1002,
+                            "protocol": "TCP",
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "sourceAddressPrefix": "*",
+                            "sourcePortRange": "*",
+                            "destinationAddressPrefix": "*",
+                            "destinationPortRange": "443"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2019-04-01",
+            "name": "[variables('ansibleVnet')]",
+            "location": "[variables('location')]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[variables('addressPrefix')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[variables('ansibleSubnet')]",
+                        "properties": {
+                            "addressPrefix": "[variables('subnetAddressPrefix')]",
+                            "privateEndpointNetworkPolicies": "Enabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/publicIpAddresses",
+            "apiVersion": "2019-02-01",
+            "name": "[variables('publicIpAddressName')]",
+            "location": "[variables('location')]",
+            "sku": {
+                "name": "Basic",
+                "tier": "Regional"
+            },
+            "properties": {
+                "publicIpAllocationMethod": "Dynamic",
+                "publicIPAddressVersion": "IPv4",
+                "dnsSettings": {
+                    "domainNameLabel": "[toLower(concat(variables('ansibleVmName'), '-PubIP'))]"
+                },
+                "idleTimeoutInMinutes": 4
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2019-03-01",
+            "name": "[variables('ansibleVmName')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces/', variables('ansibleNicName'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[variables('ansibleVmSku')]"
+                },
+                "storageProfile": {
+                    "osDisk": {
+                        "createOption": "fromImage",
+                        "managedDisk": {
+                            "storageAccountType": "[variables('osDiskType')]"
+                        }
+                    },
+                    "imageReference": {
+                        "publisher": "Canonical",
+                        "offer": "UbuntuServer",
+                        "sku": "[variables('ubuntuOSVersion')]",
+                        "version": "latest"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('ansibleNicName'))]"
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[variables('ansibleVmName')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('sshPublicKey')]",
+                    "linuxConfiguration": "[ variables('linuxConfiguration')]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2017-03-30",
+            "name": "[concat(variables('ansibleVmName'),'/','ansibleServer')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/',variables('ansibleVmName'))]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "CustomScript",
+                "typeHandlerVersion": "2.0",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": [
+                        "https://raw.githubusercontent.com/ummadisudhakar/LAMP/ansible_playbook_mat32/scripts/moodle_main.sh"
+                    ]
+                },
+                "protectedSettings": {
+                    "commandToExecute": "[concat('bash moodle_main.sh ', parameters('adminUsername'), ' ', variables('base64String'))]"
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "adminUsername": {
+            "type": "String",
+            "value": "[parameters('adminUsername')]"
+        },
+        "hostname": {
+            "type": "String",
+            "value": "[reference(variables('publicIPAddressName')).dnsSettings.fqdn]"
+        },
+        "sshCommand": {
+            "type": "String",
+            "value": "[concat('ssh ', parameters('adminUsername'), '@', reference(variables('publicIPAddressName')).dnsSettings.fqdn)]"
+        },
+        "scriptCommand": {
+            "type": "string",
+            "value": "[concat('bash ansiblemain.sh ', parameters('adminUsername'), ' ', variables('scriptinput'))]"
+        },
+        "base64Output": {
+            "type": "string",
+            "value": "[variables('base64String')]"
+        },
+        "toStringOutput": {
+            "type": "string",
+            "value": "[base64ToString(variables('base64String'))]"
+        }
+    }
+}
