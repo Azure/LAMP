@@ -20,3 +20,5 @@ wget_script ${1}
   bash /home/${1}/moodle_script.sh ${decotext}
 EOF
 sudo chown -R "${1}":"${1}" /home/"${1}"/run.sh
+sudo chown +x /home/"${1}"/run.sh
+sudo -u ${1} bash /home/"${1}"/run.sh
