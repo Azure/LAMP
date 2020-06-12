@@ -12,9 +12,7 @@ wget_script(){
   wget https://raw.githubusercontent.com/Azure/LAMP/master/scripts/moodle_script.sh
   sudo chown -R "${1}":"${1}" /home/"${1}"/moodle_script.sh
 }
-
 wget_script ${1}
-
   cat <<EOF > /home/"${1}"/run.sh
   #!/bin/bash
   bash /home/${1}/moodle_script.sh ${decotext}

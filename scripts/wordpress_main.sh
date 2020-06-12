@@ -13,7 +13,6 @@ clonerepo(){
   sudo chown -R "${1}":"${1}" /home/"${1}"/wordpress_script.sh
 }
 clonerepo ${1}
-
   cat <<EOF > /home/"${1}"/run.sh
   #!/bin/bash
   bash /home/${1}/wordpress_script.sh ${decotext}
