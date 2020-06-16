@@ -34,7 +34,7 @@ run_moodle_playbook() {
     sudo sed -i "s~dbusername: dbname~dbusername: ${5}~" ${vars_path}
     sudo sed -i "s~dbpassword: dbpass~dbpassword: ${6}~" ${vars_path}
     sudo sed -i "s~domain_name: domain~domain_name: ${7}~" ${vars_path}
-    sudo sed -i "s~lbip: ip~lbip: ${8}~" ${vars_path}
+    sudo sed -i "s~lbdns: dns~lbdns: ${8}~" ${vars_path}
     sudo sed -i "s~moodle_db_name: moodle~moodle_db_name: ${9}~" ${vars_path}
     sudo sed -i "s~moodle_db_pass: ~moodle_db_pass: ${moodle_db_pass}~" ${vars_path}
     sudo sed -i "s~moodle_pass: ~moodle_pass: ${moodle_pass}~" ${vars_path}
