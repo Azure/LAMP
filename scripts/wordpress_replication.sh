@@ -14,18 +14,19 @@ wp_content=wp-content/uploads
 change_location() {
     sudo mkdir ${replica_path}
     sudo cp -rf ${webroot}/wordpress/* ${replica_path}
+    sudo chown -R www-data:www-data ${replica_path}
 }
 configuring_certs() {
     sudo mkdir ${replica_certs}
     sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ${replica_certs}/nginx.key -out ${replica_certs}/nginx.crt -subj "/C=US/ST=WA/L=Redmond/O=IT/CN=${1}"
     sudo chown www-data:www-data ${replica_certs}/nginx.*
     sudo chmod 400 ${replica_certs}/nginx.*
-
 }
 linking_data_location() {
     sudo mkdir -p ${replica_data}/${wp_content}
     sudo ln -s ${replica_data}/${wp_content} ${replica_path}/${wp_content}
     sudo chmod 0755 ${replica_data}/${wp_content}
+    sudo chown -R www-data:www-data ${replica_data}/wp-content
 }
 update_nginx_configuration() {
     cd ${replica_bin}/
