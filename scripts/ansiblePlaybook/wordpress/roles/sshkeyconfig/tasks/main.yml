@@ -1,0 +1,23 @@
+---
+   - name: "upgrade"
+     apt:
+      upgrade: true
+     become: true
+
+   - name: "install sshpass"
+     #command: apt-get install sshpass
+     apt:
+       name: sshpass
+       state: latest
+     become: yes
+
+   - name: “generate sshkey”
+     openssh_keypair:
+      path: /home/{{ user_name | quote }}/.ssh/id_rsa
+      group: "{{ user_name | quote }}"
+      owner: "{{ user_name | quote }}"
+      size: 4096
+     become: yes
+      
+   - name: "copy file to remote host"
+     command: sshpass -p {{ vm_password | quote }} ssh-copy-id -i /home/{{ user_name | quote }}/.ssh/id_rsa.pub -o StrictHostKeyChecking=no {{user_name | quote }}@{{ vm_ip | quote }}

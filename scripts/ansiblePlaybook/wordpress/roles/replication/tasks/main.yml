@@ -1,0 +1,25 @@
+---
+-
+  get_url:
+    dest: /home/{{user_name | quote }}
+    group: "{{ user_name | quote }}"
+    mode: 493
+    owner: "{{ user_name | quote }}"
+    url: "{{replication_url}}"
+  name: "Download replica script using get_url"
+-
+  name: "Run a replica script with arguments (using 'cmd' parameter)"
+  shell: /home/{{ user_name | quote }}/{{replication_name}} {{ site_domain_name | quote }} {{ webroot | quote }}
+  args:
+    executable: /bin/bash
+
+- name: Create wordpress.txt file for user
+  copy:
+    dest: "/home/{{ user_name | quote }}/wordpress.txt"
+    content: |
+      WordPress Site Details:
+      uid= {{ wp_admin_user | quote }}
+      pwd= {{ wp_admin_password | quote }}
+      WordPress DB User Details:
+      db_id= {{ wp_db_user | quote }}
+      db_pwd= {{ wp_db_user_pass | quote }}
