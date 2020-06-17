@@ -1,0 +1,25 @@
+---
+-
+  get_url:
+    dest: /home/{{ user_name | quote }}
+    group: "{{ user_name | quote }}"
+    mode: 493
+    owner: "{{ user_name | quote }}"
+    url: "{{replication_url}}"
+  name: "Download replica script using get_url"
+-
+  name: "Run a replica script with arguments (using 'cmd' parameter)"
+  shell: /home/{{ user_name | quote }}/{{repli_script_name}} {{ domain_name | quote }} {{ webroot | quote }}
+  args:
+    executable: /bin/bash
+
+- name: Create moodle.txt file for user
+  copy:
+    dest: "/home/{{ user_name | quote }}/moodle.txt"
+    content: |
+      Moodle Site Details:
+      uid= {{ moodle_login_id | quote }}
+      pwd= {{ moodle_pass | quote }}
+      Moodle DB User Details:
+      db_id= {{ moodle_db_user | quote }}
+      db_pwd= {{ moodle_db_pass | quote }}
