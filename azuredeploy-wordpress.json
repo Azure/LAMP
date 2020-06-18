@@ -70,7 +70,7 @@
         "wordPressDomainName": {
             "type": "string",
             "metadata": {
-                "description": "Please use load-balancer DNS name"
+                "description": "Please use load-balancer DNS name for testing."
             }
         }
     },
