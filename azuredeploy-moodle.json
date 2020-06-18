@@ -18,17 +18,10 @@
                 "description": "Username for the Virtual Machine."
             }
         },
-        
         "sshPublicKey": {
             "type": "SecureString",
             "metadata": {
                 "description": "SSH Key for the Virtual Machine. SSH key is recommended."
-            }
-        },
-        "loadBalancerDNS(ControllerVM)": {
-            "type": "string",
-            "metadata": {
-                "description": "Provide Load Balancer IP to install ansible"
             }
         },
         "MoodleRemoteVMIP(ControllerVM)": {
@@ -83,7 +76,7 @@
     },
     "variables": {
         "location": "[resourceGroup().location]",
-        "scriptinput": "[concat(parameters('MoodleRemoteVMIP(ControllerVM)'), ' ',parameters('remoteVMPassword(ControllerVM)'), ' ', parameters('adminUsername'), ' ', parameters('databaseServerName'), ' ', parameters('databaseServerAdminLoginName'), ' ', parameters('databaseServerAdminLoginPassword'), ' ', parameters('MoodleDomainName'),' ', parameters('loadBalancerDNS(ControllerVM)'), ' ', parameters('newDatabaseName'))]",
+        "scriptinput": "[concat(parameters('MoodleRemoteVMIP(ControllerVM)'), ' ',parameters('remoteVMPassword(ControllerVM)'), ' ', parameters('adminUsername'), ' ', parameters('databaseServerName'), ' ', parameters('databaseServerAdminLoginName'), ' ', parameters('databaseServerAdminLoginPassword'), ' ', parameters('MoodleDomainName'),' ', parameters('newDatabaseName'))]",
         "base64String": "[base64(variables('scriptinput'))]",
         "resourceprefix": "[substring(uniqueString(resourceGroup().id, deployment().name), 3, 6)]",
         "ansibleVmSku": "[parameters('ansibleVmSku')]",
