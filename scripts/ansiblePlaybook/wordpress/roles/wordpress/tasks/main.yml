@@ -84,4 +84,4 @@
   become: yes
 
 - name: install wordpress
-  command: "wp core install --url='http://{{lb_dns_name}}' --title='{{wp_title}}' --admin_user='{{wp_admin_user}}' --admin_password='{{wp_admin_password}}' --admin_email='{{wp_admin_email}}' --path='{{webroot}}/{{wordpress_dir}}'"
+  command: "wp core install --url='http://{{site_domain_name}}' --title='{{wp_title}}' --admin_user='{{wp_admin_user}}' --admin_password='{{wp_admin_password}}' --admin_email='{{wp_admin_email}}' --path='{{webroot}}/{{wordpress_dir}}'"
