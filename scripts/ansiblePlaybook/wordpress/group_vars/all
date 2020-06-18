@@ -1,4 +1,4 @@
-# Below variables values are updated at runtime
+# Below parameters will be updated at runtime.
 wp_db_server_name: wordpress
 wp_db_user: wordpress
 wp_db_password: password
@@ -13,7 +13,7 @@ site_domain_name: domain
 wp_admin_password: 
 wp_db_user_pass: 
 
-# Static values
+# Dont change wordpress_dir value
 wordpress_dir: wordpress
 wp_title: LAMP-WordPress
 wp_admin_user: admin
@@ -24,19 +24,19 @@ wp_db_user_id: wordpress
 # By default automatic updates are enabled, set this value to true to disable all automatic updates
 auto_up_disable: true
 
-#Define Core Update Level
-#true  = Development, minor, and major updates are all enabled
-#false = Development, minor, and major updates are all disabled
-#minor = Minor updates are enabled, development, and major updates are disabled
+# Define Core Update Level
+# true  = Development, minor, and major updates are all enabled
+# false = Development, minor, and major updates are all disabled
+# minor = Minor updates are enabled, development, and major updates are disabled
 core_update_level: true
 
 # WordPress Latest Version
-#if you want to update wordpress to latest version then update sha1sum value from https://wordpress.org/download/releases/
-wp_version: 5.4.1
-woocommerce_version: 4.0.1
-wp_sha1sum: 9800c231828eb5cd76ba0b8aa6c1a74dfca2daff
+# If you want to update wordpress to latest version then update sha1sum value from https://wordpress.org/download/releases/
+wp_version: 5.4.2
+woocommerce_version: 4.2.0
+wp_sha1sum: e5631f812232fbd45d3431783d3db2e0d5670d2d
 
-#default_paths
+# Default_paths
 default_permission: www-data
 woocommerce_script_name: woocommerce.sh
 replication_name: wordpress_replication.sh
