@@ -6,11 +6,11 @@ domain_name: domain
 lbdns: dns
 
 webroot: /var/www/html
-moodle_download_url: https://download.moodle.org/stable36/moodle
+moodle_download_url: https://download.moodle.org/stable38/moodle
 
 moodle_data_direc_path: /azlamp/moodledata
 moodle_download_path: /tmp/moodle
-version: 3.6.3
+version: 3.8.3
 default_permission: www-data
 #database details will be updated in run time
 
