@@ -6,7 +6,6 @@ wp_db_name: wordpress
 user_name: azusername
 vm_password: password
 vm_ip: IP
-lb_dns_name: domain
 site_domain_name: domain
 
 # Password will be auto generated
