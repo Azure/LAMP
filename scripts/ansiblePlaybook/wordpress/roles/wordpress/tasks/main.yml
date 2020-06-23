@@ -1,0 +1,87 @@
+---
+- name: Create webroot
+  file:
+    state: directory
+    path: "{{webroot}}"
+    owner: "{{default_permission}}"
+    group: "{{default_permission}}"
+    mode: 0755
+  become: yes
+
+- name: Check if WordPress directory exists in "{{webroot}}"
+  stat: path="{{webroot}}/{{wordpress_dir}}"
+  register: check_path
+
+- name: Download WordPress
+  get_url: 
+    url: "{{wordpress_url}}-{{ wp_version }}.tar.gz"
+    dest: "{{wordpress_path}}-{{ wp_version }}.tar.gz" 
+    checksum: "sha1:{{ wp_sha1sum }}" 
+  become: yes
+  when: not check_path.stat.exists
+
+- name: Extract WordPress
+  unarchive:
+    src: "{{wordpress_path}}-{{ wp_version }}.tar.gz"
+    dest: /tmp
+    owner: "{{default_permission}}"
+    group: "{{default_permission}}"
+    copy: no
+  become: yes
+  when: not check_path.stat.exists
+  
+- 
+  name: create a database
+  command: mysql -h {{wp_db_server_name}} -u {{wp_db_user}} -p{{wp_db_password}} -e "CREATE DATABASE {{wp_db_name}} CHARACTER SET utf8;"
+  register: output
+
+- 
+  name: grant user permission to database
+  command: mysql -h {{wp_db_server_name}} -u {{wp_db_user}} -p{{wp_db_password}} -e "GRANT ALL ON {{wp_db_name}}.* TO {{wp_db_user_id}} IDENTIFIED BY '{{wp_db_user_pass}}';"
+  register: outputpremission
+
+- name: Move WordPress install files
+  command: "mv {{wordpress_path}} {{webroot}}/{{wordpress_dir}}"
+  become: yes
+  when: not check_path.stat.exists
+
+- name: Fetch random salts for WordPress config
+  local_action: "command curl {{wp_salt_path}}"
+  register: "wp_salt"
+  become: no
+
+- name: Add wp-config
+  template: "src=wp-config.php dest={{webroot}}/{{wordpress_dir}}/wp-config.php"
+  become: yes
+
+- name: Update WordPress config file
+
+  lineinfile:
+    dest: "{{webroot}}/{{wordpress_dir}}/wp-config.php"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - {'regexp': "define\\('DB_NAME', '(.)+'\\);", 'line': "define('DB_NAME', '{{wp_db_name}}');"}
+    - {'regexp': "define\\('DB_USER', '(.)+'\\);", 'line': "define('DB_USER', '{{wp_db_user}}');"}
+    - {'regexp': "define\\('DB_PASSWORD', '(.)+'\\);", 'line': "define('DB_PASSWORD', '{{wp_db_password}}');"}
+  become: yes
+  no_log: true
+  
+- name: download wpcli
+  get_url:
+    dest: "/home/{{user_name}}"
+    group: "{{default_permission}}"
+    owner: "{{default_permission}}"
+    url: "{{wp_cli_url}}"
+  become: yes
+
+- name: install wp-cli
+  command: "chmod +x /home/{{user_name}}/wp-cli.phar"
+  become: yes
+
+- name: move wp-cli
+  command: "mv /home/{{user_name}}/wp-cli.phar /usr/local/bin/wp"
+  become: yes
+
+- name: install wordpress
+  command: "wp core install --url='http://{{site_domain_name}}' --title='{{wp_title}}' --admin_user='{{wp_admin_user}}' --admin_password='{{wp_admin_password}}' --admin_email='{{wp_admin_email}}' --path='{{webroot}}/{{wordpress_dir}}'"

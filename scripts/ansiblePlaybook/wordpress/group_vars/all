@@ -1,0 +1,51 @@
+# Below parameters will be updated at runtime.
+wp_db_server_name: wordpress
+wp_db_user: wordpress
+wp_db_password: password
+wp_db_name: wordpress
+user_name: azusername
+vm_password: password
+vm_ip: IP
+site_domain_name: domain
+
+# Password will be auto generated
+wp_admin_password: 
+wp_db_user_pass: 
+
+# Dont change wordpress_dir value
+wordpress_dir: wordpress
+wp_title: LAMP-WordPress
+wp_admin_user: admin
+wp_admin_email: test@microsoft.com
+wp_db_user_id: wordpress
+
+# Disable All Updates
+# By default automatic updates are enabled, set this value to true to disable all automatic updates
+auto_up_disable: true
+
+# Define Core Update Level
+# true  = Development, minor, and major updates are all enabled
+# false = Development, minor, and major updates are all disabled
+# minor = Minor updates are enabled, development, and major updates are disabled
+core_update_level: true
+
+# WordPress Latest Version
+# If you want to update wordpress to latest version then update sha1sum value from https://wordpress.org/download/releases/
+wp_version: 5.4.2
+woocommerce_version: 4.2.0
+wp_sha1sum: e5631f812232fbd45d3431783d3db2e0d5670d2d
+
+# Default_paths
+default_permission: www-data
+woocommerce_script_name: woocommerce.sh
+replication_name: wordpress_replication.sh
+
+webroot: /var/www/html
+wordpress_path: /tmp/wordpress
+
+wordpress_url: https://wordpress.org/wordpress
+wp_salt_path: https://api.wordpress.org/secret-key/1.1/salt/
+wp_cli_url: https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+woocommerce_plugin_url: https://downloads.wordpress.org/plugin/woocommerce.
+woocommerce_url: https://raw.githubusercontent.com/Azure/LAMP/master/scripts/woocommerce.sh
+replication_url: https://raw.githubusercontent.com/Azure/LAMP/master/scripts/wordpress_replication.sh
