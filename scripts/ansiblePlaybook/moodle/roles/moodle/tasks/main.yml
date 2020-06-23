@@ -1,0 +1,61 @@
+--- 
+- 
+  become: true
+  file: 
+    group: "{{default_permission}}"
+    mode: 493
+    owner: "{{default_permission}}"
+    path: "{{webroot}}"
+    state: directory
+  name: "Create webroot"
+- 
+  name: "Check if Moodle archive exists"
+  register: moodle_path
+  stat: path="{{moodle_download_path}}-{{version}}.tgz"
+- 
+  get_url: "dest=/tmp/ url={{moodle_download_url}}-{{version}}.tgz"
+  name: "Download Moodle archive"
+  when: "(moodle_path.stat.exists == false)"
+- 
+  become: true
+  name: "Extract moodle"
+  unarchive: 
+    copy: false
+    dest: /tmp
+    group: "{{default_permission}}"
+    owner: "{{default_permission}}"
+    src: "{{moodle_download_path}}-{{version}}.tgz"
+- 
+  become: true
+  file: 
+    group: "{{default_permission}}"
+    mode: 493
+    owner: "{{default_permission}}"
+    path: "{{moodle_data_direc_path}}"
+    state: directory
+  name: "Create moodle data directory"
+- 
+  name: create a database
+  command: mysql -h {{dbservername}} -u {{dbusername}} -p{{dbpassword}} -e "CREATE DATABASE {{moodle_db_name}} CHARACTER SET utf8;"
+  register: output
+- debug: var=output.stdout_lines
+
+- 
+  name: grant user permission to database
+  command: mysql -h {{dbservername}} -u {{dbusername}} -p{{dbpassword}} -e "GRANT ALL ON {{moodle_db_name}}.* TO {{moodle_db_user}} IDENTIFIED BY '{{moodle_db_pass}}';"
+  register: outputpremission
+- debug: var=outputpremission.stdout_lines
+
+- name: install moodle
+  command: /usr/bin/php /tmp/moodle/admin/cli/install.php --chmod=770 --lang=en_us --wwwroot=https://{{domain_name}} --dataroot={{moodle_data_direc_path}} --dbhost={{dbservername}} --dbname={{moodle_db_name}} --dbuser={{dbusername}} --dbpass={{dbpassword}} --dbtype=mysqli --fullname='{{moodle_full_name}}' --shortname='{{moodle_short_name}}' --adminuser={{moodle_login_id}} --adminpass={{moodle_pass}} --adminemail={{moodle_admin_mail}} --non-interactive=true --agree-license=true --allow-unstable=true
+  become: true
+
+- 
+  become: true
+  command: "mv {{moodle_download_path}}/ {{webroot}}/{{hostname}}/"
+  name: "Move moodle install files"
+  
+- 
+  file: "path={{webroot}}/{{hostname}}/ owner={{default_permission}} group={{default_permission}} state=directory recurse=yes"
+  name: "Change ownership of Moodle"
+  become: true

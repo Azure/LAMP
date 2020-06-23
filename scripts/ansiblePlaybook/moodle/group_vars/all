@@ -1,0 +1,29 @@
+# Below parameters will be updated in run time.
+vm_ip: IP
+vm_password: password
+user_name: azusername
+hostname: moodle
+domain_name: domain
+dbservername: localhost
+dbusername: dbname
+dbpassword: dbpass
+moodle_db_name: moodle
+moodle_login_id: admin
+moodle_admin_mail: test@gmail.com
+moodle_full_name: Moodle LMS
+moodle_short_name: Moodle
+moodle_db_user: moodle
+
+# Passwords are auto-genrated.
+moodle_pass: 
+moodle_db_pass: 
+
+version: 3.8.3
+moodle_download_url: https://download.moodle.org/stable38/moodle
+replication_url: https://raw.githubusercontent.com/Azure/LAMP/master/scripts/moodle_replication.sh
+repli_script_name: moodle_replication.sh
+
+webroot: /var/www/html
+moodle_data_direc_path: /azlamp/moodledata
+moodle_download_path: /tmp/moodle
+default_permission: www-data
