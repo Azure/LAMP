@@ -229,10 +229,12 @@ do
 
 done
 EOF
-    if [ $applicationType = "WordPress" ]
-        if [ $siteFQDN = "www.example.org"]
+    if [ "$applicationType" = "WordPress" ]; then
+    function install_application
+    {
+        if [ "$siteFQDN" = "www.example.org" ]; then
             local dnssite=$lbDns
-        elif
+        else
             local dnssite=$siteFQDN
         fi
         local wp_title=LAMP-WordPress
@@ -250,6 +252,8 @@ EOF
         sudo -u $sshUsername install_wordpress $dnssite $wp_title $wp_admin_user wp_admin_password $wp_admin_email $wp_path
         sudo -u $sshUsername install_woocommerce $wp_path
         install_sslcerts $dnssite
+    }
+    install_application
     fi
 
 }  > /tmp/install.log
