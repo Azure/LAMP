@@ -11,22 +11,7 @@ vars_path=/home/${1}/wordpress/group_vars/all
 wp_admin_password=$(</dev/urandom tr -dc _A-Z-a-z-0-9 | head -c8)
 wp_db_user_pass=$(</dev/urandom tr -dc _A-Z-a-z-0-9 | head -c8)
 
-install_ansible() {
-  sudo apt-add-repository ppa:ansible/ansible -y
-  sudo apt-get update
-  sudo apt-get install ansible -y
-}
-configure_ansible() {
-  sudo chown -R ${1}:${1} ${home_path}/.ansible/cp
-  echo "Configure ansible Ip is : ${1}" >> ${log_path}
-  sudo chmod 777 /etc/ansible/hosts
-  sudo echo -e "[webservers]\n${1}" >>/etc/ansible/hosts
-  sudo chmod 755 /etc/ansible/hosts
-}
-install_svn() {
-  sudo apt-get update -y
-  sudo apt-get install -y subversion
-}
+
 wordpress_install() {
   cd /home/${1}
   svn checkout https://github.com/Azure/LAMP/trunk/scripts/ansiblePlaybook/wordpress
@@ -39,13 +24,6 @@ wordpress_install() {
   ansible-playbook /home/${1}/wordpress/playbook.yml -i /etc/ansible/hosts -u ${1}
 }
 
-# Disable strict host key checking to configure host VM IP  (controller VM IP)
-sudo sed -i "s~#   StrictHostKeyChecking ask~   StrictHostKeyChecking no~" /etc/ssh/ssh_config 
-sudo systemctl restart ssh
-install_ansible >> ${log_path}
-#configure_ansible ${1} ${3} >> ${log_path}
-install_svn
+
+
 wordpress_install ${1} ${2} ${3} ${4} ${5} ${6} >> ${log_path}
-# Enable strict host key checking
-sudo sed -i "s~   StrictHostKeyChecking no~#   StrictHostKeyChecking ask~" /etc/ssh/ssh_config 
-sudo systemctl restart ssh
