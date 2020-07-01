@@ -30,29 +30,35 @@ set -ex
 
     get_setup_params_from_configs_json $lamp_on_azure_configs_json_path || exit 99
 
-    echo $glusterNode          >> /tmp/vars.txt
-    echo $glusterVolume        >> /tmp/vars.txt
-    echo $siteFQDN             >> /tmp/vars.txt
-    echo $httpsTermination     >> /tmp/vars.txt
-    echo $dbIP                 >> /tmp/vars.txt
-    echo $adminpass            >> /tmp/vars.txt
-    echo $dbadminlogin         >> /tmp/vars.txt
-    echo $dbadminloginazure    >> /tmp/vars.txt
-    echo $dbadminpass          >> /tmp/vars.txt
-    echo $storageAccountName   >> /tmp/vars.txt
-    echo $storageAccountKey    >> /tmp/vars.txt
-    echo $redisDeploySwitch    >> /tmp/vars.txt
-    echo $redisDns             >> /tmp/vars.txt
-    echo $redisAuth            >> /tmp/vars.txt
-    echo $dbServerType                >> /tmp/vars.txt
-    echo $fileServerType              >> /tmp/vars.txt
-    echo $mssqlDbServiceObjectiveName >> /tmp/vars.txt
-    echo $mssqlDbEdition	>> /tmp/vars.txt
-    echo $mssqlDbSize	>> /tmp/vars.txt
-    echo $thumbprintSslCert >> /tmp/vars.txt
-    echo $thumbprintCaCert >> /tmp/vars.txt
-    echo $nfsByoIpExportPath >> /tmp/vars.txt
-    echo $phpVersion >> /tmp/vars.txt
+    echo $glusterNode                   >> /tmp/vars.txt
+    echo $glusterVolume                 >> /tmp/vars.txt
+    echo $siteFQDN                      >> /tmp/vars.txt
+    echo $httpsTermination              >> /tmp/vars.txt
+    echo $dbIP                          >> /tmp/vars.txt
+    echo $adminpass                     >> /tmp/vars.txt
+    echo $dbadminlogin                  >> /tmp/vars.txt
+    echo $dbadminloginazure             >> /tmp/vars.txt
+    echo $dbadminpass                   >> /tmp/vars.txt
+    echo $storageAccountName            >> /tmp/vars.txt
+    echo $storageAccountKey             >> /tmp/vars.txt
+    echo $redisDeploySwitch             >> /tmp/vars.txt
+    echo $redisDns                      >> /tmp/vars.txt
+    echo $redisAuth                     >> /tmp/vars.txt
+    echo $dbServerType                  >> /tmp/vars.txt
+    echo $fileServerType                >> /tmp/vars.txt
+    echo $mssqlDbServiceObjectiveName   >> /tmp/vars.txt
+    echo $mssqlDbEdition	            >> /tmp/vars.txt
+    echo $mssqlDbSize                   >> /tmp/vars.txt
+    echo $thumbprintSslCert             >> /tmp/vars.txt
+    echo $thumbprintCaCert              >> /tmp/vars.txt
+    echo $nfsByoIpExportPath            >> /tmp/vars.txt
+    echo $phpVersion                    >> /tmp/vars.txt
+    echo $applicationType               >> /tmp/vars.txt
+    echo $sshUsername                   >> /tmp/vars.txt
+    echo $lbDns                         >> /tmp/vars.txt
+    echo $applicationDbName             >> /tmp/vars.txt
+    echo $wpAdminPass                   >> /tmp/vars.txt
+    echo $wpDbUserPass                  >> /tmp/vars.txt
 
     check_fileServerType_param $fileServerType
 
@@ -118,7 +124,7 @@ set -ex
     
     # install pre-requisites
     apt-get install -y --fix-missing python-software-properties unzip
-
+ 
     # install the entire stack
     # passing php versions $phpVersion
     apt-get -y --force-yes install nginx php$phpVersion-fpm php$phpVersion php$phpVersion-cli php$phpVersion-curl php$phpVersion-zip >> /tmp/apt5.log
@@ -223,5 +229,27 @@ do
 
 done
 EOF
-  
+    if [ $applicationType = "WordPress" ]
+        if [ $siteFQDN = "www.example.org"]
+            local dnssite=$lbDns
+        elif
+            local dnssite=$siteFQDN
+        fi
+        local wp_title=LAMP-WordPress
+        local wp_admin_user=adminpass
+        local wp_admin_password= $wpAdminPass
+        local wp_admin_email=admin@$dnssite
+        local wp_path=/azlamp/html/$dnssite
+        local wp_db_user_id=admin
+        local wp_db_user_pass=$wpDbUserPass
+
+        create_database $dbIP $dbadminloginazure $dbadminpass $applicationDbName
+        download_wordpress $dnssite
+        create_wpconfig $dbIP $applicationDbName $dbadminloginazure $dbadminpass $dnssite
+        install_wp_cli $sshUsername
+        sudo -u $sshUsername install_wordpress $dnssite $wp_title $wp_admin_user wp_admin_password $wp_admin_email $wp_path
+        sudo -u $sshUsername install_woocommerce $wp_path
+        install_sslcerts $dnssite
+    fi
+
 }  > /tmp/install.log

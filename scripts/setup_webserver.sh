@@ -44,6 +44,12 @@ echo $redisDeploySwitch   >> /tmp/vars.txt
 echo $redisDns            >> /tmp/vars.txt
 echo $redisAuth           >> /tmp/vars.txt
 echo $phpVersion          >> /tmp/vars.txt
+echo $applicationType     >> /tmp/vars.txt
+echo $sshUsername         >> /tmp/vars.txt
+echo $lbDns               >> /tmp/vars.txt
+echo $applicationDbName   >> /tmp/vars.txt
+echo $wpAdminPass         >> /tmp/vars.txt
+echo $wpDbUserPass        >> /tmp/vars.txt
 
 # downloading and updating php packages from the repository 
   sudo add-apt-repository ppa:ondrej/php -y
