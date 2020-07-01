@@ -67,6 +67,14 @@
             },
             "phpProfile": {
                 "phpVersion": "[parameters('lampCommon').phpVersion]"
+            },
+            "applicationProfile": {
+                "applicationType": "[parameters('lampCommon').applicationType]",
+                "sshUsername": "[parameters('lampCommon').sshUsername]",
+                "lbDns": "[parameters('lampCommon').lbDns]",
+                "wordpressDbName": "[parameters('lampCommon').wordpressDbName]",
+                "wordpressDbUser": "[parameters('lampCommon').wordpressDbUser]",
+                "wordpressDbPass": "[parameters('lampCommon').wordpressDbPass]"
             }
         }
     },
