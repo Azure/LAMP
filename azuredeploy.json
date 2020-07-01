@@ -893,6 +893,7 @@
         "documentation09": "    controller          - creates a controller VM and deploys code",
         "documentation10": "GlusterFS Sizing guidance",
         "lampCommon": {
+            "applicationDbName": "[parameters('applicationType')]",
             "applicationType": "[parameters('applicationType')]",
             "baseTemplateUrl": "[concat(parameters('_artifactsLocation'), 'nested/')]",
             "scriptLocation": "[concat(parameters('_artifactsLocation'), 'scripts/')]",
@@ -1013,9 +1014,9 @@
             "vnetName": "[concat('vnet-',variables('resourceprefix'))]",
             "vpnType": "[parameters('vpnType')]",
             "webServerSetupScriptFilename": "setup_webserver.sh",
-            "wordpressDbName": "wordpress",
-            "wordpressDbUser": "wordpress",
-            "wordpressDbPass": "[concat('9#36^', substring(uniqueString(resourceGroup().id, deployment().name), 5, 8), toUpper('ercq'))]"
+            "wpAdminPass": "[concat(toUpper('xl'), substring(uniqueString(resourceGroup().id, deployment().name), 6, 7),',1*8')]",
+            "wpDbUserPass": "[concat('9#36^', substring(uniqueString(resourceGroup().id, deployment().name), 5, 8), toUpper('ercq'))]"
+
         },
         "certUrlArray": [
             {

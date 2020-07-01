@@ -72,9 +72,9 @@
                 "applicationType": "[parameters('lampCommon').applicationType]",
                 "sshUsername": "[parameters('lampCommon').sshUsername]",
                 "lbDns": "[parameters('lampCommon').lbDns]",
-                "wordpressDbName": "[parameters('lampCommon').wordpressDbName]",
-                "wordpressDbUser": "[parameters('lampCommon').wordpressDbUser]",
-                "wordpressDbPass": "[parameters('lampCommon').wordpressDbPass]"
+                "applicationDbName": "[parameters('lampCommon').applicationDbName]",
+                "wpAdminPass": "[parameters('lampCommon').wpAdminPass]",
+                "wpDbUserPass": "[parameters('lampCommon').wpDbUserPass]"
             }
         }
     },
