@@ -21,6 +21,18 @@
                 "description": "ssh public key"
             },
             "type": "string"
+        },
+        "applicationType":{
+            "defaultValue": "None",
+            "allowedValues": [
+                "None",
+                "WordPress",
+                "Moodle"
+            ],
+            "metadata": {
+                "description": "Select the application to be installed. If selects none it will deploy Empty LAMP stack"
+            },
+            "type": "string"
         }
     },
     "resources": [
@@ -37,7 +49,8 @@
                     "sshPublicKey":                 { "value": "[parameters('sshPublicKey')]" },
                     "mysqlPgresVcores":             { "value": 8 },
                     "mysqlPgresStgSizeGB":          { "value": 128 },
-                    "fileServerDiskSize":           { "value": 128 }
+                    "fileServerDiskSize":           { "value": 128 },
+                    "applicationType":              { "value": "[parameters('applicationType')]"}
                 },
                 "templateLink": {
                     "uri": "[concat(parameters('_artifactsLocation'), 'azuredeploy.json', parameters('_artifactsLocationSasToken'))]"
