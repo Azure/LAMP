@@ -123,12 +123,14 @@ function create_database
 function download_wordpress
 {
     local wordpress_path=/azlamp/html
+    local path=/var/lib/waagent/custom-script/download/0
     local siteFQDN=$1
     #/usr/bin/curl -k --max-redirs 10 https://wordpress.org/latest.zip -L -o $wordpress_path/wordpress.zip
     #/usr/bin/unzip -q $wordpress_path/wordpress.zip
     #rm $wordpress_path/wordpress.zip
     #mv $wordpress_path/wordpress $wordpress_path/$siteFQDN
 
+    cd $wordpress_path
     wget https://wordpress.org/latest.tar.gz
     tar -xvf $wordpress_path/latest.tar.gz
     rm $wordpress_path/latest.tar.gz
