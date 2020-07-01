@@ -245,7 +245,7 @@ EOF
         local wp_db_user_id=admin
         local wp_db_user_pass=$wpDbUserPass
 
-        create_database $dbIP $dbadminloginazure $dbadminpass $applicationDbName
+        create_database $dbIP $dbadminloginazure $dbadminpass $applicationDbName $wp_db_user_id $wp_db_user_pass
         download_wordpress $dnssite
         create_wpconfig $dbIP $applicationDbName $dbadminloginazure $dbadminpass $dnssite
         install_wp_cli $sshUsername
