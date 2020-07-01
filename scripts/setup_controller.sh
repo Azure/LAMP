@@ -239,11 +239,11 @@ EOF
         fi
         local wp_title=LAMP-WordPress
         local wp_admin_user=adminpass
-        local wp_admin_password= $wpAdminPass
+        local wp_admin_password= iTalent@20
         local wp_admin_email=admin@$dnssite
         local wp_path=/azlamp/html/$dnssite
         local wp_db_user_id=admin
-        local wp_db_user_pass=$wpDbUserPass
+        local wp_db_user_pass=iTalent@20
 
         create_database $dbIP $dbadminloginazure $dbadminpass $applicationDbName
         download_wordpress $dnssite
