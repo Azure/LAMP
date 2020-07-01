@@ -124,9 +124,14 @@ function download_wordpress
 {
     local wordpress_path=/azlamp/html
     local siteFQDN=$1
-    /usr/bin/curl -k --max-redirs 10 https://wordpress.org/latest.zip -L -o $wordpress_path/wordpress.zip
-    /usr/bin/unzip -q $wordpress_path/wordpress.zip
-    rm $wordpress_path/wordpress.zip
+    #/usr/bin/curl -k --max-redirs 10 https://wordpress.org/latest.zip -L -o $wordpress_path/wordpress.zip
+    #/usr/bin/unzip -q $wordpress_path/wordpress.zip
+    #rm $wordpress_path/wordpress.zip
+    #mv $wordpress_path/wordpress $wordpress_path/$siteFQDN
+
+    wget https://wordpress.org/latest.tar.gz
+    tar -xvf $wordpress_path/latest.tar.gz
+    rm $wordpress_path/latest.tar.gz
     mv $wordpress_path/wordpress $wordpress_path/$siteFQDN
 }
 
