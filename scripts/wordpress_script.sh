@@ -21,6 +21,8 @@ wordpress_install() {
   sudo sed -i "s~wp_db_user: wordpress~wp_db_user: ${3}~" ${vars_path} 
   sudo sed -i "s~wp_db_password: password~wp_db_password: ${4}~" ${vars_path}
   sudo sed -i "s~wp_db_name: wordpress~wp_db_name: ${6}~" ${vars_path}
+  sudo sed -i "s~wp_admin_password: ~wp_admin_password: ${wp_admin_password}~" ${vars_path}
+  sudo sed -i "s~wp_db_user_pass: ~wp_db_user_pass: ${wp_db_user_pass}~" ${vars_path}
   ansible-playbook /home/${1}/wordpress/playbook.yml -i /etc/ansible/hosts -u ${1}
 }
 
