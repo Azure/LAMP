@@ -238,12 +238,13 @@ EOF
             local dnssite=$siteFQDN
         fi
         local wp_title=LAMP-WordPress
-        local wp_admin_user=adminpass
+        local wp_admin_user=admin
         local wp_admin_password=$wpAdminPass
         local wp_admin_email=admin@$dnssite
         local wp_path=/azlamp/html/$dnssite
         local wp_db_user_id=admin
         local wp_db_user_pass=$wpDbUserPass
+        local sshUsername=azureadmin
 
         create_database $dbIP $dbadminloginazure $dbadminpass $applicationDbName $wp_db_user_id $wp_db_user_pass
         download_wordpress $dnssite

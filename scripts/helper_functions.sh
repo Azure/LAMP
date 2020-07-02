@@ -49,7 +49,7 @@ function get_setup_params_from_configs_json
     export nfsByoIpExportPath=$(echo $json | jq -r .fileServerProfile.nfsByoIpExportPath)
     export phpVersion=$(echo $json | jq -r .phpProfile.phpVersion)
     export applicationType=$(echo $json | jq -r .applicationProfile.applicationType)
-    export sshUsername=$(echo $json | jq -r .applicatioProfile.sshUsername)
+    export sshUsername=$(echo $json | jq -r .applicationProfile.sshUsername)
     export lbDns=$(echo $json | jq -r .applicationProfile.lbDns)
     export applicationDbName=$(echo $json | jq -r .applicationProfile.applicationDbName)
     export wpAdminPass=$(echo $json | jq -r .applicationProfile.wpAdminPass)
