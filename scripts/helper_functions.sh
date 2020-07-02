@@ -242,7 +242,7 @@ function install_woocommerce
 
 function linking_data_location 
 {
-    local dataPath=/azlamp/data/
+    local dataPath=/azlamp/data
     mkdir -p $dataPath/$1
     mkdir -p $dataPath/$1/wp-content
     mv /azlamp/html/$1/wp-content /tmp/wp-content
