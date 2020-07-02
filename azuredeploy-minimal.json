@@ -26,8 +26,7 @@
             "defaultValue": "None",
             "allowedValues": [
                 "None",
-                "WordPress",
-                "Moodle"
+                "WordPress"
             ],
             "metadata": {
                 "description": "Select the application to be installed. If selects none it will deploy Empty LAMP stack"
