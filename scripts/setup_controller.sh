@@ -246,7 +246,7 @@ EOF
         download_wordpress $dnssite
         create_wpconfig $dbIP $applicationDbName $dbadminloginazure $dbadminpass $dnssite
         install_wp_cli $sshUsername
-        sudo -u $sshUsername install_wordpress $dnssite $wp_title $wp_admin_user wp_admin_password $wp_admin_email $wp_path
+        sudo -u $sshUsername install_wordpress $dnssite $wp_title $wp_admin_user $wp_admin_password $wp_admin_email $wp_path
         sudo -u $sshUsername install_woocommerce $wp_path
         linking_data_location $dnssite
         install_sslcerts $dnssite
