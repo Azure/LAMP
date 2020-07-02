@@ -243,12 +243,12 @@ EOF
         local sshUsername=azureadmin
 
         create_database $dbIP $dbadminloginazure $dbadminpass $applicationDbName $wp_db_user_id $wp_db_user_pass
-        download_wordpress $dnssite
+        download_wordpress $
+        linking_data_location $dnssite
         create_wpconfig $dbIP $applicationDbName $dbadminloginazure $dbadminpass $dnssite
         install_wp_cli $sshUsername
         install_wordpress $dnssite $wp_title $wp_admin_user $wp_admin_password $wp_admin_email $wp_path
         install_woocommerce $wp_path
-        linking_data_location $dnssite
         install_sslcerts $dnssite
     }
     install_application
