@@ -260,7 +260,21 @@ function install_woocommerce
     local path=$1
     wp plugin install woocommerce --path='$path'
     wp plugin activate woocommerce --path='$path'
+    chown -R www-data:www-data $path
 }
+
+function linking_data_location 
+{
+    local dataPath=/azlamp/data/
+    mkdir -p $dataPath/$1
+    mkdir -p $dataPath/$1/wp-content
+    #mkdir -p $dataPath/$1/wp-content/uploads
+    #ln -s $dataPath/wp-content/uploads /azlamp/html/$1/wp-content/uploads
+    ln -s $dataPath/$1/wp-content /azlamp/html/$1/wp-content
+    chmod 0755 $dataPath/$1/wp-content
+    chown -R www-data:www-data $dataPath/$1/wp-content
+}
+
 function install_sslcerts
 {
     local path=/azlamp/certs/$1
