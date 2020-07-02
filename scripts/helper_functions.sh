@@ -199,7 +199,7 @@ function create_wpconfig
   * You can have multiple installations in one database if you give each a unique prefix.
   * Only numbers, letters, and underscores are allowed.
   */
-  $table_prefix  = 'wp_';
+  \$table_prefix  = 'wp_';
 
   /**
   * WordPress Localized Language, defaults language is English.
@@ -252,14 +252,14 @@ function install_wordpress
     local wp_admin_email=$5
     local wp_path=$6
 
-    wp core install --url='https://$lbDns' --title='$wp_title' --admin_user='$wp_admin_user' --admin_password='$wp_admin_password' --admin_email='$wp_admin_email' --path='$wp_path'
+    wp core install --url='https://$lbDns' --title='$wp_title' --admin_user='$wp_admin_user' --admin_password='$wp_admin_password' --admin_email='$wp_admin_email' --path='$wp_path' --allow-root
 }
 
 function install_woocommerce
 {
     local path=$1
-    wp plugin install woocommerce --path='$path'
-    wp plugin activate woocommerce --path='$path'
+    wp plugin install woocommerce --path='$path' --allow-root
+    wp plugin activate woocommerce --path='$path' --allow-root
     chown -R www-data:www-data $path
 }
 
@@ -283,6 +283,7 @@ function install_sslcerts
     chown www-data:www-data $path/nginx.*
     chmod 400 $path/nginx.*
 }
+
 function check_fileServerType_param
 {
     local fileServerType=$1
