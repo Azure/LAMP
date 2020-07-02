@@ -86,24 +86,6 @@ function install_php_mssql_driver
     echo "extension=pdo_sqlsrv.so" >> /etc/php/$PHPVER/cli/php.ini
 }
 
-# function clonerepo
-# {
-#     cd /home/$sshUsername/ 
-#     wget https://raw.githubusercontent.com/Azure/LAMP/master/scripts/wordpress_script.sh
-#     sudo chown -R $sshUsername:$sshUsername /home/$sshUsername/wordpress_script.sh
-# }
-
-# function install_ansible {
-#   apt-add-repository ppa:ansible/ansible -y
-#   apt-get update
-#   apt-get install ansible -y
-# }
-
-# function install_svn {
-#   apt-get update -y
-#   apt-get install -y subversion
-# }
-
 function create_database
 {
     local dbIP=$1
@@ -117,7 +99,6 @@ function create_database
     mysql -h $dbIP -u $dbadminloginazure -p$dbadminpass -e "CREATE DATABASE $applicationDbName CHARACTER SET utf8;"
     # grant user permission for database
     mysql -h $dbIP -u $dbadminloginazure -p$dbadminpass -e "GRANT ALL ON $applicationDbName.* TO $wp_db_user_id IDENTIFIED BY '$wp_db_user_pass';"
-
 }
 
 function download_wordpress
@@ -125,10 +106,6 @@ function download_wordpress
     local wordpress_path=/azlamp/html
     local path=/var/lib/waagent/custom-script/download/0
     local siteFQDN=$1
-    #/usr/bin/curl -k --max-redirs 10 https://wordpress.org/latest.zip -L -o $wordpress_path/wordpress.zip
-    #/usr/bin/unzip -q $wordpress_path/wordpress.zip
-    #rm $wordpress_path/wordpress.zip
-    #mv $wordpress_path/wordpress $wordpress_path/$siteFQDN
 
     cd $wordpress_path
     wget https://wordpress.org/latest.tar.gz
@@ -268,11 +245,11 @@ function linking_data_location
     local dataPath=/azlamp/data/
     mkdir -p $dataPath/$1
     mkdir -p $dataPath/$1/wp-content
-    #mkdir -p $dataPath/$1/wp-content/uploads
-    #ln -s $dataPath/wp-content/uploads /azlamp/html/$1/wp-content/uploads
-    ln -s $dataPath/$1/wp-content /azlamp/html/$1/wp-content
+    mv /azlamp/html/$1/wp-content /tmp/wp-content
+    ln -s $dataPath/$1/wp-content /azlamp/html/$1/
+    mv /tmp/wp-content/* $dataPath/$1/wp-content/
     chmod 0755 $dataPath/$1/wp-content
-    chown -R www-data:www-data $dataPath/$1/wp-content
+    chown -R www-data:www-data $dataPath/$1
 }
 
 function install_sslcerts
