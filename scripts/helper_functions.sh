@@ -229,14 +229,14 @@ function install_wordpress
     local wp_admin_email=$5
     local wp_path=$6
 
-    wp core install --url=https://$lbDns --title=$wp_title --admin_user=$wp_admin_user --admin_password=$wp_admin_password --admin_email=$wp_admin_email --path=$wp_path --allow-root
+    wp core install --url=https://$lbDns --title=$wp_title --admin_user=$wp_admin_user --admin_password=$wp_admin_password --admin_email=$wp_admin_email --path=$wp_path #--allow-root
 }
 
 function install_woocommerce
 {
     local path=$1
-    wp plugin install woocommerce --path=$path --allow-root
-    wp plugin activate woocommerce --path=$path --allow-root
+    wp plugin install woocommerce --path=$path #--allow-root
+    wp plugin activate woocommerce --path=$path #--allow-root
     chown -R www-data:www-data $path
 }
 

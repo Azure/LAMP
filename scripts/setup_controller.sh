@@ -247,8 +247,8 @@ EOF
         linking_data_location $dnssite
         create_wpconfig $dbIP $applicationDbName $dbadminloginazure $dbadminpass $dnssite
         install_wp_cli $sshUsername
-        install_wordpress $dnssite $wp_title $wp_admin_user $wp_admin_password $wp_admin_email $wp_path
-        install_woocommerce $wp_path
+        sudo -u $sshUsername install_wordpress $dnssite $wp_title $wp_admin_user $wp_admin_password $wp_admin_email $wp_path
+        sudo -u $sshUsername install_woocommerce $wp_path
         install_sslcerts $dnssite
     }
     install_application
