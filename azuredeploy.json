@@ -2,16 +2,16 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "TypeOfTemplate":{
-            "defaultValue":"LAMP ARM TEMPLATE",
-            "type":"string"
+        "TypeOfTemplate": {
+            "defaultValue": "LAMP ARM TEMPLATE",
+            "type": "string"
         },
         "_artifactsLocation": {
             "type": "string",
             "metadata": {
                 "description": "The base URI where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated."
             },
-            "defaultValue": "https://raw.githubusercontent.com/Azure/LAMP/master/"
+            "defaultValue": "https://raw.githubusercontent.com/asift91/LAMP/mat78/"
         },
         "_artifactsLocationSasToken": {
             "type": "securestring",
@@ -149,12 +149,12 @@
         },
         "UbuntuVersion": {
             "defaultValue": "16.04-LTS",
-            "allowedValues":[
+            "allowedValues": [
                 "16.04-LTS",
                 "18.04-LTS"
             ],
             "type": "string",
-            "metadata":{
+            "metadata": {
                 "description": "Select Ubuntu version. By default it will take 16.04-LTS"
             }
         },
@@ -527,7 +527,7 @@
             },
             "type": "string"
         },
-        "applicationType":{
+        "applicationType": {
             "defaultValue": "None",
             "allowedValues": [
                 "None",
