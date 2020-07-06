@@ -527,7 +527,7 @@
             },
             "type": "string"
         },
-        "applicationType": {
+        "cmsApplication": {
             "defaultValue": "WordPress",
             "allowedValues": [
                 "WordPress",
@@ -892,8 +892,8 @@
         "documentation09": "    controller          - creates a controller VM and deploys code",
         "documentation10": "GlusterFS Sizing guidance",
         "lampCommon": {
-            "applicationDbName": "[parameters('applicationType')]",
-            "applicationType": "[parameters('applicationType')]",
+            "applicationDbName": "[parameters('cmsApplication')]",
+            "cmsApplication": "[parameters('cmsApplication')]",
             "baseTemplateUrl": "[concat(parameters('_artifactsLocation'), 'nested/')]",
             "scriptLocation": "[concat(parameters('_artifactsLocation'), 'scripts/')]",
             "artifactsSasToken": "[parameters('_artifactsLocationSasToken')]",

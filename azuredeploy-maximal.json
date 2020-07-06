@@ -22,7 +22,7 @@
             },
             "type": "string"
         },
-        "applicationType": {
+        "cmsApplication": {
             "defaultValue": "WordPress",
             "allowedValues": [
                 "WordPress",
@@ -51,7 +51,7 @@
                     "mysqlPgresStgSizeGB": { "value": 512 },
                     "fileServerType": { "value": "gluster" },
                     "fileServerDiskSize": { "value": 512 },
-                    "applicatioType": { "value": "[parameters('applicationType')]" }
+                    "cmsApplication": { "value": "[parameters('cmsApplication')]" }
                 },
                 "templateLink": {
                     "uri": "[concat(parameters('_artifactsLocation'), 'azuredeploy.json', parameters('_artifactsLocationSasToken'))]"
