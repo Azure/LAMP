@@ -22,11 +22,11 @@
             },
             "type": "string"
         },
-        "applicationType":{
-            "defaultValue": "None",
+        "applicationType": {
+            "defaultValue": "WordPress",
             "allowedValues": [
-                "None",
-                "WordPress"
+                "WordPress",
+                "None"
             ],
             "metadata": {
                 "description": "Select the application to be installed. If selects none it will deploy Empty LAMP stack"
@@ -42,16 +42,16 @@
             "properties": {
                 "mode": "Incremental",
                 "parameters": {
-                    "_artifactsLocation":           { "value": "[parameters('_artifactsLocation')]" },
-                    "_artifactsLocationSasToken":   { "value": "[parameters('_artifactsLocationSasToken')]" },
-                    "redisDeploySwitch":            { "value": false },
-                    "sshPublicKey":                 { "value": "[parameters('sshPublicKey')]" },
-                    "autoscaleVmSku":               { "value": "Standard_DS1_v2" },
-                    "enableAccelNwForOtherVmsSwitch":   { "value": false },
-                    "dbServerType":                 { "value": "mysql" },
-                    "fileServerDiskCount":          { "value": 2 },
-                    "fileServerDiskSize":           { "value": 32 },
-                    "applicationType":              { "value": "[parameters('applicationType')]"}
+                    "_artifactsLocation": { "value": "[parameters('_artifactsLocation')]" },
+                    "_artifactsLocationSasToken": { "value": "[parameters('_artifactsLocationSasToken')]" },
+                    "redisDeploySwitch": { "value": false },
+                    "sshPublicKey": { "value": "[parameters('sshPublicKey')]" },
+                    "autoscaleVmSku": { "value": "Standard_DS1_v2" },
+                    "enableAccelNwForOtherVmsSwitch": { "value": false },
+                    "dbServerType": { "value": "mysql" },
+                    "fileServerDiskCount": { "value": 2 },
+                    "fileServerDiskSize": { "value": 32 },
+                    "applicationType": { "value": "[parameters('applicationType')]" }
                 },
                 "templateLink": {
                     "uri": "[concat(parameters('_artifactsLocation'), 'azuredeploy.json', parameters('_artifactsLocationSasToken'))]"
