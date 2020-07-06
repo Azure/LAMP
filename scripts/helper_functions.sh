@@ -92,25 +92,25 @@ function create_database() {
   local dbadminloginazure=$2
   local dbadminpass=$3
   local applicationDbName=$4
-  local wp_db_user_id=$5
-  local wp_db_user_pass=$6
+  local wpDbUserId=$5
+  local wpDbUserPass=$6
 
   # create database for application
   mysql -h $dbIP -u $dbadminloginazure -p$dbadminpass -e "CREATE DATABASE $applicationDbName CHARACTER SET utf8;"
   # grant user permission for database
-  mysql -h $dbIP -u $dbadminloginazure -p$dbadminpass -e "GRANT ALL ON $applicationDbName.* TO $wp_db_user_id IDENTIFIED BY '$wp_db_user_pass';"
+  mysql -h $dbIP -u $dbadminloginazure -p$dbadminpass -e "GRANT ALL ON $applicationDbName.* TO $wpDbUserId IDENTIFIED BY '$wpDbUserPass';"
 }
 
 function download_wordpress() {
-  local wordpress_path=/azlamp/html
-  local path=/var/lib/waagent/custom-script/download/0
+  local wordpressPath=/azlamp/html
+  #local path=/var/lib/waagent/custom-script/download/0
   local siteFQDN=$1
 
-  cd $wordpress_path
+  cd $wordpressPath
   wget https://wordpress.org/latest.tar.gz
-  tar -xvf $wordpress_path/latest.tar.gz
-  rm $wordpress_path/latest.tar.gz
-  mv $wordpress_path/wordpress $wordpress_path/$siteFQDN
+  tar -xvf $wordpressPath/latest.tar.gz
+  rm $wordpressPath/latest.tar.gz
+  mv $wordpressPath/wordpress $wordpressPath/$siteFQDN
 }
 
 function create_wpconfig() {
@@ -219,13 +219,13 @@ function install_wp_cli() {
 
 function install_wordpress() {
   local lbDns=$1
-  local wp_title=$2
-  local wp_admin_user=$3
-  local wp_admin_password=$4
-  local wp_admin_email=$5
-  local wp_path=$6
+  local wpTitle=$2
+  local wpAdminUser=$3
+  local wpAdminPassword=$4
+  local wpAdminEmail=$5
+  local wpPath=$6
 
-  wp core install --url=https://$lbDns --title=$wp_title --admin_user=$wp_admin_user --admin_password=$wp_admin_password --admin_email=$wp_admin_email --path=$wp_path --allow-root
+  wp core install --url=https://$lbDns --title=$wpTitle --admin_user=$wpAdminUser --admin_password=$wpAdminPassword --admin_email=$wpAdminEmail --path=$wpPath --allow-root
 }
 
 function install_woocommerce() {
@@ -247,7 +247,7 @@ function linking_data_location() {
   chown -R www-data:www-data $dataPath/$1
 }
 
-function install_sslcerts() {
+function generate_sslcerts() {
   local path=/azlamp/certs/$1
   mkdir $path
   openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout $path/nginx.key -out $path/nginx.crt -subj "/C=US/ST=WA/L=Redmond/O=IT/CN=$1"

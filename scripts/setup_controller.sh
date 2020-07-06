@@ -231,24 +231,32 @@ done
 EOF
     if [ "$cmsApplication" = "WordPress" ]; then
         function install_application() {
-            local dnssite=$siteFQDN
-            local wp_title=LAMP-WordPress
-            local wp_admin_user=admin
-            local wp_admin_password=$wpAdminPass
-            local wp_admin_email=admin@$dnssite
-            local wp_path=/azlamp/html/$dnssite
-            local wp_db_user_id=admin
-            local wp_db_user_pass=$wpDbUserPass
+            local dnsSite=$siteFQDN
+            local wpTitle=LAMP-WordPress
+            local wpAdminUser=admin
+            local wpAdminPassword=$wpAdminPass
+            local wpAdminEmail=admin@$dnsSite
+            local wpPath=/azlamp/html/$dnsSite
+            local wpDbUserId=admin
+            local wpDbUserPass=$wpDbUserPass
             local sshUsername=azureadmin
 
-            create_database $dbIP $dbadminloginazure $dbadminpass $applicationDbName $wp_db_user_id $wp_db_user_pass
-            download_wordpress $dnssite
-            linking_data_location $dnssite
-            create_wpconfig $dbIP $applicationDbName $dbadminloginazure $dbadminpass $dnssite
+            # Creates a Database for CMS application
+            create_database $dbIP $dbadminloginazure $dbadminpass $applicationDbName $wpDbUserId $wpDbUserPass
+            # Download the wordpress application compressed file
+            download_wordpress $dnsSite
+            # Links the data content folder to shared folder.. /azlamp/data
+            linking_data_location $dnsSite
+            # Creates a wp-config file for wordpress
+            create_wpconfig $dbIP $applicationDbName $dbadminloginazure $dbadminpass $dnsSite
+            # Installs WP-CLI tool
             install_wp_cli $sshUsername
-            install_wordpress $dnssite $wp_title $wp_admin_user $wp_admin_password $wp_admin_email $wp_path
-            install_woocommerce $wp_path
-            install_sslcerts $dnssite
+            # Install WordPress by using wp-cli commands
+            install_wordpress $dnsSite $wpTitle $wpAdminUser $wpAdminPassword $wpAdminEmail $wpPath
+            # Install WooCommerce plug-in
+            install_woocommerce $wpPath
+            # Generates the openSSL certificates
+            generate_sslcerts $dnsSite
         }
         install_application
     fi
