@@ -23,10 +23,10 @@
             "type": "string"
         },
         "applicationType": {
-            "defaultValue": "None",
+            "defaultValue": "WordPress",
             "allowedValues": [
-                "None",
-                "WordPress"
+                "WordPress",
+                "None"
             ],
             "metadata": {
                 "description": "Select the application to be installed. If selects none it will deploy Empty LAMP stack"
