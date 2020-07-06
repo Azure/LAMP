@@ -534,7 +534,7 @@
                 "None"
             ],
             "metadata": {
-                "description": "Select the application to be installed. If select none it will deploy Empty LAMP stack"
+                "description": "Select the CMS application to be installed. If select none it will deploy LAMP stack"
             },
             "type": "string"
         },
