@@ -69,7 +69,7 @@
                 "phpVersion": "[parameters('lampCommon').phpVersion]"
             },
             "applicationProfile": {
-                "applicationType": "[parameters('lampCommon').applicationType]",
+                "cmsApplication": "[parameters('lampCommon').cmsApplication]",
                 "sshUsername": "[parameters('lampCommon').sshUsername]",
                 "lbDns": "[parameters('lampCommon').lbDns]",
                 "applicationDbName": "[parameters('lampCommon').applicationDbName]",
