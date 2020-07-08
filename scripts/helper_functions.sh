@@ -281,6 +281,7 @@ function generate_text_file() {
 WordPress site name: $dnsSite
 username: $username
 password: $passw
+
 Database details
 db server name: $dbIP
 wpDbUserId: $wpDbUserId
