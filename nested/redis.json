@@ -39,7 +39,7 @@
     },
     "outputs": {
         "redisKey": {
-            "value": "[listKeys(variables('redisResourceId'), '2016-04-01').primaryKey]",
+            "value": "[listKeys(variables('redisResourceId'), '2019-07-01').primaryKey]",
             "type": "string"
         }
     }
