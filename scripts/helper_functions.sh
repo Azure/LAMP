@@ -56,6 +56,7 @@ function get_setup_params_from_configs_json() {
   export applicationDbName=$(echo $json | jq -r .applicationProfile.applicationDbName)
   export wpAdminPass=$(echo $json | jq -r .applicationProfile.wpAdminPass)
   export wpDbUserPass=$(echo $json | jq -r .applicationProfile.wpDbUserPass)
+  export wpVersion=$(echo $json | jq -r .applicationProfile.wpVersion)
 }
 
 function get_php_version() {
@@ -107,9 +108,22 @@ function download_wordpress() {
   local siteFQDN=$1
 
   cd $wordpressPath
-  wget https://wordpress.org/latest.tar.gz
-  tar -xvf $wordpressPath/latest.tar.gz
+  wget https://wordpress.org/latest..gz
+  tar -xvf $wordpressPath/latest.tar.gztar
   rm $wordpressPath/latest.tar.gz
+  mv $wordpressPath/wordpress $wordpressPath/$siteFQDN
+}
+
+function download_wordpress_version() {
+  local wordpressPath=/azlamp/html
+  #local path=/var/lib/waagent/custom-script/download/0
+  local siteFQDN=$1
+  local version=$2
+
+  cd $wordpressPath
+  wget https://wordpress.org/wordpress-$version.tar.gz
+  tar -xvf $wordpressPath/wordpress-$version.tar.gz
+  rm $wordpressPath/wordpress-$version.tar.gz
   mv $wordpressPath/wordpress $wordpressPath/$siteFQDN
 }
 
@@ -210,11 +224,10 @@ EOF
 }
 
 function install_wp_cli() {
-  local sshUsername=$1
-  cd /home/$sshUsername
+  cd /tmp
   wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-  chmod +x /home/$sshUsername/wp-cli.phar
-  mv /home/$sshUsername/wp-cli.phar /usr/local/bin/wp
+  chmod +x /tmp/wp-cli.phar
+  mv /tmp/wp-cli.phar /usr/local/bin/wp
 }
 
 function install_wordpress() {
@@ -228,7 +241,7 @@ function install_wordpress() {
   wp core install --url=https://$lbDns --title=$wpTitle --admin_user=$wpAdminUser --admin_password=$wpAdminPassword --admin_email=$wpAdminEmail --path=$wpPath --allow-root
 }
 
-function install_woocommerce() {
+function install_plugins() {
   local path=$1
   wp plugin install woocommerce --path=$path --allow-root
   wp plugin activate woocommerce --path=$path --allow-root
@@ -256,6 +269,25 @@ function generate_sslcerts() {
   chown -R www-data:www-data /azlamp/data/$1
 }
 
+function generate_text_file() {
+  local dnsSite=$1
+  local username=$2
+  local passw=$3
+  local dbIP=$4
+  local wpDbUserId=$5
+  local wpDbUserPass=$6
+
+  cat <<EOF >/home
+WordPress site name: $dnsSite
+username: $username
+password: $passw
+Database details
+db server name: $dbIP
+wpDbUserId: $wpDbUserId
+wpDbUserPass: $wpDbUserPass
+
+EOF
+}
 function check_fileServerType_param() {
   local fileServerType=$1
   if [ "$fileServerType" != "gluster" -a "$fileServerType" != "azurefiles" -a "$fileServerType" != "nfs" -a "$fileServerType" != "nfs-ha" -a "$fileServerType" != "nfs-byo" ]; then
