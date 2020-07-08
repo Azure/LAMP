@@ -265,7 +265,6 @@ EOF
             generate_sslcerts $dnsSite
             # Generate wordpress.txt in /home location
             generate_text_file $dnsSite $wpAdminUser $wpAdminPassword $dbIP $wpDbUserId $wpDbUserPass
-
         }
         install_wordpress
     fi
