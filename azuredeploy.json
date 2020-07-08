@@ -538,6 +538,18 @@
             },
             "type": "string"
         },
+        "wordpressVersion": {
+            "allowedValues": [
+                "5.4.1",
+                "5.4.2",
+                "5.4"
+            ],
+            "defaultValue": "5.4.2",
+            "metadata": {
+                "description": "Select the CMS wordpress application version to be installed."
+            },
+            "type": "string"
+        },
         "location": {
             "type": "string",
             "defaultValue": "[resourceGroup().location]",
@@ -1014,8 +1026,8 @@
             "vpnType": "[parameters('vpnType')]",
             "webServerSetupScriptFilename": "setup_webserver.sh",
             "wpAdminPass": "[concat(toUpper('xl'), substring(uniqueString(resourceGroup().id, deployment().name), 6, 7),',1*8')]",
-            "wpDbUserPass": "[concat('9#36^', substring(uniqueString(resourceGroup().id, deployment().name), 5, 8), toUpper('ercq'))]"
-
+            "wpDbUserPass": "[concat('9#36^', substring(uniqueString(resourceGroup().id, deployment().name), 5, 8), toUpper('ercq'))]",
+            "wpVersion": "[parameters('wordpressVersion')]"
         },
         "certUrlArray": [
             {
