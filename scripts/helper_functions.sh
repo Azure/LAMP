@@ -97,8 +97,10 @@ function create_database() {
   local wpDbUserPass=$6
 
   # create database for application
+  # mysql -h $dbIP -u $dbadminloginazure -p$dbadminpass -e "CREATE DATABASE $applicationDbName CHARACTER SET utf8;"
   mysql -h $dbIP -u $dbadminloginazure -p$dbadminpass -e "CREATE DATABASE $applicationDbName CHARACTER SET utf8;"
   # grant user permission for database
+  # mysql -h $dbIP -u $dbadminloginazure -p$dbadminpass -e "GRANT ALL ON $applicationDbName.* TO $wpDbUserId IDENTIFIED BY '$wpDbUserPass';"
   mysql -h $dbIP -u $dbadminloginazure -p$dbadminpass -e "GRANT ALL ON $applicationDbName.* TO $wpDbUserId IDENTIFIED BY '$wpDbUserPass';"
 }
 
