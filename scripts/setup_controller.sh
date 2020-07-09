@@ -59,6 +59,7 @@ set -ex
     echo $applicationDbName >>/tmp/vars.txt
     echo $wpAdminPass >>/tmp/vars.txt
     echo $wpDbUserPass >>/tmp/vars.txt
+    echo $wpVersion >>/tmp/vars.txt
 
     check_fileServerType_param $fileServerType
 
@@ -239,15 +240,13 @@ EOF
             local wpPath=/azlamp/html/$dnsSite
             local wpDbUserId=admin
             local wpDbUserPass=$wpDbUserPass
-            local sshUsername=azureadmin # can be avoided because installing WP as root
-
-            # create a file to store user credentials to wordpress.txt
-            # check the versioning of wordpress install (versions which supports )
+            local sshUsername=azureadmin
 
             # Creates a Database for CMS application
             create_database $dbIP $dbadminloginazure $dbadminpass $applicationDbName $wpDbUserId $wpDbUserPass
             # Download the wordpress application compressed file
-            download_wordpress $dnsSite
+            # download_wordpress $dnsSite
+            download_wordpress_version $dnsSite $wpVersion
             # Links the data content folder to shared folder.. /azlamp/data
             linking_data_location $dnsSite
             # Creates a wp-config file for wordpress
@@ -257,11 +256,12 @@ EOF
             # Install WordPress by using wp-cli commands
             install_wordpress $dnsSite $wpTitle $wpAdminUser $wpAdminPassword $wpAdminEmail $wpPath
             # Install WooCommerce plug-in
-            install_plugins $wpPath
+            install_plugin $wpPath
             # Generates the openSSL certificates
             generate_sslcerts $dnsSite
         }
         install_wordpress
     fi
 
-} >/tmp/install.log
+}
+>/tmp/install.log
