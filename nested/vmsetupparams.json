@@ -70,7 +70,6 @@
             },
             "applicationProfile": {
                 "cmsApplication": "[parameters('lampCommon').cmsApplication]",
-                "sshUsername": "[parameters('lampCommon').sshUsername]",
                 "lbDns": "[parameters('lampCommon').lbDns]",
                 "applicationDbName": "[parameters('lampCommon').applicationDbName]",
                 "wpAdminPass": "[parameters('lampCommon').wpAdminPass]",
