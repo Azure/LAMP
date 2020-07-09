@@ -248,6 +248,7 @@ EOF
 
             # Creates a Database for CMS application
             create_database $dbIP $dbadminloginazure $dbadminpass $applicationDbName $wpDbUserId $wpDbUserPass
+            # create_database $dbIP $dbadminloginazure $dbadminpass $applicationDbName $wpDbUserId $wpDbUserPass
             # Download the wordpress application compressed file
             # download_wordpress $dnsSite
             download_wordpress_version $dnsSite $wpVersion
