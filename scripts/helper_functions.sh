@@ -224,7 +224,7 @@ function install_wordpress() {
   wp core install --url=https://$lbDns --title=$wpTitle --admin_user=$wpAdminUser --admin_password=$wpAdminPassword --admin_email=$wpAdminEmail --path=$wpPath --allow-root
 }
 
-function install_plugin() {
+function install_plugins() {
   local path=$1
   wp plugin install woocommerce --path=$path --allow-root
   wp plugin activate woocommerce --path=$path --allow-root
@@ -250,6 +250,28 @@ function generate_sslcerts() {
   chmod 400 $path/nginx.*
   chown www-data:www-data $path/nginx.*
   chown -R www-data:www-data /azlamp/data/$1
+}
+
+function generate_text_file() {
+  local dnsSite=$1
+  local username=$2
+  local passw=$3
+  local dbIP=$4
+  local wpDbUserId=$5
+  local wpDbUserPass=$6
+
+  cat <<EOF >/home/wordpress.txt
+WordPress Details
+WordPress site name: $dnsSite
+username: $username
+password: $passw
+
+Database details
+db server name: $dbIP
+wpDbUserId: $wpDbUserId
+wpDbUserPass: $wpDbUserPass
+
+EOF
 }
 
 function check_fileServerType_param() {
