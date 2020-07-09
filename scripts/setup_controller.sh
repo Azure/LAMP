@@ -59,7 +59,6 @@ set -ex
     echo $applicationDbName >>/tmp/vars.txt
     echo $wpAdminPass >>/tmp/vars.txt
     echo $wpDbUserPass >>/tmp/vars.txt
-    echo $wpVersion >>/tmp/vars.txt
 
     check_fileServerType_param $fileServerType
 
@@ -241,31 +240,26 @@ EOF
             local wpDbUserId=admin
             local wpDbUserPass=$wpDbUserPass
             local sshUsername=azureadmin # can be avoided because installing WP as root
-            local wpVersion=$wpVersion
 
-            # create a file to store user credentials to wordpress.txt  - done
-            # check the versioning of wordpress install (versions which supports woocommerce)
+            # create a file to store user credentials to wordpress.txt
+            # check the versioning of wordpress install (versions which supports )
 
             # Creates a Database for CMS application
             create_database $dbIP $dbadminloginazure $dbadminpass $applicationDbName $wpDbUserId $wpDbUserPass
-            # create_database $dbIP $dbadminloginazure $dbadminpass $applicationDbName $wpDbUserId $wpDbUserPass
             # Download the wordpress application compressed file
-            # download_wordpress $dnsSite
-            download_wordpress_version $dnsSite $wpVersion
+            download_wordpress $dnsSite
             # Links the data content folder to shared folder.. /azlamp/data
             linking_data_location $dnsSite
             # Creates a wp-config file for wordpress
             create_wpconfig $dbIP $applicationDbName $dbadminloginazure $dbadminpass $dnsSite
             # Installs WP-CLI tool
-            install_wp_cli
+            install_wp_cli $sshUsername
             # Install WordPress by using wp-cli commands
             install_wordpress $dnsSite $wpTitle $wpAdminUser $wpAdminPassword $wpAdminEmail $wpPath
             # Install WooCommerce plug-in
             install_plugins $wpPath
             # Generates the openSSL certificates
             generate_sslcerts $dnsSite
-            # Generate wordpress.txt in /home location
-            generate_text_file $dnsSite $wpAdminUser $wpAdminPassword $dbIP $wpDbUserId $wpDbUserPass
         }
         install_wordpress
     fi
