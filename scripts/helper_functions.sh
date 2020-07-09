@@ -51,7 +51,6 @@ function get_setup_params_from_configs_json() {
   export nfsByoIpExportPath=$(echo $json | jq -r .fileServerProfile.nfsByoIpExportPath)
   export phpVersion=$(echo $json | jq -r .phpProfile.phpVersion)
   export cmsApplication=$(echo $json | jq -r .applicationProfile.cmsApplication)
-  export sshUsername=$(echo $json | jq -r .applicationProfile.sshUsername)
   export lbDns=$(echo $json | jq -r .applicationProfile.lbDns)
   export applicationDbName=$(echo $json | jq -r .applicationProfile.applicationDbName)
   export wpAdminPass=$(echo $json | jq -r .applicationProfile.wpAdminPass)
@@ -206,11 +205,10 @@ EOF
 }
 
 function install_wp_cli() {
-  local sshUsername=$1
-  cd /home/$sshUsername
+  cd /tmp
   wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-  chmod +x /home/$sshUsername/wp-cli.phar
-  mv /home/$sshUsername/wp-cli.phar /usr/local/bin/wp
+  chmod +x /tmp/wp-cli.phar
+  mv /tmp/wp-cli.phar /usr/local/bin/wp
 }
 
 function install_wordpress() {

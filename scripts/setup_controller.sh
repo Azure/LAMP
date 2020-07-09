@@ -54,7 +54,6 @@ set -ex
     echo $nfsByoIpExportPath >>/tmp/vars.txt
     echo $phpVersion >>/tmp/vars.txt
     echo $cmsApplication >>/tmp/vars.txt
-    echo $sshUsername >>/tmp/vars.txt
     echo $lbDns >>/tmp/vars.txt
     echo $applicationDbName >>/tmp/vars.txt
     echo $wpAdminPass >>/tmp/vars.txt
@@ -239,7 +238,6 @@ EOF
         local wpPath=/azlamp/html/$dnsSite
         local wpDbUserId=admin
         local wpDbUserPass=$wpDbUserPass
-        local sshUsername=azureadmin
 
         # Creates a Database for CMS application
         create_database $dbIP $dbadminloginazure $dbadminpass $applicationDbName $wpDbUserId $wpDbUserPass
@@ -251,7 +249,7 @@ EOF
         # Creates a wp-config file for wordpress
         create_wpconfig $dbIP $applicationDbName $dbadminloginazure $dbadminpass $dnsSite
         # Installs WP-CLI tool
-        install_wp_cli $sshUsername
+        install_wp_cli
         # Install WordPress by using wp-cli commands
         install_wordpress $dnsSite $wpTitle $wpAdminUser $wpAdminPassword $wpAdminEmail $wpPath
         # Install WooCommerce plug-in
