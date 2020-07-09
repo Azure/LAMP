@@ -230,37 +230,40 @@ do
 
 done
 EOF
-    if [ "$cmsApplication" = "WordPress" ]; then
-        function install_wordpress() {
-            local dnsSite=$siteFQDN
-            local wpTitle=LAMP-WordPress
-            local wpAdminUser=admin
-            local wpAdminPassword=$wpAdminPass
-            local wpAdminEmail=admin@$dnsSite
-            local wpPath=/azlamp/html/$dnsSite
-            local wpDbUserId=admin
-            local wpDbUserPass=$wpDbUserPass
-            local sshUsername=azureadmin
+    function install_wordpress_application() {
+        local dnsSite=$siteFQDN
+        local wpTitle=LAMP-WordPress
+        local wpAdminUser=admin
+        local wpAdminPassword=$wpAdminPass
+        local wpAdminEmail=admin@$dnsSite
+        local wpPath=/azlamp/html/$dnsSite
+        local wpDbUserId=admin
+        local wpDbUserPass=$wpDbUserPass
+        local sshUsername=azureadmin
 
-            # Creates a Database for CMS application
-            create_database $dbIP $dbadminloginazure $dbadminpass $applicationDbName $wpDbUserId $wpDbUserPass
-            # Download the wordpress application compressed file
-            # download_wordpress $dnsSite
-            download_wordpress_version $dnsSite $wpVersion
-            # Links the data content folder to shared folder.. /azlamp/data
-            linking_data_location $dnsSite
-            # Creates a wp-config file for wordpress
-            create_wpconfig $dbIP $applicationDbName $dbadminloginazure $dbadminpass $dnsSite
-            # Installs WP-CLI tool
-            install_wp_cli $sshUsername
-            # Install WordPress by using wp-cli commands
-            install_wordpress $dnsSite $wpTitle $wpAdminUser $wpAdminPassword $wpAdminEmail $wpPath
-            # Install WooCommerce plug-in
-            install_plugin $wpPath
-            # Generates the openSSL certificates
-            generate_sslcerts $dnsSite
-        }
-        install_wordpress
+        # Creates a Database for CMS application
+        create_database $dbIP $dbadminloginazure $dbadminpass $applicationDbName $wpDbUserId $wpDbUserPass
+        # Download the wordpress application compressed file
+        # download_wordpress $dnsSite
+        download_wordpress_version $dnsSite $wpVersion
+        # Links the data content folder to shared folder.. /azlamp/data
+        linking_data_location $dnsSite
+        # Creates a wp-config file for wordpress
+        create_wpconfig $dbIP $applicationDbName $dbadminloginazure $dbadminpass $dnsSite
+        # Installs WP-CLI tool
+        install_wp_cli $sshUsername
+        # Install WordPress by using wp-cli commands
+        install_wordpress $dnsSite $wpTitle $wpAdminUser $wpAdminPassword $wpAdminEmail $wpPath
+        # Install WooCommerce plug-in
+        install_plugins $wpPath
+        # Generates the openSSL certificates
+        generate_sslcerts $dnsSite
+        # Generate the text
+        generate_text_file $dnsSite $wpAdminUser $wpAdminPassword $dbIP $wpDbUserId $wpDbUserPass
+    }
+
+    if [ "$cmsApplication" = "WordPress" ]; then
+        install_wordpress_application
     fi
 
 }
