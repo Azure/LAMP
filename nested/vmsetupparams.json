@@ -69,7 +69,7 @@
                 "phpVersion": "[parameters('lampCommon').phpVersion]"
             },
             "applicationProfile": {
-                "cmsApplication": "[parameters('lampCommon').cmsApplication]",
+                "cmsApplication": "[parameters('lampCommon').CMSApplication]",
                 "lbDns": "[parameters('lampCommon').lbDns]",
                 "applicationDbName": "[parameters('lampCommon').applicationDbName]",
                 "wpAdminPass": "[parameters('lampCommon').wpAdminPass]",
