@@ -229,7 +229,7 @@ do
 
 done
 EOF
-    function install_wordpress_application() {
+    function install_wordpress_application {
         local dnsSite=$siteFQDN
         local wpTitle=LAMP-WordPress
         local wpAdminUser=admin
