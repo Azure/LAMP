@@ -197,8 +197,8 @@ set -ex
     cp helper_functions.sh /azlamp/bin/utils.sh
     chmod +x /azlamp/bin/utils.sh
     cat <<EOF > /azlamp/bin/update-vmss-config
-    
 #!/bin/bash
+
 # Lookup the version number corresponding to the next process to be run on the machine
 VERSION=1
 VERSION_FILE=/root/vmss_config_version
@@ -211,24 +211,24 @@ do
         # Uncomment the following block when adding/removing sites. Change the parameters if needed (default should work for most cases).
         # true (or anything else): htmlLocalCopySwitch, VMSS (or anything else): https termination
         # Add another block with the next version number for any further site addition/removal.
-        
+
         #1)
         #    . /azlamp/bin/utils.sh
         #    reset_all_sites_on_vmss true VMSS
         #;;
-        
+
         *)
             # nothing more to do so exit
             exit 0
         ;;
     esac
-    
+
     # increment the version number and store it away to mark the successful end of the process
     VERSION=\$(( \$VERSION + 1 ))
     echo \$VERSION > \${VERSION_FILE}
+
 done
 EOF
-  
     function install_wordpress_application() {
         local dnsSite=$siteFQDN
         local wpTitle=LAMP-WordPress
@@ -263,4 +263,5 @@ EOF
     if [ "$cmsApplication" = "WordPress" ]; then
         install_wordpress_application
     fi
+
 }  > /tmp/install.log
