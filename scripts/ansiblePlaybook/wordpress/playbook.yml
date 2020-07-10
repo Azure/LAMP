@@ -7,4 +7,4 @@
   roles:
      - wordpress
      - woocommerce
-     - replication
+     - replication 
