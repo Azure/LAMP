@@ -229,6 +229,7 @@ do
 
 done
 EOF
+
     function install_wordpress_application() {
         local dnsSite=$siteFQDN
         local wpTitle=LAMP-WordPress
@@ -255,7 +256,7 @@ EOF
         # Install WooCommerce plug-in
         install_plugins $wpPath
         # Generates the openSSL certificates
-        generate_sslcerts $dnsSite
+        generate_sslcerts $dnsSite $thumbprintSslCert $thumbprintCaCert
         # Generate the text
         generate_text_file $dnsSite $wpAdminUser $wpAdminPassword $dbIP $wpDbUserId $wpDbUserPass
     }

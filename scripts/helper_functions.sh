@@ -242,9 +242,25 @@ function linking_data_location() {
 }
 
 function generate_sslcerts() {
+
   local path=/azlamp/certs/$1
+  local thumbprintSslCert=$2
+  local thumbprintCaCert=$3
+
   mkdir $path
-  openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout $path/nginx.key -out $path/nginx.crt -subj "/C=US/ST=WA/L=Redmond/O=IT/CN=$1"
+  ### SSL cert ###
+  if [ "$thumbprintSslCert" != "None" ]; then
+    echo "Using VM's cert (/var/lib/waagent/$thumbprintSslCert.*) for SSL..."
+    cat /var/lib/waagent/$thumbprintSslCert.prv >$path/nginx.key
+    cat /var/lib/waagent/$thumbprintSslCert.crt >$path/nginx.crt
+    if [ "$thumbprintCaCert" != "None" ]; then
+      echo "CA cert was specified (/var/lib/waagent/$thumbprintCaCert.crt), so append it to nginx.crt..."
+      cat /var/lib/waagent/$thumbprintCaCert.crt >>$path/nginx.crt
+    fi
+  else
+    echo -e "Generating SSL self-signed certificate"
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout $path/nginx.key -out $path/nginx.crt -subj "/C=US/ST=WA/L=Redmond/O=IT/CN=$1"
+  fi
   chmod 400 $path/nginx.*
   chown www-data:www-data $path/nginx.*
   chown -R www-data:www-data /azlamp/data/$1
