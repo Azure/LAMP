@@ -8,10 +8,10 @@
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-#
+# 
 # The above copyright notice and this permission notice shall be included in all
 # copies or substantial portions of the Software.
-#
+# 
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -28,26 +28,26 @@ lamp_on_azure_configs_json_path=${1}
 
 get_setup_params_from_configs_json $lamp_on_azure_configs_json_path || exit 99
 
-echo $glusterNode >>/tmp/vars.txt
-echo $glusterVolume >>/tmp/vars.txt
-echo $siteFQDN >>/tmp/vars.txt
-echo $httpsTermination >>/tmp/vars.txt
-echo $syslogServer >>/tmp/vars.txt
-echo $dbServerType >>/tmp/vars.txt
-echo $fileServerType >>/tmp/vars.txt
-echo $storageAccountName >>/tmp/vars.txt
-echo $storageAccountKey >>/tmp/vars.txt
-echo $nfsVmName >>/tmp/vars.txt
-echo $nfsByoIpExportPath >>/tmp/vars.txt
-echo $htmlLocalCopySwitch >>/tmp/vars.txt
-echo $redisDeploySwitch >>/tmp/vars.txt
-echo $redisDns >>/tmp/vars.txt
-echo $redisAuth >>/tmp/vars.txt
-echo $phpVersion >>/tmp/vars.txt
+echo $glusterNode         >> /tmp/vars.txt
+echo $glusterVolume       >> /tmp/vars.txt
+echo $siteFQDN            >> /tmp/vars.txt
+echo $httpsTermination    >> /tmp/vars.txt
+echo $syslogServer        >> /tmp/vars.txt
+echo $dbServerType        >> /tmp/vars.txt
+echo $fileServerType      >> /tmp/vars.txt
+echo $storageAccountName  >> /tmp/vars.txt
+echo $storageAccountKey   >> /tmp/vars.txt
+echo $nfsVmName           >> /tmp/vars.txt
+echo $nfsByoIpExportPath  >> /tmp/vars.txt
+echo $htmlLocalCopySwitch >> /tmp/vars.txt
+echo $redisDeploySwitch   >> /tmp/vars.txt
+echo $redisDns            >> /tmp/vars.txt
+echo $redisAuth           >> /tmp/vars.txt
+echo $phpVersion          >> /tmp/vars.txt
 
-# downloading and updating php packages from the repository
-sudo add-apt-repository ppa:ondrej/php -y
-sudo apt-get update
+# downloading and updating php packages from the repository 
+  sudo add-apt-repository ppa:ondrej/php -y
+  sudo apt-get update
 
 check_fileServerType_param $fileServerType
 
@@ -107,18 +107,18 @@ check_fileServerType_param $fileServerType
   fi
 
   # Configure syslog to forward
-  cat <<EOF >>/etc/rsyslog.conf
+  cat <<EOF >> /etc/rsyslog.conf
 \$ModLoad imudp
 \$UDPServerRun 514
 EOF
-  cat <<EOF >>/etc/rsyslog.d/40-remote.conf
+  cat <<EOF >> /etc/rsyslog.d/40-remote.conf
 local1.*   @${syslogServer}:514
 local2.*   @${syslogServer}:514
 EOF
   systemctl restart syslog
 
   # Build nginx config
-  cat <<EOF >/etc/nginx/nginx.conf
+  cat <<EOF > /etc/nginx/nginx.conf
 user www-data;
 worker_processes 2;
 pid /run/nginx.pid;
@@ -178,7 +178,7 @@ EOF
 
   config_all_sites_on_vmss $htmlLocalCopySwitch $httpsTermination
 
-  # php config
+  # php config 
   PhpIni=/etc/php/${PhpVer}/fpm/php.ini
   sed -i "s/memory_limit.*/memory_limit = 512M/" $PhpIni
   sed -i "s/max_execution_time.*/max_execution_time = 18000/" $PhpIni
@@ -198,7 +198,7 @@ EOF
     sed -i "s/session.save_handler.*/session.save_handler = redis/" $PhpIni
     sed -i "s/;session.save_path.*/session.save_path = \"tcp:\/\/$redisDns:6379?auth=$redisAuth\"/" $PhpIni
   fi
-
+    
   # Remove the default nginx site
   rm -f /etc/nginx/sites-enabled/default
 
@@ -208,8 +208,8 @@ EOF
   # restart nginx
   systemctl restart nginx
 
-  # fpm config - overload this
-  cat <<EOF >/etc/php/${PhpVer}/fpm/pool.d/www.conf
+  # fpm config - overload this 
+  cat <<EOF > /etc/php/${PhpVer}/fpm/pool.d/www.conf
 [www]
 user = www-data
 group = www-data
@@ -226,4 +226,4 @@ EOF
   # Restart php-fpm
   systemctl restart php${PhpVer}-fpm
 
-} >/tmp/setup.log
+}  > /tmp/setup.log
