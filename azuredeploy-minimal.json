@@ -22,7 +22,7 @@
             },
             "type": "string"
         },
-        "cmsApplication": {
+        "CMSApplication": {
             "defaultValue": "WordPress",
             "allowedValues": [
                 "WordPress",
@@ -51,7 +51,7 @@
                     "dbServerType":                 { "value": "mysql" },
                     "fileServerDiskCount":          { "value": 2 },
                     "fileServerDiskSize":           { "value": 32 },
-                    "cmsApplication":               { "value": "[parameters('cmsApplication')]" }
+                    "CMSApplication":               { "value": "[parameters('CMSApplication')]" }
                 },
                 "templateLink": {
                     "uri": "[concat(parameters('_artifactsLocation'), 'azuredeploy.json', parameters('_artifactsLocationSasToken'))]"
