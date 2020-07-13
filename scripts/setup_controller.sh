@@ -241,12 +241,11 @@ EOF
 
         # Creates a Database for CMS application
         create_database $dbIP $dbadminloginazure $dbadminpass $applicationDbName $wpDbUserId $wpDbUserPass
-        # Download the wordpress application compressed file
-        # download_wordpress $dnsSite
+        # Download the WordPress application compressed file
         download_wordpress_version $dnsSite $wpVersion
         # Links the data content folder to shared folder.. /azlamp/data
         linking_data_location $dnsSite
-        # Creates a wp-config file for wordpress
+        # Creates a wp-config file for WordPress
         create_wpconfig $dbIP $applicationDbName $dbadminloginazure $dbadminpass $dnsSite
         # Installs WP-CLI tool
         install_wp_cli
@@ -255,7 +254,7 @@ EOF
         # Install WooCommerce plug-in
         install_plugins $wpPath
         # Generates the openSSL certificates
-        generate_sslcerts $dnsSite $thumbprintSslCert $thumbprintCaCert
+        generate_sslcerts $dnsSite
         # Generate the text file
         generate_text_file $dnsSite $wpAdminUser $wpAdminPassword $dbIP $wpDbUserId $wpDbUserPass
     }
