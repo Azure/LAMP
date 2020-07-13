@@ -3,6 +3,8 @@
 ## One Click Deploy of WordPress with WooCommerce Plug-in on top of LAMP
 This document explains how to install WordPress with the WooCommerce plugin on a LAMP cluster in Azure. The following diagram shows how the required system components participate in the installation process.
 
+![Workflow](https://github.com/asift91/LAMP/blob/mat78/images/One_Click_WP.png)
+
 ## Supported Software Configuration
 - To support the current installation, the LAMP stack must be running with the below software versions.
 	*	Ubuntu 16.04 LTS
