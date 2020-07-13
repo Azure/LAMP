@@ -18,13 +18,13 @@ This document explains how to install WordPress with the WooCommerce plugin on a
 	*	Deploy the LAMP Stack
 	*	Install WordPress with WooCommerce on the Controller VM
 
-Once predefined template has been choosen user will be redirected to the Azure Custom deployment.
+- Once predefined template has been choosen user will be redirected to the Azure Custom deployment.
 
-By default CMS Application field will be "WordPress", however if user wants to deploy LAMP only please select None in the dropdown list.
+- By default CMS Application field will be "WordPress", however if user wants to deploy LAMP only please select None in the dropdown list.
 
-When user selects WordPress, template will deploy the WordPress with 5.4.2 version and also deploys the latest WooCommerce plug-in on top of WordPress.
+- When user selects WordPress, template will deploy the WordPress with 5.4.2 version and also deploys the latest WooCommerce plug-in on top of WordPress.
 
-In custom deployment user will have an option to choose WordPress versions mentioned above.
+- In custom deployment user will have an option to choose WordPress versions mentioned above.
 
 ## Overview of the Installation Process
 
