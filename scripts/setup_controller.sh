@@ -242,7 +242,7 @@ EOF
         # Creates a Database for CMS application
         create_database $dbIP $dbadminloginazure $dbadminpass $applicationDbName $wpDbUserId $wpDbUserPass
         # Download the WordPress application compressed file
-        download_wordpress_version $dnsSite $wpVersion
+        download_wordpress $dnsSite $wpVersion
         # Links the data content folder to shared folder.. /azlamp/data
         linking_data_location $dnsSite
         # Creates a wp-config file for WordPress
