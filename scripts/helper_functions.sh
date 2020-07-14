@@ -79,7 +79,7 @@ function create_database {
     mysql -h $dbIP -u $dbadminloginazure -p$dbadminpass -e "GRANT ALL ON $applicationDbName.* TO $wpDbUserId IDENTIFIED BY '$wpDbUserPass';"
 }
 
-function download_wordpress_version {
+function download_wordpress {
     local wordpressPath=/azlamp/html
     #local path=/var/lib/waagent/custom-script/download/0
     local siteFQDN=$1
@@ -89,18 +89,6 @@ function download_wordpress_version {
     wget https://wordpress.org/wordpress-$version.tar.gz
     tar -xvf $wordpressPath/wordpress-$version.tar.gz
     rm $wordpressPath/wordpress-$version.tar.gz
-    mv $wordpressPath/wordpress $wordpressPath/$siteFQDN
-}
-
-function download_wordpress {
-    local wordpressPath=/azlamp/html
-    #local path=/var/lib/waagent/custom-script/download/0
-    local siteFQDN=$1
-
-    cd $wordpressPath
-    wget https://wordpress.org/latest.tar.gz
-    tar -xvf $wordpressPath/latest.tar.gz
-    rm $wordpressPath/latest.tar.gz
     mv $wordpressPath/wordpress $wordpressPath/$siteFQDN
 }
 
