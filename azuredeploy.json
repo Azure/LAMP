@@ -527,6 +527,29 @@
             },
             "type": "string"
         },
+        "CMSApplication": {
+            "defaultValue": "WordPress",
+            "allowedValues": [
+                "WordPress",
+                "None"
+            ],
+            "metadata": {
+                "description": "Select the CMS application to be installed. If select none it will deploy LAMP stack"
+            },
+            "type": "string"
+        },
+        "wordpressVersion": {
+            "allowedValues": [
+                "5.4.1",
+                "5.4.2",
+                "5.4"
+            ],
+            "defaultValue": "5.4.2",
+            "metadata": {
+                "description": "Select the CMS wordpress application version to be installed."
+            },
+            "type": "string"
+        },
         "location": {
             "type": "string",
             "defaultValue": "[resourceGroup().location]",
@@ -881,6 +904,8 @@
         "documentation09": "    controller          - creates a controller VM and deploys code",
         "documentation10": "GlusterFS Sizing guidance",
         "lampCommon": {
+            "applicationDbName": "[parameters('CMSApplication')]",
+            "cmsApplication": "[parameters('CMSApplication')]",
             "baseTemplateUrl": "[concat(parameters('_artifactsLocation'), 'nested/')]",
             "scriptLocation": "[concat(parameters('_artifactsLocation'), 'scripts/')]",
             "artifactsSasToken": "[parameters('_artifactsLocationSasToken')]",
@@ -999,7 +1024,10 @@
             "vnetGwDeploySwitch": "[parameters('vnetGwDeploySwitch')]",
             "vnetName": "[concat('vnet-',variables('resourceprefix'))]",
             "vpnType": "[parameters('vpnType')]",
-            "webServerSetupScriptFilename": "setup_webserver.sh"
+            "webServerSetupScriptFilename": "setup_webserver.sh",
+            "wpAdminPass": "[concat(toUpper('xl'), substring(uniqueString(resourceGroup().id, deployment().name), 6, 7),',1*8')]",
+            "wpDbUserPass": "[concat('9#36^', substring(uniqueString(resourceGroup().id, deployment().name), 5, 8), toUpper('ercq'))]",
+            "wpVersion": "[parameters('wordpressVersion')]"
         },
         "certUrlArray": [
             {

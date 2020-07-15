@@ -53,6 +53,13 @@ set -ex
     echo $thumbprintCaCert >> /tmp/vars.txt
     echo $nfsByoIpExportPath >> /tmp/vars.txt
     echo $phpVersion >> /tmp/vars.txt
+    echo $cmsApplication    >>/tmp/vars.txt
+    echo $lbDns             >>/tmp/vars.txt
+    echo $applicationDbName >>/tmp/vars.txt
+    echo $wpAdminPass       >>/tmp/vars.txt
+    echo $wpDbUserPass      >>/tmp/vars.txt
+    echo $wpVersion         >>/tmp/vars.txt
+    echo $sshUsername       >>/tmp/vars.txt
 
     check_fileServerType_param $fileServerType
 
@@ -223,5 +230,38 @@ do
 
 done
 EOF
-  
+    function install_wordpress_application {
+        local dnsSite=$siteFQDN
+        local wpTitle=LAMP-WordPress
+        local wpAdminUser=admin
+        local wpAdminPassword=$wpAdminPass
+        local wpAdminEmail=admin@$dnsSite
+        local wpPath=/azlamp/html/$dnsSite
+        local wpDbUserId=admin
+        local wpDbUserPass=$wpDbUserPass
+
+        # Creates a Database for CMS application
+        create_database $dbIP $dbadminloginazure $dbadminpass $applicationDbName $wpDbUserId $wpDbUserPass
+        # Download the WordPress application compressed file
+        download_wordpress $dnsSite $wpVersion
+        # Links the data content folder to shared folder.. /azlamp/data
+        linking_data_location $dnsSite
+        # Creates a wp-config file for WordPress
+        create_wpconfig $dbIP $applicationDbName $dbadminloginazure $dbadminpass $dnsSite
+        # Installs WP-CLI tool
+        install_wp_cli
+        # Install WordPress by using wp-cli commands
+        install_wordpress $dnsSite $wpTitle $wpAdminUser $wpAdminPassword $wpAdminEmail $wpPath
+        # Install WooCommerce plug-in
+        install_plugins $wpPath
+        # Generates the openSSL certificates
+        generate_sslcerts $dnsSite
+        # Generate the text file
+        generate_text_file $dnsSite $wpAdminUser $wpAdminPassword $dbIP $wpDbUserId $wpDbUserPass $sshUsername
+    }
+
+    if [ "$cmsApplication" = "WordPress" ]; then
+        install_wordpress_application
+    fi
+
 }  > /tmp/install.log
