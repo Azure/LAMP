@@ -59,6 +59,7 @@ set -ex
     echo $wpAdminPass       >>/tmp/vars.txt
     echo $wpDbUserPass      >>/tmp/vars.txt
     echo $wpVersion         >>/tmp/vars.txt
+    echo $sshUsername       >>/tmp/vars.txt
 
     check_fileServerType_param $fileServerType
 
@@ -256,7 +257,7 @@ EOF
         # Generates the openSSL certificates
         generate_sslcerts $dnsSite
         # Generate the text file
-        generate_text_file $dnsSite $wpAdminUser $wpAdminPassword $dbIP $wpDbUserId $wpDbUserPass
+        generate_text_file $dnsSite $wpAdminUser $wpAdminPassword $dbIP $wpDbUserId $wpDbUserPass $sshUsername
     }
 
     if [ "$cmsApplication" = "WordPress" ]; then

@@ -55,6 +55,7 @@ function get_setup_params_from_configs_json
     export wpAdminPass=$(echo $json | jq -r .applicationProfile.wpAdminPass)
     export wpDbUserPass=$(echo $json | jq -r .applicationProfile.wpDbUserPass)
     export wpVersion=$(echo $json | jq -r .applicationProfile.wpVersion)
+    export sshUsername=$(echo $json | jq -r .applicationProfile.sshUsername)
 }
 
 function get_php_version {
@@ -224,8 +225,9 @@ function generate_text_file {
     local dbIP=$4
     local wpDbUserId=$5
     local wpDbUserPass=$6
+    local sshUsername=$7
 
-    cat <<EOF >/home/wordpress.txt
+    cat <<EOF >/home/$sshUsername/wordpress.txt
 WordPress Details
 WordPress site name: $dnsSite
 username: $username
