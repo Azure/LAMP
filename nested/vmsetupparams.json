@@ -74,7 +74,8 @@
                 "applicationDbName": "[parameters('lampCommon').applicationDbName]",
                 "wpAdminPass": "[parameters('lampCommon').wpAdminPass]",
                 "wpDbUserPass": "[parameters('lampCommon').wpDbUserPass]",
-                "wpVersion": "[parameters('lampCommon').wpVersion]"
+                "wpVersion": "[parameters('lampCommon').wpVersion]",
+                "sshUsername": "[parameters('lampCommon').sshUsername]"
             }
         }
     },
