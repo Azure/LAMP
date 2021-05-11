@@ -273,29 +273,38 @@ http {
 EOF
 
   # Set up html dir local copy if specified
+  htmlRootDir="/var/www/html/${siteFQDN}"
   if [ "$htmlLocalCopySwitch" = "true" ]; then
-    mkdir -p /var/www/html
-    # rsync -av --delete /azlamp/html/. /var/www/html
-    ACCOUNT_KEY="$storageAccountKey"
-    NAME="$storageAccountName"
-    END=`date -u -d "60 minutes" '+%Y-%m-%dT%H:%M:00Z'`
-    htmlRootDir="/var/www/html/${siteFQDN}"
+    if [ "$fileServerType" = "azurefiles" ]; then
+        mkdir -p /var/www/html
+        # rsync -av --delete /azlamp/html/. /var/www/html
+        ACCOUNT_KEY="$storageAccountKey"
+        NAME="$storageAccountName"
+        END=`date -u -d "60 minutes" '+%Y-%m-%dT%H:%M:00Z'`
+        
 
-    sas=$(az storage share generate-sas \
-      -n azlamp \
-      --account-key $ACCOUNT_KEY \
-      --account-name $NAME \
-      --https-only \
-      --permissions lr \
-      --expiry $END -o tsv)
+        sas=$(az storage share generate-sas \
+          -n azlamp \
+          --account-key $ACCOUNT_KEY \
+          --account-name $NAME \
+          --https-only \
+          --permissions lr \
+          --expiry $END -o tsv)
 
-    export AZCOPY_CONCURRENCY_VALUE='48'
-    export AZCOPY_BUFFER_GB='4'
+        export AZCOPY_CONCURRENCY_VALUE='48'
+        export AZCOPY_BUFFER_GB='4'
 
-    echo "azcopy --log-level ERROR copy https://$NAME.file.core.windows.net/azlamp/html/$siteFQDN/*?$sas $htmlRootDir --recursive"
-    azcopy --log-level ERROR copy "https://$NAME.file.core.windows.net/azlamp/html/$siteFQDN/*?$sas" $htmlRootDir --recursive
-    chown www-data:www-data -R $htmlRootDir && sync
-    setup_html_local_copy_cron_job
+        echo "azcopy --log-level ERROR copy https://$NAME.file.core.windows.net/azlamp/html/$siteFQDN/*?$sas $htmlRootDir --recursive"
+        azcopy --log-level ERROR copy "https://$NAME.file.core.windows.net/azlamp/html/$siteFQDN/*?$sas" $htmlRootDir --recursive
+        chown www-data:www-data -R $htmlRootDir && sync
+        setup_html_local_copy_cron_job
+    fi
+    if [ "$fileServerType" = "nfs" -o "$fileServerType" = "nfs-ha" -o "$fileServerType" = "nfs-byo" -o "$fileServerType" = "gluster" ]; then
+        mkdir -p /var/www/html
+        rsync -av --delete /azlamp/html/. $htmlRootDir
+        chown www-data:www-data -R $htmlRootDir && sync
+        setup_html_local_copy_cron_job
+     fi   
   fi
 
   config_all_sites_on_vmss $htmlLocalCopySwitch $httpsTermination
