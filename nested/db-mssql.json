@@ -14,6 +14,18 @@
             },
             "type": "string"
         },
+        "lbOut001PubIp": {
+            "metadata": {
+                "description": "Outgoing Public IP address of the deployed load balancer"
+            },
+            "type": "string"
+        },
+        "lbOut002PubIp": {
+            "metadata": {
+                "description": "Outgoing Public IP address of the deployed load balancer"
+            },
+            "type": "string"
+        },
         "ctlrPubIp": {
             "metadata": {
                 "description": "Public IP address of the deployed controller VM"
@@ -24,7 +36,7 @@
     "resources": [
         {
             "type": "Microsoft.Sql/servers",
-            "apiVersion": "2019-06-01-preview",
+            "apiVersion": "2015-05-01-preview",
             "kind": "",
             "location": "[parameters('lampCommon').location]",
             "name": "[parameters('lampCommon').serverName]",
@@ -35,7 +47,7 @@
             },
             "resources": [
                 {
-                    "apiVersion": "2014-04-01",
+                    "apiVersion": "2015-05-01-preview",
                     "dependsOn": [
                         "[concat('Microsoft.Sql/servers/', parameters('lampCommon').serverName)]"
                     ],
@@ -48,7 +60,33 @@
                     "type": "firewallRules"
                 },
                 {
-                    "apiVersion": "2014-04-01",
+                    "apiVersion": "2015-05-01-preview",
+                    "dependsOn": [
+                        "[concat('Microsoft.Sql/servers/', parameters('lampCommon').serverName)]"
+                    ],
+                    "location": "[parameters('lampCommon').location]",
+                    "name": "mssql-firewall-allow-lb-out001",
+                    "properties": {
+                        "startIpAddress": "[parameters('lbOut001PubIp')]",
+                        "endIpAddress": "[parameters('lbOut001PubIp')]"
+                    },
+                    "type": "firewallRules"
+                },
+                {
+                    "apiVersion": "2015-05-01-preview",
+                    "dependsOn": [
+                        "[concat('Microsoft.Sql/servers/', parameters('lampCommon').serverName)]"
+                    ],
+                    "location": "[parameters('lampCommon').location]",
+                    "name": "mssql-firewall-allow-lb-out002",
+                    "properties": {
+                        "startIpAddress": "[parameters('lbOut002PubIp')]",
+                        "endIpAddress": "[parameters('lbOut002PubIp')]"
+                    },
+                    "type": "firewallRules"
+                },
+                {
+                    "apiVersion": "2015-05-01-preview",
                     "dependsOn": [
                         "[concat('Microsoft.Sql/servers/', parameters('lampCommon').serverName)]"
                     ],
