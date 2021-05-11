@@ -46,7 +46,7 @@
             "lampProfile": {
                 "storageAccountName": "[parameters('storageAccountName')]",
                 "storageAccountKey": "[parameters('storageAccountKey')]",
-                "storageAccountType": "[parameters('moodleCommon').storageAccountType]",
+                "storageAccountType": "[parameters('lampCommon').storageAccountType]",
                 "redisDeploySwitch": "[parameters('lampCommon').redisDeploySwitch]",
                 "redisDns": "[parameters('lampCommon').redisDns]",
                 "redisKey": "[parameters('redisKey')]",
@@ -71,7 +71,7 @@
                 "nfsByoIpExportPath": "[parameters('lampCommon').nfsByoIpExportPath]",
                 "nfsHaLbIP": "[parameters('lampCommon').nfsHaLbIP]",
                 "nfsHaExportPath": "[parameters('lampCommon').nfsHaExportPath]",
-                "fileServerDiskSize": "[parameters('moodleCommon').fileServerDiskSize]"
+                "fileServerDiskSize": "[parameters('lampCommon').fileServerDiskSize]"
 
             },
             "phpProfile": {
