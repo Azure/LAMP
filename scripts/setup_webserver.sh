@@ -282,7 +282,7 @@ EOF
     htmlRootDir="/var/www/html/${siteFQDN}"
 
     sas=$(az storage share generate-sas \
-      -n moodle \
+      -n azlamp \
       --account-key $ACCOUNT_KEY \
       --account-name $NAME \
       --https-only \
