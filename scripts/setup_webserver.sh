@@ -291,8 +291,8 @@ EOF
 
     export AZCOPY_CONCURRENCY_VALUE='48'
     export AZCOPY_BUFFER_GB='4'
-    
-    echo "azcopy --log-level ERROR copy 'https://$NAME.file.core.windows.net/azlamp/html/$siteFQDN/*?$sas' $htmlRootDir --recursive"
+
+    echo "azcopy --log-level ERROR copy https://$NAME.file.core.windows.net/azlamp/html/$siteFQDN/*?$sas $htmlRootDir --recursive"
     azcopy --log-level ERROR copy "https://$NAME.file.core.windows.net/azlamp/html/$siteFQDN/*?$sas" $htmlRootDir --recursive
     chown www-data:www-data -R $htmlRootDir && sync
     setup_html_local_copy_cron_job
