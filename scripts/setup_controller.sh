@@ -60,6 +60,8 @@ set -ex
     echo $wpDbUserPass      >>/tmp/vars.txt
     echo $wpVersion         >>/tmp/vars.txt
     echo $sshUsername       >>/tmp/vars.txt
+    echo $storageAccountType >>/tmp/vars.txt
+    echo $fileServerDiskSize >>/tmp/vars.txt
 
     check_fileServerType_param $fileServerType
 
@@ -93,7 +95,14 @@ set -ex
     if [ $fileServerType = "gluster" ]; then
         apt-get -y --force-yes install glusterfs-client                 >> /tmp/apt3.log
     elif [ "$fileServerType" = "azurefiles" ]; then
-        apt-get -y --force-yes install cifs-utils                       >> /tmp/apt3.log
+        # install azure cli & setup container
+        AZ_REPO=$(lsb_release -cs)
+        echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" |  tee /etc/apt/sources.list.d/azure-cli.list
+        curl -L https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add - >> /tmp/apt3.log
+        sudo apt-get -y install apt-transport-https >> /tmp/apt3.log
+        sudo apt-get -y update > /dev/null
+        sudo apt-get -y install azure-cli >> /tmp/apt3.log
+        apt-get -y --force-yes install cifs-utils >> /tmp/apt3.log
     fi
 
     if [ $dbServerType = "mysql" ]; then
@@ -175,14 +184,34 @@ set -ex
         mv /azlamp /azlamp_old_delete_me
         # Then create the azlamp share
         echo -e '\n\rCreating an Azure Files share for azlamp'
-        create_azure_files_share azlamp $storageAccountName $storageAccountKey /tmp/wabs.log
+        create_azure_files_share azlamp $storageAccountName $storageAccountKey /tmp/wabs.log $fileServerDiskSize
         # Set up and mount Azure Files share. Must be done after nginx is installed because of www-data user/group
         echo -e '\n\rSetting up and mounting Azure Files share on //'$storageAccountName'.file.core.windows.net/azlamp on /azlamp\n\r'
         setup_and_mount_azure_files_share azlamp $storageAccountName $storageAccountKey
         # Move the local installation over to the Azure Files
         echo -e '\n\rMoving locally installed azlamp over to Azure Files'
-        cp -a /azlamp_old_delete_me/* /azlamp || true # Ignore case sensitive directory copy failure
-        # rm -rf /azlamp_old_delete_me || true # Keep the files just in case
+        #cp -a /azlamp_old_delete_me/* /azlamp || true # Ignore case sensitive directory copy failure
+        # install azcopy
+      wget -q -O azcopy_v10.tar.gz https://aka.ms/downloadazcopy-v10-linux && tar -xf azcopy_v10.tar.gz --strip-components=1 && mv ./azcopy /usr/bin/
+
+      ACCOUNT_KEY="$storageAccountKey"
+      NAME="$storageAccountName"
+      END=`date -u -d "60 minutes" '+%Y-%m-%dT%H:%M:00Z'`
+
+      sas=$(az storage share generate-sas \
+        -n moodle \
+        --account-key $ACCOUNT_KEY \
+        --account-name $NAME \
+        --https-only \
+        --permissions lrw \
+        --expiry $END -o tsv)
+
+      export AZCOPY_CONCURRENCY_VALUE='48'
+      export AZCOPY_BUFFER_GB='4'
+
+      # cp -a /moodle_old_delete_me/* /moodle || true # Ignore case sensitive directory copy failure
+      azcopy --log-level ERROR copy "/moodle_old_delete_me/*" "https://$NAME.file.core.windows.net/azlamp?$sas" --recursive || true # Ignore case sensitive directory copy failure
+      rm -rf /moodle_old_delete_me || true # Keep the files just in case
     fi
 
     # chmod /azlamp for Azure NetApp Files (its default is 770!)
@@ -264,4 +293,6 @@ EOF
         install_wordpress_application
     fi
 
-}  > /tmp/install.log
+  echo "### Script End `date`###"
+
+}  2>&1 | tee /tmp/install.log
