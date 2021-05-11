@@ -112,7 +112,7 @@
                         "osDisk": {
                             "caching": "ReadOnly",
                             "createOption": "FromImage",
-                            "diskSizeGB": "[parameters('moodleCommon').OSDiskSizeInGB]",
+                            "diskSizeGB": "[parameters('lampCommon').OSDiskSizeInGB]",
                             "managedDisk": {
                                 "storageAccountType": "[parameters('lampCommon').osDiskStorageType]"
                             }

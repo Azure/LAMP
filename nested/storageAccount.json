@@ -11,11 +11,11 @@
     },
     "resources": [
         {
-            "condition": "[not(equals(parameters('moodleCommon').fileServerType, 'azurefiles'))]",
+            "condition": "[not(equals(parameters('lampCommon').fileServerType, 'azurefiles'))]",
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-06-01",
             "location": "[parameters('lampCommon').location]",
-            "name": "[concat(parameters('moodleCommon').storageAccountName,'naf')]",
+            "name": "[concat(parameters('lampCommon').storageAccountName,'naf')]",
             "kind": "Storage",
             "sku": {
                 "name": "[parameters('lampCommon').storageAccountType]"
@@ -42,14 +42,14 @@
             }
         },
         {
-            "condition": "[equals(parameters('moodleCommon').fileServerType, 'azurefiles')]",
+            "condition": "[equals(parameters('lampCommon').fileServerType, 'azurefiles')]",
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-06-01",
-            "location": "[parameters('moodleCommon').location]",
-            "name": "[concat(parameters('moodleCommon').storageAccountName,'af')]",
-            "kind": "[if(equals(parameters('moodleCommon').storageAccountType, 'Premium_LRS'), 'FileStorage', 'Storage')]",
+            "location": "[parameters('lampCommon').location]",
+            "name": "[concat(parameters('lampCommon').storageAccountName,'af')]",
+            "kind": "[if(equals(parameters('lampCommon').storageAccountType, 'Premium_LRS'), 'FileStorage', 'Storage')]",
             "sku": {
-                "name": "[parameters('moodleCommon').storageAccountType]"
+                "name": "[parameters('lampCommon').storageAccountType]"
             },
             "properties": {
                 "largeFileSharesState": "Enabled",
@@ -80,7 +80,7 @@
         "documentation1": "This sub-template creates a storage account.  It expects certain values in the 'common' datastructure.",
         "documentation2": " storageAccountName - name of storage account",
         "documentation3": " storageAccountType - type of storage account",
-        "storageName": "[concat(parameters('moodleCommon').storageAccountName,if(equals(parameters('moodleCommon').fileServerType, 'azurefiles'), 'af', 'naf'))]",
+        "storageName": "[concat(parameters('lampCommon').storageAccountName,if(equals(parameters('lampCommon').fileServerType, 'azurefiles'), 'af', 'naf'))]",
         "storageAccountId": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageName'))]"
     },
     "outputs": {
