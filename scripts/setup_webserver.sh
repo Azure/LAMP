@@ -22,6 +22,7 @@
 
 set -ex
 echo "### Script Start `date`###"
+{
 lamp_on_azure_configs_json_path=${1}
 
 . ./helper_functions.sh
@@ -51,14 +52,14 @@ echo $phpVersion          >> /tmp/vars.txt
 
 check_fileServerType_param $fileServerType
 
-{
+
   # make sure the system does automatic update
   #apt-get -y update
   # TODO: ENSURE THIS IS CONFIGURED CORRECTLY
   #apt-get -y install unattended-upgrades
 
-  set -ex
-  echo "### Function Start `date`###"
+  #set -ex
+  #echo "### Function Start `date`###"
 
   # add azure-cli repository
   curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null
@@ -330,6 +331,7 @@ EOF
   systemctl restart nginx
 
   # This code is stop apache2 which is installing in 18.04
+  webServerType = nginx #need to change this later to read dynamically
   service=apache2
   if [ "$webServerType" = "nginx" ]; then
       if [ $(ps -ef | grep -v grep | grep $service | wc -l) > 0 ]; then
