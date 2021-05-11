@@ -6,8 +6,9 @@ function get_setup_params_from_configs_json
 {
     local configs_json_path=${1}    # E.g., /var/lib/cloud/instance/lamp_on_azure_configs.json
 
-    (dpkg -l jq &> /dev/null) || (apt -y update; apt -y install jq)
-
+    # (dpkg -l jq &> /dev/null) || (apt -y update; apt -y install jq)
+    # Added curl command to download jq.
+    curl https://stedolan.github.io/jq/download/linux64/jq > /usr/bin/jq && chmod +x /usr/bin/jq
     # Wait for the cloud-init write-files user data file to be generated (just in case)
     local wait_time_sec=0
     while [ ! -f "$configs_json_path" ]; do
