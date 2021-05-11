@@ -46,20 +46,20 @@ echo $redisDns            >> /tmp/vars.txt
 echo $redisAuth           >> /tmp/vars.txt
 echo $phpVersion          >> /tmp/vars.txt
 
-# downloading and updating php packages from the repository 
-  #sudo add-apt-repository ppa:ondrej/php -y
-  #sudo apt-get update
+  # downloading and updating php packages from the repository 
+  # sudo add-apt-repository ppa:ondrej/php -y
+  # sudo apt-get update
 
 check_fileServerType_param $fileServerType
 
 
   # make sure the system does automatic update
-  #apt-get -y update
+  # apt-get -y update
   # TODO: ENSURE THIS IS CONFIGURED CORRECTLY
-  #apt-get -y install unattended-upgrades
+  # apt-get -y install unattended-upgrades
 
-  #set -ex
-  #echo "### Function Start `date`###"
+  # set -ex
+  # echo "### Function Start `date`###"
 
   # add azure-cli repository
   curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null
@@ -142,19 +142,19 @@ EOF
   fi
 
   # install pre-requisites
-  #apt-get -y install python-software-properties unzip rsyslog
+  # apt-get -y install python-software-properties unzip rsyslog
 
-  #apt-get -y install postgresql-client mysql-client git
+  # apt-get -y install postgresql-client mysql-client git
 
   # configuring tuned for throughput-performance
   systemctl enable tuned
   tuned-adm profile throughput-performance
 
   if [ $fileServerType = "gluster" ]; then
-    #configure gluster repository & install gluster client
-    #add-apt-repository ppa:gluster/glusterfs-3.10 -y
-    #apt-get -y update
-    #apt-get -y install glusterfs-client
+    # configure gluster repository & install gluster client
+    # add-apt-repository ppa:gluster/glusterfs-3.10 -y
+    # apt-get -y update
+    # apt-get -y install glusterfs-client
 
     add-apt-repository ppa:gluster/glusterfs-3.10 -y
     apt-get -y update
@@ -166,7 +166,7 @@ EOF
 
   # install the base stack
   # passing php versions $phpVersion
-  #apt-get -y install nginx php$phpVersion php$phpVersion-fpm php$phpVersion-cli php$phpVersion-curl php$phpVersion-zip php-pear php$phpVersion-mbstring php$phpVersion-dev mcrypt php$phpVersion-soap php$phpVersion-json php$phpVersion-redis php$phpVersion-bcmath php$phpVersion-gd php$phpVersion-pgsql php$phpVersion-mysql php$phpVersion-xmlrpc php$phpVersion-intl php$phpVersion-xml php$phpVersion-bz2
+  # apt-get -y install nginx php$phpVersion php$phpVersion-fpm php$phpVersion-cli php$phpVersion-curl php$phpVersion-zip php-pear php$phpVersion-mbstring php$phpVersion-dev mcrypt php$phpVersion-soap php$phpVersion-json php$phpVersion-redis php$phpVersion-bcmath php$phpVersion-gd php$phpVersion-pgsql php$phpVersion-mysql php$phpVersion-xmlrpc php$phpVersion-intl php$phpVersion-xml php$phpVersion-bz2
   apt-get -y install nginx php$phpVersion-fpm
 
   # MSSQL
@@ -275,7 +275,7 @@ EOF
   # Set up html dir local copy if specified
   if [ "$htmlLocalCopySwitch" = "true" ]; then
     mkdir -p /var/www/html
-    #rsync -av --delete /azlamp/html/. /var/www/html
+    # rsync -av --delete /azlamp/html/. /var/www/html
     ACCOUNT_KEY="$storageAccountKey"
     NAME="$storageAccountName"
     END=`date -u -d "60 minutes" '+%Y-%m-%dT%H:%M:00Z'`
@@ -331,15 +331,15 @@ EOF
   systemctl restart nginx
 
   # This code is stop apache2 which is installing in 18.04
-  webServerType = nginx #need to change this later to read dynamically
+  webServerType=nginx #need to change this later to read dynamically
+  
   service=apache2
   if [ "$webServerType" = "nginx" ]; then
-      if [ $(ps -ef | grep -v grep | grep $service | wc -l) > 0 ]; then
+
       if pgrep -x "$service" >/dev/null 
       then
-            echo “Stop the $service!!!”
-            sudo systemctl stop $service
-            sudo systemctl mask $service
+            echo "Stop the $service!!!"
+
             systemctl stop $service
       else
             systemctl mask $service
@@ -377,4 +377,5 @@ EOF
 systemctl restart php${PhpVer}-fpm
 
 echo "### Script End `date`###"
-} 2>&1 | tee /tmp/setup.log
+
+}  2>&1 | tee /tmp/setup.log
