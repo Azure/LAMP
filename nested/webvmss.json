@@ -25,8 +25,8 @@
         {
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2017-10-01",
-            "location": "[parameters('moodleCommon').location]",
-            "name": "[parameters('moodleCommon').vmssNsgName]",
+            "location": "[parameters('lampCommon').location]",
+            "name": "[parameters('lampCommon').vmssNsgName]",
             "properties": {
                 "securityRules": [
                     {
@@ -249,7 +249,7 @@
         "webvmss1NIC": "[concat('Microsoft.Compute/virtualMachineScaleSets/', parameters('lampCommon').vmssName, '/virtualMachines/0/networkInterfaces/vmssnic')]",
         "appGwID": "[resourceId('Microsoft.Network/applicationGateways', parameters('lampCommon').appGwName)]",
         "appGwBePoolId": "[concat(variables('appGwID'), '/backendAddressPools/', parameters('lampCommon').appGwBePoolName)]",
-        "vmssNsgNameId": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('moodleCommon').vmssNsgName)]",
+        "vmssNsgNameId": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('lampCommon').vmssNsgName)]",
         "lbBePoolArray": [
             {
                 "id": "[variables('extBeID')]"
