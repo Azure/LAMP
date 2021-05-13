@@ -2,8 +2,19 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
         "parameters": {
-                "sshPublicKey":                { "value": "GEN-SSH-PUB-KEY" },
-                "fileServerDiskCount":         { "value": 2 },
-                "fileServerDiskSize":          { "value": 32 }
+                "sshPublicKey":                { "value": "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEAmOis3/0lu5MgNdrXhrCPy8KSJuUn8cOGY+TTGBP0TchTGRPXlwS+w2YucUU1QfAlyClbnCvtndZlL7kO+8IFafuLHw9fRt5vISHZVx7tZisPWBd11AbFacg1x37kxpXv/0Hk20Ag1SSo+An4PnwG1pW4zJayb3zOkC4TJ1P/hJ5q/vXqRkiiXUm5kxRcX8lt9AziQiN16pGuNrnSl45/TD58cJxQkGjGHBYu8vzC7Xo7trLPxMInC6R9sN3JpZ4xFzYWq74wanwtfW5UOBXk/VPCJKSsAUvmIgse36hEypXJ1b2IbEg/T1FsIkqh784ecqbsLigDUPOFVGO9oa5jNw== rsa-key-20200203" },
+                "_artifactsLocation":           { "value": "https://raw.githubusercontent.com/ummadisudhakar/LAMP/portmoodleimprovements/" },
+                "_artifactsLocationSasToken":   { "value": "" },
+                "redisDeploySwitch":            { "value": true },
+                "autoscaleVmCountMax":          { "value": 20 },
+                "autoscaleVmSku":		 { "value": "Standard_DS3_v2" },
+                "mysqlPgresVcores":             { "value": 16 },
+                "mysqlPgresStgSizeGB":          { "value": 512 },
+                "fileServerType":               { "value": "azurefiles" },
+                "fileServerDiskSize":           { "value": 1024 },
+                "storageAccountType":           { "value": "Premium_LRS" },
+                "loadBalancerSku":              { "value": "Standard" },
+                "OSDiskSizeInGB":               { "value": 1024 },
+                "CMSApplication":               { "value": "WordPress" }
         }
 }
