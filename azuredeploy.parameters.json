@@ -6,15 +6,6 @@
                 "_artifactsLocation":           { "value": "https://raw.githubusercontent.com/ummadisudhakar/LAMP/portmoodleimprovements/" },
                 "_artifactsLocationSasToken":   { "value": "" },
                 "redisDeploySwitch":            { "value": true },
-                "autoscaleVmCountMax":          { "value": 20 },
-                "autoscaleVmSku":		 { "value": "Standard_DS3_v2" },
-                "mysqlPgresVcores":             { "value": 16 },
-                "mysqlPgresStgSizeGB":          { "value": 512 },
-                "fileServerType":               { "value": "azurefiles" },
-                "fileServerDiskSize":           { "value": 1024 },
-                "storageAccountType":           { "value": "Premium_LRS" },
-                "loadBalancerSku":              { "value": "Standard" },
-                "OSDiskSizeInGB":               { "value": 1024 },
                 "CMSApplication":               { "value": "WordPress" }
         }
 }
