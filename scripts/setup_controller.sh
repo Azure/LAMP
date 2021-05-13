@@ -204,7 +204,7 @@ set -ex
       END=`date -u -d "60 minutes" '+%Y-%m-%dT%H:%M:00Z'`
 
       sas=$(az storage share generate-sas \
-        -n moodle \
+        -n azlamp \
         --account-key $ACCOUNT_KEY \
         --account-name $NAME \
         --https-only \
@@ -214,9 +214,9 @@ set -ex
       export AZCOPY_CONCURRENCY_VALUE='48'
       export AZCOPY_BUFFER_GB='4'
 
-      # cp -a /moodle_old_delete_me/* /moodle || true # Ignore case sensitive directory copy failure
-      azcopy --log-level ERROR copy "/moodle_old_delete_me/*" "https://$NAME.file.core.windows.net/azlamp?$sas" --recursive || true # Ignore case sensitive directory copy failure
-      rm -rf /moodle_old_delete_me || true # Keep the files just in case
+      # cp -a /azlamp_old_delete_me/* /azlamp || true # Ignore case sensitive directory copy failure
+      azcopy --log-level ERROR copy "/azlamp_old_delete_me/*" "https://$NAME.file.core.windows.net/azlamp?$sas" --recursive || true # Ignore case sensitive directory copy failure
+      rm -rf /azlamp_old_delete_me || true # Keep the files just in case
     fi
 
     # chmod /azlamp for Azure NetApp Files (its default is 770!)
