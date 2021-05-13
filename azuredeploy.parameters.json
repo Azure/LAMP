@@ -5,7 +5,7 @@
                 "sshPublicKey":                { "value": "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEAmOis3/0lu5MgNdrXhrCPy8KSJuUn8cOGY+TTGBP0TchTGRPXlwS+w2YucUU1QfAlyClbnCvtndZlL7kO+8IFafuLHw9fRt5vISHZVx7tZisPWBd11AbFacg1x37kxpXv/0Hk20Ag1SSo+An4PnwG1pW4zJayb3zOkC4TJ1P/hJ5q/vXqRkiiXUm5kxRcX8lt9AziQiN16pGuNrnSl45/TD58cJxQkGjGHBYu8vzC7Xo7trLPxMInC6R9sN3JpZ4xFzYWq74wanwtfW5UOBXk/VPCJKSsAUvmIgse36hEypXJ1b2IbEg/T1FsIkqh784ecqbsLigDUPOFVGO9oa5jNw== rsa-key-20200203" },
                 "_artifactsLocation":           { "value": "https://raw.githubusercontent.com/ummadisudhakar/LAMP/portmoodleimprovements/" },
                 "_artifactsLocationSasToken":   { "value": "" },
-                "redisDeploySwitch":            { "value": true },
                 "CMSApplication":               { "value": "WordPress" }
+        
         }
 }
