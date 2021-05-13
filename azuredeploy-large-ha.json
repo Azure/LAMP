@@ -52,9 +52,9 @@
                     "mysqlPgresStgSizeGB":          { "value": 512 },
                     "fileServerType":               { "value": "azurefiles" },
                     "fileServerDiskSize":           { "value": 1024 },
+                    "storageAccountType":           { "value": "Premium_LRS" },
                     "loadBalancerSku":              { "value": "Standard" },
                     "OSDiskSizeInGB":               { "value": 1024 },
-                    "storageAccountType":           { "value": "Premium_LRS" },
                     "CMSApplication":               { "value": "[parameters('CMSApplication')]" }
                 },
                 "templateLink": {
