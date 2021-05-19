@@ -133,7 +133,8 @@
             "condition": "[not(equals(parameters('lampCommon').httpsTermination, 'AppGw'))]",
             "type": "Microsoft.Network/publicIPAddresses",
             "sku": {
-                "name": "[parameters('lampCommon').lbSku]"
+                "name": "[parameters('lampCommon').lbSku]",
+                "tier": "[parameters('lampCommon').lbTier]"
             },
             "apiVersion": "2019-11-01",
             "location": "[parameters('lampCommon').location]",
@@ -146,6 +147,46 @@
             },
             "tags": {
                 "displayName": "Load Balancer Public IP"
+            }
+        },
+        {
+            "condition": "[not(equals(parameters('lampCommon').httpsTermination, 'AppGw'))]",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "sku": {
+                "name": "[parameters('lampCommon').lbSku]",
+                "tier": "[parameters('lampCommon').lbTier]"
+            },
+            "apiVersion": "2019-11-01",
+            "location": "[parameters('lampCommon').location]",
+            "name": "[parameters('lampCommon').lbOutPipName001]",
+            "properties": {
+                "dnsSettings": {
+                    "domainNameLabel": "[parameters('lampCommon').lbOutName001]"
+                },
+                "publicIPAllocationMethod": "Static"
+            },
+            "tags": {
+                "displayName": "Load Balancer Outbound Public IP 001"
+            }
+        },
+        {
+            "condition": "[not(equals(parameters('lampCommon').httpsTermination, 'AppGw'))]",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "sku": {
+                "name": "[parameters('lampCommon').lbSku]",
+                "tier": "[parameters('lampCommon').lbTier]"
+            },
+            "apiVersion": "2019-11-01",
+            "location": "[parameters('lampCommon').location]",
+            "name": "[parameters('lampCommon').lbOutPipName002]",
+            "properties": {
+                "dnsSettings": {
+                    "domainNameLabel": "[parameters('lampCommon').lbOutName002]"
+                },
+                "publicIPAllocationMethod": "Static"
+            },
+            "tags": {
+                "displayName": "Load Balancer Outbound Public IP 002"
             }
         },
         {
@@ -183,11 +224,14 @@
             "condition": "[not(equals(parameters('lampCommon').httpsTermination, 'AppGw'))]",
             "type": "Microsoft.Network/loadBalancers",
             "sku": {
-                "name": "[parameters('lampCommon').lbSku]"
+                "name": "[parameters('lampCommon').lbSku]",
+                "tier": "[parameters('lampCommon').lbTier]"
             },
             "apiVersion": "2019-11-01",
             "dependsOn": [
-                "[concat('Microsoft.Network/publicIPAddresses/',parameters('lampCommon').lbPipName)]"
+                "[concat('Microsoft.Network/publicIPAddresses/',parameters('lampCommon').lbPipName)]",
+                "[concat('Microsoft.Network/publicIPAddresses/',parameters('lampCommon').lbOutPipName001)]",
+                "[concat('Microsoft.Network/publicIPAddresses/',parameters('lampCommon').lbOutPipName002)]"
             ],
             "location": "[parameters('lampCommon').location]",
             "name": "[parameters('lampCommon').lbName]",
@@ -205,11 +249,28 @@
                                 "id": "[variables('lbPipID')]"
                             }
                         }
-                    }
+                    },
+                    {
+                        "name": "[parameters('lampCommon').extOutName001 ]",
+                        "properties": {
+                            "publicIPAddress": {
+                                "id": "[variables('lbOutPip001ID')]"
+                            }
+                        }
+
+                    },
+                    {
+                        "name": "[parameters('lampCommon').extOutName002 ]",
+                        "properties": {
+                            "publicIPAddress": {
+                                "id": "[variables('lbOutPip002ID')]"
+                            }
+                        }
+                    }    
                 ],
                 "loadBalancingRules": [
                     {
-                        "name": "Http",
+                        "name": "HTTP",
                         "properties": {
                             "backendAddressPool": {
                                 "id": "[variables('extBeID')]"
@@ -228,7 +289,7 @@
                         }
                     },
                     {
-                        "name": "Https",
+                        "name": "HTTPS",
                         "properties": {
                             "backendAddressPool": {
                                 "id": "[variables('extBeID')]"
@@ -266,7 +327,31 @@
                             "protocol": "Tcp"
                         }
                     }
-                ]
+                ],
+                "inboundNatRules": [],
+                "outboundRules": [
+                    {
+                        "name": "Outboundrule001",
+                        "properties": {
+                            "allocatedOutboundPorts": 12800,
+                            "protocol": "Tcp",
+                            "enableTcpReset": false,
+                            "idleTimeoutInMinutes": 5,
+                            "backendAddressPool": {
+                                "id": "[variables('extBeID')]"
+                            },
+                            "frontendIPConfigurations": [
+                                {
+                                    "id": "[variables('extOutID001')]"
+                                },
+                                {
+                                    "id": "[variables('extOutID002')]"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "inboundNatPools": []
             }
         },
         {
@@ -306,10 +391,14 @@
         "documentation01": "This sub-template creates a virtual network with a number of subnets and then creates the load-balancer (or an Azure Application Gateway) with public IP/dns",
         "extBeID": "[concat(variables('extLbID'),'/backendAddressPools/',parameters('lampCommon').extBeName)]",
         "extFeID": "[concat(variables('extLbID'),'/frontendIPConfigurations/',parameters('lampCommon').extFeName)]",
+        "extOutID001": "[concat(variables('extLbID'),'/frontendIPConfigurations/',parameters('lampCommon').extOutName001)]",
+        "extOutID002": "[concat(variables('extLbID'),'/frontendIPConfigurations/',parameters('lampCommon').extOutName002)]",
         "extLbID": "[resourceId('Microsoft.Network/loadBalancers',parameters('lampCommon').lbName)]",
         "extProbeHTTPID": "[concat(variables('extLbID'),'/probes/',parameters('lampCommon').extProbeHTTP)]",
         "extProbeHTTPSID": "[concat(variables('extLbID'),'/probes/',parameters('lampCommon').extProbeHTTPS)]",
         "lbPipID": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('lampCommon').lbPipName)]",
+        "lbOutPip001ID": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('lampCommon').lbOutPipName001)]",
+        "lbOutPip002ID": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('lampCommon').lbOutPipName002)]",
         "ctlrPipID": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('lampCommon').ctlrPipName)]",
         "customVnetIdArr":              "[split(parameters('lampCommon').customVnetId, '/')]",
         "vnetSub":                      "[if(equals(parameters('lampCommon').customVnetId, ''), subscription().subscriptionId, variables('customVnetIdArr')[2])]",
@@ -329,6 +418,14 @@
     "outputs": {
         "lbPubIp": {
             "value": "[if(equals(parameters('lampCommon').httpsTermination, 'AppGw'), '0.0.0.0', reference(parameters('lampCommon').lbPipName, '2017-10-01').ipAddress)]",
+            "type": "string"
+        },
+        "lbOut001PubIp": {
+            "value": "[if(equals(parameters('lampCommon').httpsTermination, 'AppGw'), '0.0.0.0', reference(parameters('lampCommon').lbOutPipName001, '2017-10-01').ipAddress)]",
+            "type": "string"
+        },
+        "lbOut002PubIp": {
+            "value": "[if(equals(parameters('lampCommon').httpsTermination, 'AppGw'), '0.0.0.0', reference(parameters('lampCommon').lbOutPipName002, '2017-10-01').ipAddress)]",
             "type": "string"
         },
         "ctlrPubIp": {

@@ -6,8 +6,9 @@ function get_setup_params_from_configs_json
 {
     local configs_json_path=${1}    # E.g., /var/lib/cloud/instance/lamp_on_azure_configs.json
 
-    (dpkg -l jq &> /dev/null) || (apt -y update; apt -y install jq)
-
+    # (dpkg -l jq &> /dev/null) || (apt -y update; apt -y install jq)
+    # Added curl command to download jq.
+    curl https://stedolan.github.io/jq/download/linux64/jq > /usr/bin/jq && chmod +x /usr/bin/jq
     # Wait for the cloud-init write-files user data file to be generated (just in case)
     local wait_time_sec=0
     while [ ! -f "$configs_json_path" ]; do
@@ -56,6 +57,8 @@ function get_setup_params_from_configs_json
     export wpDbUserPass=$(echo $json | jq -r .applicationProfile.wpDbUserPass)
     export wpVersion=$(echo $json | jq -r .applicationProfile.wpVersion)
     export sshUsername=$(echo $json | jq -r .applicationProfile.sshUsername)
+    export storageAccountType=$(echo $json | jq -r .moodleProfile.storageAccountType)
+    export fileServerDiskSize=$(echo $json | jq -r .fileServerProfile.fileServerDiskSize)
 }
 
 function get_php_version {
@@ -278,12 +281,15 @@ function create_azure_files_share
     local storageAccountName=$2
     local storageAccountKey=$3
     local logFilePath=$4
+    local fileServerDiskSize=$5
+
 
     az storage share create \
         --name $shareName \
         --account-name $storageAccountName \
         --account-key $storageAccountKey \
-        --fail-on-exist >> $logFilePath
+        --fail-on-exist >> $logFilePath \
+        --quota $fileServerDiskSize
 }
 
 function setup_and_mount_gluster_share
@@ -332,6 +338,8 @@ function setup_azlamp_mount_dependency_for_systemd_service
     cat <<EOF > $systemdSvcOverrideFilePath
 [Unit]
 After=azlamp.mount
+[Service]
+LimitNOFILE=100000
 EOF
     systemctl daemon-reload
   fi
@@ -608,6 +616,10 @@ server {
         ssl_certificate ${certsDir}/nginx.crt;
         ssl_certificate_key ${certsDir}/nginx.key;
 
+        ssl_session_timeout 1d;
+        ssl_session_cache shared:MozSSL:10m;  # about 40000 sessions
+        ssl_session_tickets off;
+
         # Log to syslog
         # error_log syslog:server=localhost,facility=local1,severity=error,tag=lamp;
         # access_log syslog:server=localhost,facility=local1,severity=notice,tag=lamp combined;
@@ -624,12 +636,17 @@ server {
           fastcgi_buffers 16 16k;
           fastcgi_buffer_size 32k;
           fastcgi_param   SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-          fastcgi_pass unix:/run/php/php${PhpVer}-fpm.sock;
+          # fastcgi_pass unix:/run/php/php${PhpVer}-fpm.sock;
+          fastcgi_pass backend;
           fastcgi_read_timeout 3600;
           fastcgi_index index.php;
           include fastcgi_params;
         }
 }
+upstream backend {
+        server unix:/run/php/php${PhpVer}-fpm.sock fail_timeout=1s;
+        server unix:/run/php/php${PhpVer}-fpm-backup.sock backup;
+}  
 EOF
   fi
 
