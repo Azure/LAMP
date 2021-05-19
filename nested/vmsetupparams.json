@@ -14,6 +14,12 @@
             },
             "type": "string"
         },
+        "storageAccountName": {
+            "metadata": {
+                "description": "Storage account name from the storage account deployment."
+            },
+            "type": "string"
+        },
         "storageAccountKey": {
             "metadata": {
                 "description": "Storage account key from the storage account deployment."
@@ -38,8 +44,9 @@
                 "thumbprintCaCert": "[parameters('lampCommon').thumbprintCaCert]"
             },
             "lampProfile": {
-                "storageAccountName": "[parameters('lampCommon').storageAccountName]",
+                "storageAccountName": "[parameters('storageAccountName')]",
                 "storageAccountKey": "[parameters('storageAccountKey')]",
+                "storageAccountType": "[parameters('lampCommon').storageAccountType]",
                 "redisDeploySwitch": "[parameters('lampCommon').redisDeploySwitch]",
                 "redisDns": "[parameters('lampCommon').redisDns]",
                 "redisKey": "[parameters('redisKey')]",
@@ -63,7 +70,9 @@
                 "glusterVolName": "data",
                 "nfsByoIpExportPath": "[parameters('lampCommon').nfsByoIpExportPath]",
                 "nfsHaLbIP": "[parameters('lampCommon').nfsHaLbIP]",
-                "nfsHaExportPath": "[parameters('lampCommon').nfsHaExportPath]"
+                "nfsHaExportPath": "[parameters('lampCommon').nfsHaExportPath]",
+                "fileServerDiskSize": "[parameters('lampCommon').fileServerDiskSize]"
+
             },
             "phpProfile": {
                 "phpVersion": "[parameters('lampCommon').phpVersion]"
