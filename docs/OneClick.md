@@ -7,7 +7,7 @@ This document explains how to install WordPress with the WooCommerce plugin on a
 
 ## Supported Software Configuration
 - To support the current installation, the LAMP stack must be running with the below software versions.
-	*	Ubuntu 16.04 LTS
+	*	Ubuntu 18.04 LTS
 	*	Nginx web server 1.10.3
 	*	MySQL PaaS 5.6, 5.7 or 8.0 database server
 	*	PHP 7.2, 7.3, or 7.4 

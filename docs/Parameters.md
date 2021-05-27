@@ -342,7 +342,7 @@ File server type: GlusterFS, NFS, and NFS-HA (2-VM highly available NFS cluster)
 
 Type: string
 
-Possible Values: ["gluster","nfs","nfs-ha","nfs-byo"]
+Possible Values: ["gluster","nfs","nfs-ha","nfs-byo","azurefiles"]
 
 Default: nfs
 
@@ -492,7 +492,7 @@ Storage Account type. This storage account is only for the (currently disabled) 
 
 Type: string
 
-Possible Values: ["Standard_LRS","Standard_GRS","Standard_ZRS"]
+Possible Values: ["Standard_LRS","Standard_GRS","Standard_ZRS","Premium_LRS"]
 
 Default: Standard_LRS
 
@@ -544,7 +544,7 @@ Type: string
 
 Possible Values: ["Basic","Standard"]
 
-Default: Basic
+Default: Standard
 
 ### location
 
