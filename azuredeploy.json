@@ -558,6 +558,74 @@
             },
             "type": "string"
         },
+        "workspaceName": {
+          "type": "string",
+          "metadata": {
+            "description": "Name of the workspace."
+          }
+      },
+      "sku": {
+          "type": "string",
+          "allowedValues": [
+            "pergb2018",
+            "Free",
+            "Standalone",
+            "PerNode",
+            "Standard",
+            "Premium"
+            ],
+          "defaultValue": "pergb2018",
+          "metadata": {
+          "description": "Pricing tier: PerGB2018 or legacy tiers (Free, Standalone, PerNode, Standard or Premium) which are not available to all customers."
+          }
+        },
+        "locationForWorkspace": {
+          "type": "string",
+          "allowedValues": [
+          "australiacentral", 
+          "australiaeast", 
+          "australiasoutheast", 
+          "brazilsouth",
+          "canadacentral", 
+          "centralindia", 
+          "centralus", 
+          "eastasia", 
+          "eastus", 
+          "eastus2", 
+          "francecentral", 
+          "japaneast", 
+          "koreacentral", 
+          "northcentralus", 
+          "northeurope", 
+          "southafricanorth", 
+          "southcentralus", 
+          "southeastasia",
+          "switzerlandnorth",
+          "switzerlandwest",
+          "uksouth", 
+          "ukwest", 
+          "westcentralus", 
+          "westeurope", 
+          "westus", 
+          "westus2" 
+          ],
+          "metadata": {
+              "description": "Specifies the location for the workspace."
+              }
+        },
+        "retentionInDays": {
+          "type": "int",
+          "defaultValue": 120,
+          "metadata": {
+            "description": "Number of days to retain data."
+          }
+        },
+        "resourcePermissions": {
+          "type": "bool",
+          "metadata": {
+            "description": "true to use resource or workspace permissions. false to require workspace permissions."
+          }
+      },
         "wordpressVersion": {
             "allowedValues": [
                 "5.4.1",
@@ -791,6 +859,24 @@
                 }
             }
         },
+        //Log Analytic Workspace generator
+        {
+          "type": "Microsoft.OperationalInsights/workspaces",
+          "name": "[parameters('workspaceName')]",
+          "apiVersion": "2020-08-01",
+          "location": "[parameters('locationForWorkspace')]",
+          "properties": {
+              "sku": {
+                  "name": "[parameters('sku')]"
+              },
+              "retentionInDays": "[parameters('retentionInDays')]",
+              "features": {
+                  "searchVersion": 1,
+                  "legacy": 0,
+                  "enableLogAccessUsingOnlyResourcePermissions": "[parameters('resourcePermissions')]"
+              }
+          }
+      },
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
