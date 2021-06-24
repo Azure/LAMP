@@ -847,9 +847,9 @@
                     "dataDiskSizeInGB": {
                         "value": "[parameters('fileServerDiskSize')]"
                     },
-                    "OSDiskSizeInGB": {
-                        "value": "[parameters('OSDiskSizeInGB')]"
-                    },
+                    // "OSDiskSizeInGB": {
+                    //     "value": "[parameters('OSDiskSizeInGB')]"
+                    // },
                     "resourcesUniqueString": {
                         "value": "[variables('resourceprefix')]"
                     }
