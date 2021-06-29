@@ -582,7 +582,7 @@
         },
         "locationForWorkspace": {
           "type": "string",
-          "defaultValue": "westus",
+          "defaultValue": "westus2",
           "allowedValues": [
           "australiacentral", 
           "australiaeast", 
@@ -608,7 +608,6 @@
           "ukwest", 
           "westcentralus", 
           "westeurope", 
-          "westus", 
           "westus2" 
           ],
           "metadata": {
