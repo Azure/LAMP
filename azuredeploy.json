@@ -624,7 +624,7 @@
         },
         "resourcePermissions": {
           "type": "bool",
-          "defaultValue": "true",
+          "defaultValue": true,
           "metadata": {
             "description": "true to use resource or workspace permissions. false to require workspace permissions."
           }
