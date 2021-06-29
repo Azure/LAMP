@@ -560,6 +560,7 @@
         },
         "workspaceName": {
           "type": "string",
+          "defaultValue": "DefaultLogWorkspace",
           "metadata": {
             "description": "Name of the workspace."
           }
