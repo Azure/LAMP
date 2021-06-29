@@ -610,6 +610,7 @@
           "westus", 
           "westus2" 
           ],
+          "defaultValue": "westus",
           "metadata": {
               "description": "Specifies the location for the workspace."
               }
@@ -623,6 +624,7 @@
         },
         "resourcePermissions": {
           "type": "bool",
+          "defaultValue": "true",
           "metadata": {
             "description": "true to use resource or workspace permissions. false to require workspace permissions."
           }
