@@ -582,7 +582,7 @@
         },
         "locationForWorkspace": {
           "type": "string",
-          "defaultValue": "westus2",
+          "defaultValue": "eastus2",
           "allowedValues": [
           "australiacentral", 
           "australiaeast", 
@@ -849,9 +849,9 @@
                     "dataDiskSizeInGB": {
                         "value": "[parameters('fileServerDiskSize')]"
                     },
-                    // "OSDiskSizeInGB": {
-                    //     "value": "[parameters('OSDiskSizeInGB')]"
-                    // },
+                    "OSDiskSizeInGB": {
+                        "value": "[parameters('OSDiskSizeInGB')]"
+                    },
                     "resourcesUniqueString": {
                         "value": "[variables('resourceprefix')]"
                     }
