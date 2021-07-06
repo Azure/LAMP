@@ -11,7 +11,7 @@
             "metadata": {
                 "description": "The base URI where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated."
             },
-            "defaultValue": "https://raw.githubusercontent.com/Azure/LAMP/master/"
+            "defaultValue": "https://raw.githubusercontent.com/Leonard-Wang-2000/LAMP/LogAnalyticsWorkspaceCreation/"
         },
         "_artifactsLocationSasToken": {
             "type": "securestring",
@@ -558,6 +558,76 @@
             },
             "type": "string"
         },
+        "workspaceName": {
+          "type": "string",
+          "defaultValue": "DefaultLogWorkspace",
+          "metadata": {
+            "description": "Name of the workspace."
+          }
+      },
+      "sku": {
+          "type": "string",
+          "allowedValues": [
+            "pergb2018",
+            "Free",
+            "Standalone",
+            "PerNode",
+            "Standard",
+            "Premium"
+            ],
+          "defaultValue": "pergb2018",
+          "metadata": {
+          "description": "Pricing tier: PerGB2018 or legacy tiers (Free, Standalone, PerNode, Standard or Premium) which are not available to all customers."
+          }
+        },
+        "locationForWorkspace": {
+          "type": "string",
+          "defaultValue": "westus2",
+          "allowedValues": [
+          "australiacentral", 
+          "australiaeast", 
+          "australiasoutheast", 
+          "brazilsouth",
+          "canadacentral", 
+          "centralindia", 
+          "centralus", 
+          "eastasia", 
+          "eastus", 
+          "eastus2", 
+          "francecentral", 
+          "japaneast", 
+          "koreacentral", 
+          "northcentralus", 
+          "northeurope", 
+          "southafricanorth", 
+          "southcentralus", 
+          "southeastasia",
+          "switzerlandnorth",
+          "switzerlandwest",
+          "uksouth", 
+          "ukwest", 
+          "westcentralus", 
+          "westeurope", 
+          "westus2" 
+          ],
+          "metadata": {
+              "description": "Specifies the location for the workspace."
+              }
+        },
+        "retentionInDays": {
+          "type": "int",
+          "defaultValue": 120,
+          "metadata": {
+            "description": "Number of days to retain data."
+          }
+        },
+        "resourcePermissions": {
+          "type": "bool",
+          "defaultValue": true,
+          "metadata": {
+            "description": "true to use resource or workspace permissions. false to require workspace permissions."
+          }
+      },
         "wordpressVersion": {
             "allowedValues": [
                 "5.4.1",
@@ -779,9 +849,9 @@
                     "dataDiskSizeInGB": {
                         "value": "[parameters('fileServerDiskSize')]"
                     },
-                    "OSDiskSizeInGB": {
-                        "value": "[parameters('OSDiskSizeInGB')]"
-                    },
+                    // "OSDiskSizeInGB": {
+                    //     "value": "[parameters('OSDiskSizeInGB')]"
+                    // },
                     "resourcesUniqueString": {
                         "value": "[variables('resourceprefix')]"
                     }
@@ -791,6 +861,24 @@
                 }
             }
         },
+        //Log Analytic Workspace generator
+        {
+          "type": "Microsoft.OperationalInsights/workspaces",
+          "name": "[parameters('workspaceName')]",
+          "apiVersion": "2020-08-01",
+          "location": "[parameters('locationForWorkspace')]",
+          "properties": {
+              "sku": {
+                  "name": "[parameters('sku')]"
+              },
+              "retentionInDays": "[parameters('retentionInDays')]",
+              "features": {
+                  "searchVersion": 1,
+                  "legacy": 0,
+                  "enableLogAccessUsingOnlyResourcePermissions": "[parameters('resourcePermissions')]"
+              }
+          }
+      },
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
