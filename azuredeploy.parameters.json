@@ -4,13 +4,8 @@
         "parameters": {
                 "sshPublicKey":                { "value": "GEN-SSH-PUB-KEY" },
                 "fileServerDiskCount":         { "value": 2 },
-                "fileServerDiskSize":          { "value": 32 },
-                "WorkspaceResourceId": {
-                    "value": "/subscriptions/<SubscriptionId>/resourceGroups/<ResourceGroup>/providers/Microsoft.OperationalInsights/workspaces/<WorkspaceName>"
-                },
-                "WorkspaceLocation": {
-                    "value": "<WorkspaceLocation>"
-                }
+                "fileServerDiskSize":          { "value": 32 }
+                
         
         }
 }
