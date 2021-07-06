@@ -11,7 +11,7 @@
             "metadata": {
                 "description": "The base URI where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated."
             },
-            "defaultValue": "https://raw.githubusercontent.com/Leonard-Wang-2000/LAMP/LogAnalyticsWorkspaceCreation/"
+            "defaultValue": "https://raw.githubusercontent.com/Leonard-Wang-2000/LAMP/VMInsights/"
         },
         "_artifactsLocationSasToken": {
             "type": "securestring",
@@ -646,6 +646,18 @@
             "metadata": {
                 "description": "Azure Location for all resources."
             }
+        },
+        "WorkspaceResourceId": {
+            "type": "String",
+            "metadata": {
+                "description": "Workspace Resource ID."
+            }
+        },
+        "WorkspaceLocation": {
+            "type": "String",
+            "metadata": {
+                "description": "Workspace Location."
+            }
         }
     },
     "resources": [
@@ -661,6 +673,105 @@
                     "resources": []
                 }
             }
+        },
+        //VM Insights Workspace Creation 
+        {
+
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2017-05-10",
+            "name": "VMI-Solution-Deployment",
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "variables": {},
+                    "resources": [
+                        {
+                            "apiVersion": "2015-11-01-preview",
+                            "type": "Microsoft.OperationsManagement/solutions",
+                            "location": "[parameters('WorkspaceLocation')]",
+                            "name": "[concat('ServiceMap', '(', split(parameters('WorkspaceResourceId'),'/')[8], ')')]",
+                            "properties": {
+                                "workspaceResourceId": "[parameters('WorkspaceResourceId')]"
+                            },
+                            "plan": {
+                                "name": "[concat('ServiceMap', '(', split(parameters('WorkspaceResourceId'),'/')[8], ')')]",
+                                "product": "[concat('OMSGallery/', 'ServiceMap')]",
+                                "promotionCode": "",
+                                "publisher": "Microsoft"
+                            }
+                        }
+                    ]
+                }
+            },
+            "subscriptionId": "[split(parameters('WorkspaceResourceId'),'/')[2]]",
+            "resourceGroup": "[split(parameters('WorkspaceResourceId'),'/')[4]]"
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2017-05-10",
+            "name": "VMI-DCR-Deployment",
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "variables": {},
+                    "resources": [
+                        {
+                            "type": "Microsoft.Insights/dataCollectionRules",
+                            "apiVersion": "2019-11-01-preview",
+                            "name": "[concat('MSVMI-', split(parameters('WorkspaceResourceId'),'/')[8])]",
+                            "location": "[parameters('WorkspaceLocation')]",
+                            "properties": {
+                                "description": "Data collection rule for VM Insights.",
+                                "dataSources": {
+                                    "performanceCounters": [
+                                        {
+                                            "name": "VMInsightsPerfCounters",
+                                            "streams": [
+                                                "Microsoft-InsightsMetrics"
+                                            ],
+                                            "scheduledTransferPeriod": "PT1M",
+                                            "samplingFrequencyInSeconds": 60,
+                                            "counterSpecifiers": [
+                                                "\\VmInsights\\DetailedMetrics"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "destinations": {
+                                    "azureMonitorMetrics": {
+                                        "name": "azureMonitorMetrics-default"
+                                    },
+                                    "logAnalytics": [
+                                        {
+                                            "workspaceResourceId": "[parameters('WorkspaceResourceId')]",
+                                            "name": "VMInsightsPerf-Logs-Dest"
+                                        }
+                                    ]
+                                },
+                                "dataFlows": [
+                                    {
+                                        "streams": [
+                                            "Microsoft-InsightsMetrics"
+                                        ],
+                                        "destinations": [
+                                            "azureMonitorMetrics-default",
+                                            "VMInsightsPerf-Logs-Dest"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            "subscriptionId": "[split(parameters('WorkspaceResourceId'),'/')[2]]",
+            "resourceGroup": "[split(parameters('WorkspaceResourceId'),'/')[4]]"
         },
         {
             "type": "Microsoft.Resources/deployments",
