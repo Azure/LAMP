@@ -654,18 +654,18 @@
                 "description": "Azure Location for all resources."
             }
         },
-        "WorkspaceResourceId": {
-            "type": "String",
-            "defaultValue": "/subscriptions/{subscriptionId}/resourceGroups/resourceGroup().id/providers/Microsoft.OperationalInsights/workspaces/workspaceName",
-            "metadata": {
-                "description": "Workspace Resource ID."
-            }
-        },
         "WorkspaceLocation": {
             "type": "String",
             "defaultValue": "locationForWorkspace",
             "metadata": {
                 "description": "Workspace Location."
+            }
+        },
+        "WorkspaceResourceId": {
+            "type": "String",
+            "defaultValue": "/subscriptions/{subscriptionId}/resourceGroups/resourceGroup().id/providers/Microsoft.OperationalInsights/workspaces/workspaceName",
+            "metadata": {
+                "description": "Workspace Resource ID."
             }
         }
     },
