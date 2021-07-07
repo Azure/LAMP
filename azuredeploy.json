@@ -724,6 +724,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2017-05-10",
             "name": "VMI-DCR-Deployment",
+            "dependsOn": ["[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"],
             "properties": {
                 "mode": "Incremental",
                 "template": {
@@ -772,7 +773,8 @@
                                         ],
                                         "destinations": [
                                             "azureMonitorMetrics-default",
-                                            "VMInsightsPerf-Logs-Dest"
+                                            "VMInsightsPerf-Logs-Dest",
+                                            "DefaultLogWorkspace"
                                         ]
                                     }
                                 ]
