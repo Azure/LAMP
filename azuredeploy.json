@@ -654,9 +654,9 @@
                 "description": "Azure Location for all resources."
             }
         },
-        "WorkspaceLocation": {
+        "WorkspaceLocation": { //need to insert variable of locationOfWorkspace into this
             "type": "String",
-            "defaultValue": "locationForWorkspace",
+            "defaultValue": "eastus2",
             "metadata": {
                 "description": "Workspace Location."
             }
