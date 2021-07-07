@@ -762,7 +762,8 @@
                                     "logAnalytics": [
                                         {
                                             "workspaceResourceId": "[parameters('WorkspaceResourceId')]",
-                                            "name": "VMInsightsPerf-Logs-Dest"
+                                            "name": "DefaultLogWorkspace"
+                                            //"VMInsightsPerf-Logs-Dest"
                                         }
                                     ]
                                 },
@@ -773,7 +774,7 @@
                                         ],
                                         "destinations": [
                                             "azureMonitorMetrics-default",
-                                            "VMInsightsPerf-Logs-Dest",
+                                            // "VMInsightsPerf-Logs-Dest",
                                             "DefaultLogWorkspace"
                                         ]
                                     }
