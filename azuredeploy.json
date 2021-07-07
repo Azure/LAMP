@@ -628,6 +628,13 @@
             "description": "true to use resource or workspace permissions. false to require workspace permissions."
           }
       },
+        "subscriptionId": {
+            "type": "string",
+            "defaultValue": "[subscription().subscriptionId]",
+            "metadata": {
+            "description": "Get the current subscription Id"
+          }
+        },
         "wordpressVersion": {
             "allowedValues": [
                 "5.4.1",
@@ -708,6 +715,7 @@
                     ]
                 }
             },
+            //"subscriptionId": "[split(parameters('WorkspaceResourceId'),'/')[2]]",
             "subscriptionId": "[split(parameters('WorkspaceResourceId'),'/')[2]]",
             "resourceGroup": "[split(parameters('WorkspaceResourceId'),'/')[4]]"
         },
