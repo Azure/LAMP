@@ -663,7 +663,7 @@
         },
         "WorkspaceResourceId": {
             "type": "String",
-            "defaultValue": "/subscriptions/{subscriptionId}/resourceGroups/resourceGroup().id/providers/Microsoft.OperationalInsights/workspaces/workspaceName",
+            "defaultValue": "/subscriptions/resourceGroups/resourceGroup().id/providers/Microsoft.OperationalInsights/workspaces/workspaceName",
             "metadata": {
                 "description": "Workspace Resource ID."
             }
@@ -715,8 +715,8 @@
                     ]
                 }
             },
-            //"subscriptionId": "[split(parameters('WorkspaceResourceId'),'/')[2]]",
-            "subscriptionId": "[subscription().subscriptionId]",
+            "subscriptionId": "[split(parameters('WorkspaceResourceId'),'/')[2]]",
+            //"subscriptionId": "[subscription().subscriptionId]",
             "resourceGroup": "[split(parameters('WorkspaceResourceId'),'/')[4]]"
         },
         {
