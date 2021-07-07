@@ -716,7 +716,7 @@
                 }
             },
             //"subscriptionId": "[split(parameters('WorkspaceResourceId'),'/')[2]]",
-            "subscriptionId": "[split(parameters('WorkspaceResourceId'),'/')[2]]",
+            "subscriptionId": "[subscription().subscriptionId]",
             "resourceGroup": "[split(parameters('WorkspaceResourceId'),'/')[4]]"
         },
         {
