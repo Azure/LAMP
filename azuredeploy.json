@@ -656,7 +656,7 @@
         },
         "WorkspaceResourceId": {
             "type": "String",
-            "defaultValue": "/subscriptions/subscriptionId/resourceGroups/resourceGroup().id/providers/Microsoft.OperationalInsights/workspaces/workspaceName",
+            "defaultValue": "/subscriptions/{subscriptionId}/resourceGroups/resourceGroup().id/providers/Microsoft.OperationalInsights/workspaces/workspaceName",
             "metadata": {
                 "description": "Workspace Resource ID."
             }
