@@ -560,7 +560,7 @@
         },
         "workspaceName": {
           "type": "string",
-          "defaultValue": "DefaultLogWorkspace",
+          "defaultValue": "LogDefaultWorkspace",
           "metadata": {
             "description": "Name of the workspace."
           }
@@ -684,6 +684,24 @@
                 }
             }
         },
+        //Log Analytic Workspace generator
+        {
+          "type": "Microsoft.OperationalInsights/workspaces",
+          "name": "[parameters('workspaceName')]",
+          "apiVersion": "2020-08-01",
+          "location": "[parameters('locationForWorkspace')]",
+          "properties": {
+              "sku": {
+                  "name": "[parameters('sku')]"
+              },
+              "retentionInDays": "[parameters('retentionInDays')]",
+              "features": {
+                  "searchVersion": 1,
+                  "legacy": 0,
+                  "enableLogAccessUsingOnlyResourcePermissions": "[parameters('resourcePermissions')]"
+              }
+          }
+      },
         //VM Insights Workspace Creation 
         {
 
@@ -762,7 +780,7 @@
                                     "logAnalytics": [
                                         {
                                             "workspaceResourceId": "[parameters('WorkspaceResourceId')]",
-                                            "name": "DefaultLogWorkspace"
+                                            "name": "LogDefaultWorkspace"
                                             //"VMInsightsPerf-Logs-Dest"
                                         }
                                     ]
@@ -775,7 +793,7 @@
                                         "destinations": [
                                             "azureMonitorMetrics-default",
                                             // "VMInsightsPerf-Logs-Dest",
-                                            "DefaultLogWorkspace"
+                                            "LogDefaultWorkspace"
                                         ]
                                     }
                                 ]
@@ -986,24 +1004,7 @@
                 }
             }
         },
-        //Log Analytic Workspace generator
-        {
-          "type": "Microsoft.OperationalInsights/workspaces",
-          "name": "[parameters('workspaceName')]",
-          "apiVersion": "2020-08-01",
-          "location": "[parameters('locationForWorkspace')]",
-          "properties": {
-              "sku": {
-                  "name": "[parameters('sku')]"
-              },
-              "retentionInDays": "[parameters('retentionInDays')]",
-              "features": {
-                  "searchVersion": 1,
-                  "legacy": 0,
-                  "enableLogAccessUsingOnlyResourcePermissions": "[parameters('resourcePermissions')]"
-              }
-          }
-      },
+        
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
