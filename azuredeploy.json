@@ -663,10 +663,38 @@
         },
         "WorkspaceResourceId": {
             "type": "String",
-            "defaultValue": "[resourceId('Microsoft.OperationalInsights/workspaces',parameters('workspaceName'))]",
+            "defaultValue": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]",
             //"/subscriptions/subscriptionId/resourceGroups/resourceGroup().id/providers/Microsoft.OperationalInsights/workspaces/workspaceName",
             "metadata": {
                 "description": "Workspace Resource ID."
+            }
+        },
+        //Existing VM Onboarding Parameters
+        "VmResourceId": {
+            "type": "String",
+            "defaultValue": "[resourceId('Microsoft.Compute/virtualMachines', parameters('workspaceName'))]", //Should be VM name
+            "metadata": {
+                "description": "VM Resource ID."
+            }
+        },
+        "VmLocation": {
+            "type": "String",
+            "defaultValue": "eastus2",
+            "metadata": {
+                "description": "The Virtual Machine Location."
+            }
+        },
+        "osType": {
+            "type": "String",
+            "defaultValue": "Linux",
+            "metadata": {
+                "description": "OS Type, Example: Linux / Windows"
+            }
+        },
+        "DcrResourceId": {
+            "type": "String",
+            "metadata": {
+                "description": "VMI DCR Resource ID."
             }
         }
     },
@@ -804,6 +832,86 @@
             },
             "subscriptionId": "[split(parameters('WorkspaceResourceId'),'/')[2]]",
             "resourceGroup": "[split(parameters('WorkspaceResourceId'),'/')[4]]"
+        },
+        //existing VM resources
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2018-10-01",
+            "name": "[variables('VmName')]",
+            "location": "[parameters('VmLocation')]",
+            "properties": {},
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "resources": [
+                {
+                    "type": "extensions",
+                    "apiVersion": "2018-10-01",
+                    "name": "[variables('DaExtensionName')]",
+                    "location": "[parameters('VmLocation')]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.Azure.Monitoring.DependencyAgent",
+                        "type": "[variables('DaExtensionType')]",
+                        "typeHandlerVersion": "[variables('DaExtensionVersion')]",
+                        "autoUpgradeMinorVersion": true,
+                        "settings": {}
+                    }
+                },
+                {
+                    "type": "extensions",
+                    "apiVersion": "2018-10-01",
+                    "name": "[variables('MmaExtensionName')]",
+                    "location": "[parameters('VmLocation')]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.EnterpriseCloud.Monitoring",
+                        "type": "[variables('MmaExtensionType')]",
+                        "typeHandlerVersion": "[variables('MmaExtensionVersion')]",
+                        "autoUpgradeMinorVersion": "true",
+                        "settings": {
+                            "workspaceId": "[reference(parameters('WorkspaceResourceId'), '2015-03-20').customerId]",
+                            "azureResourceId": "[parameters('VmResourceId')]",
+                            "stopOnMultipleConnections": "true"
+                        },
+                        "protectedSettings": {
+                            "workspaceKey": "[listKeys(parameters('WorkspaceResourceId'), '2015-03-20').primarySharedKey]"
+                        }
+                    }
+                },
+                {
+                    "type": "extensions",
+                    "apiVersion": "2018-10-01",
+                    "name": "[variables('AmaExtensionName')]",
+                    "location": "[parameters('VmLocation')]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.Azure.Monitor",
+                        "type": "[variables('AmaExtensionType')]",
+                        "typeHandlerVersion": "[variables('AmaExtensionVersion')]",
+                        "autoUpgradeMinorVersion": true,
+                        "settings": {}
+                    }
+                },
+                {
+                    "type": "Microsoft.Compute/virtualMachines/providers/dataCollectionRuleAssociations",
+                    "apiVersion": "2019-11-01-preview",
+                    "name": "[concat(variables('VmName'), '/Microsoft.Insights/VMInsights-Dcr-Association')]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
+                    ],
+                    "properties": {
+                        "description": "Association of data collection rule for VM Insights.",
+                        "dataCollectionRuleId": "[parameters('DcrResourceId')]"
+                    }
+                }
+            ]
         },
         {
             "type": "Microsoft.Resources/deployments",
@@ -1153,6 +1261,16 @@
         "documentation08": "    webvmss             - creates a vm scale set",
         "documentation09": "    controller          - creates a controller VM and deploys code",
         "documentation10": "GlusterFS Sizing guidance",
+        "VmName": "TestNameVM",
+        "DaExtensionName": "[if(equals(toLower(parameters('osType')), 'windows'), 'DependencyAgentWindows', 'DependencyAgentLinux')]",
+        "DaExtensionType": "[if(equals(toLower(parameters('osType')), 'windows'), 'DependencyAgentWindows', 'DependencyAgentLinux')]",
+        "DaExtensionVersion": "9.5",
+        "MmaExtensionName": "[if(equals(toLower(parameters('osType')), 'windows'), 'MMAExtension', 'OMSExtension')]",
+        "MmaExtensionType": "[if(equals(toLower(parameters('osType')), 'windows'), 'MicrosoftMonitoringAgent', 'OmsAgentForLinux')]",
+        "MmaExtensionVersion": "[if(equals(toLower(parameters('osType')), 'windows'), '1.0', '1.4')]",
+        "AmaExtensionName": "[if(equals(toLower(parameters('osType')), 'windows'), 'AzureMonitorWindowsAgent', 'AzureMonitorLinuxAgent')]",
+        "AmaExtensionType": "[if(equals(toLower(parameters('osType')), 'windows'), 'AzureMonitorWindowsAgent', 'AzureMonitorLinuxAgent')]",
+        "AmaExtensionVersion": "1.0",
         "lampCommon": {
             "applicationDbName": "[parameters('CMSApplication')]",
             "cmsApplication": "[parameters('CMSApplication')]",
