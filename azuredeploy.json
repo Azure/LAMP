@@ -669,6 +669,7 @@
                 "description": "Workspace Resource ID."
             }
         },
+        
         //Existing VM Onboarding Parameters
         "VmResourceId": {
             "type": "String",
@@ -694,7 +695,7 @@
         
         "DcrResourceId": {
             "type": "String",
-            "defaultValue": "[resourceId('Microsoft.Compute/virtualMachines/providers/dataCollectionRules', 'String', parameters('workspaceName'), 'test')]",
+            "defaultValue": "[resourceId('Microsoft.Insights/dataCollectionRules', 'test')]",
             "metadata": {
                 "description": "VMI DCR Resource ID."
             }
