@@ -691,8 +691,10 @@
                 "description": "OS Type, Example: Linux / Windows"
             }
         },
+        
         "DcrResourceId": {
             "type": "String",
+            "defaultValue": "[resourceId('Microsoft.Compute/virtualMachines/providers/dataCollectionRules', 'String', parameters('workspaceName'), 'test')]",
             "metadata": {
                 "description": "VMI DCR Resource ID."
             }
