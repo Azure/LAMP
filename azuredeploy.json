@@ -671,7 +671,7 @@
         },
         "tempVMName": {
             "type": "string",
-            "defaultValue": "ExampleVM",
+            "defaultValue": "TestNameVM",
             "metadata": {"description": "Temp Parameter for variable VMname"}
         },
         //Existing VM Onboarding Parameters
@@ -846,7 +846,7 @@
             "apiVersion": "2018-10-01",
             "name": "[variables('VmName')]",
             "location": "[parameters('VmLocation')]",
-            "properties": {},
+            // "properties": {"storageProfile": ""},
             "identity": {
                 "type": "SystemAssigned"
             },
