@@ -669,11 +669,15 @@
                 "description": "Workspace Resource ID."
             }
         },
-        
+        "tempVMName": {
+            "type": "string",
+            "defaultValue": "ExampleVM",
+            "metadata": {"description": "Temp Parameter for variable VMname"}
+        },
         //Existing VM Onboarding Parameters
         "VmResourceId": {
             "type": "String",
-            "defaultValue": "[resourceId('Microsoft.Compute/virtualMachines', parameters('workspaceName'))]", //Should be VM name
+            "defaultValue": "[resourceId('Microsoft.Compute/virtualMachines', parameters('tempVMName'))]", //Should be VM name
             "metadata": {
                 "description": "VM Resource ID."
             }
