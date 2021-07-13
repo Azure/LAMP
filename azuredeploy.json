@@ -843,7 +843,7 @@
         //existing VM resources
         {
             "type": "Microsoft.Compute/virtualMachines",
-            "apiVersion": "2018-10-01",
+            "apiVersion": "2020-12-01",
             "name": "[variables('VmName')]",
             "location": "[parameters('VmLocation')]",
             "properties": {},
