@@ -846,7 +846,7 @@
             "apiVersion": "2018-10-01",
             "name": "[variables('VmName')]",
             "location": "[parameters('VmLocation')]",
-            "properties": {"storageProfile": ""},
+            "properties": {},
             "identity": {
                 "type": "SystemAssigned"
             },
