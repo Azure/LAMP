@@ -842,19 +842,18 @@
         },
         //existing VM resources
         {
-            "type": "Microsoft.Compute/virtualMachines",
-            "apiVersion": "2020-12-01",
-            "name": "[variables('VmName')]",
-            "location": "[parameters('VmLocation')]",
-            "properties": {},
-            "identity": {
-                "type": "SystemAssigned"
-            },
-            "resources": [
-                {
-                    "type": "extensions",
+            // "type": "Microsoft.Compute/virtualMachines/extensions",
+            // "apiVersion": "2018-10-01",
+            // "name": "[variables('VmName')]",
+            // "location": "[parameters('VmLocation')]",
+            // "identity": {
+            //     "type": "SystemAssigned"
+            // },
+            // "resources": [
+                //{
+                    "type": "Microsoft.Compute/virtualMachines/extensions",
                     "apiVersion": "2018-10-01",
-                    "name": "[variables('DaExtensionName')]",
+                    "name": "[concat(variables('VmName'), '/', variables('DaExtensionName'))]",
                     "location": "[parameters('VmLocation')]",
                     "dependsOn": [
                         "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
@@ -866,11 +865,12 @@
                         "autoUpgradeMinorVersion": true,
                         "settings": {}
                     }
-                },
+        },
+                //},
                 {
-                    "type": "extensions",
+                    "type": "Microsoft.Compute/virtualMachines/extensions",
                     "apiVersion": "2018-10-01",
-                    "name": "[variables('MmaExtensionName')]",
+                    "name": "[concat(variables('VmName'), '/', variables('MmaExtensionName'))]",
                     "location": "[parameters('VmLocation')]",
                     "dependsOn": [
                         "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
@@ -891,9 +891,9 @@
                     }
                 },
                 {
-                    "type": "extensions",
+                    "type": "Microsoft.Compute/virtualMachines/extensions",
                     "apiVersion": "2018-10-01",
-                    "name": "[variables('AmaExtensionName')]",
+                    "name": "[concat(variables('VmName'), '/', variables('AmaExtensionName'))]",
                     "location": "[parameters('VmLocation')]",
                     "dependsOn": [
                         "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
@@ -917,9 +917,9 @@
                         "description": "Association of data collection rule for VM Insights.",
                         "dataCollectionRuleId": "[parameters('DcrResourceId')]"
                     }
-                }
-            ]
-        },
+                },
+            //]
+        
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
