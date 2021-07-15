@@ -882,7 +882,7 @@
                         "autoUpgradeMinorVersion": "true",
                         "settings": {
                             "workspaceId": "[reference(parameters('WorkspaceResourceId'), '2015-03-20').customerId]",
-                            "azureResourceId": "[resourceId('Microsoft.Compute/virtualMachines', variables('VMName'))]",
+                            "azureResourceId": "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]",
                             "stopOnMultipleConnections": "true"
                         },
                         "protectedSettings": {
