@@ -855,9 +855,9 @@
                     "apiVersion": "2018-10-01",
                     "name": "[concat(variables('VmName'), '/', variables('DaExtensionName'))]",
                     "location": "[parameters('VmLocation')]",
-                    "dependsOn": [
-                        "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
-                    ],
+                    // "dependsOn": [
+                    //     "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
+                    // ],
                     "properties": {
                         "publisher": "Microsoft.Azure.Monitoring.DependencyAgent",
                         "type": "[variables('DaExtensionType')]",
@@ -872,9 +872,9 @@
                     "apiVersion": "2018-10-01",
                     "name": "[concat(variables('VmName'), '/', variables('MmaExtensionName'))]",
                     "location": "[parameters('VmLocation')]",
-                    "dependsOn": [
-                        "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
-                    ],
+                    // "dependsOn": [
+                    //     "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
+                    // ],
                     "properties": {
                         "publisher": "Microsoft.EnterpriseCloud.Monitoring",
                         "type": "[variables('MmaExtensionType')]",
@@ -895,9 +895,9 @@
                     "apiVersion": "2018-10-01",
                     "name": "[concat(variables('VmName'), '/', variables('AmaExtensionName'))]",
                     "location": "[parameters('VmLocation')]",
-                    "dependsOn": [
-                        "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
-                    ],
+                    // "dependsOn": [
+                    //     "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
+                    // ],
                     "properties": {
                         "publisher": "Microsoft.Azure.Monitor",
                         "type": "[variables('AmaExtensionType')]",
@@ -910,9 +910,9 @@
                     "type": "Microsoft.Compute/virtualMachines/providers/dataCollectionRuleAssociations",
                     "apiVersion": "2019-11-01-preview",
                     "name": "[concat(variables('VmName'), '/Microsoft.Insights/VMInsights-Dcr-Association')]",
-                    "dependsOn": [
-                        "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
-                    ],
+                    // "dependsOn": [
+                    //     "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
+                    // ],
                     "properties": {
                         "description": "Association of data collection rule for VM Insights.",
                         "dataCollectionRuleId": "[parameters('DcrResourceId')]"
