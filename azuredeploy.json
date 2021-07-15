@@ -675,13 +675,13 @@
             "metadata": {"description": "Temp Parameter for variable VMname"}
         },
         //Existing VM Onboarding Parameters
-        "VmResourceId": {
-            "type": "String",
-            "defaultValue": "[resourceId('Microsoft.Compute/virtualMachines', parameters('tempVMName'))]", //Should be VM name
-            "metadata": {
-                "description": "VM Resource ID."
-            }
-        },
+        // "VmResourceId": {
+        //     "type": "String",
+        //     "defaultValue": "[resourceId('Microsoft.Compute/virtualMachines', parameters('tempVMName'))]", //Should be VM name
+        //     "metadata": {
+        //         "description": "VM Resource ID."
+        //     }
+        // },
         "VmLocation": {
             "type": "String",
             "defaultValue": "eastus2",
@@ -882,7 +882,7 @@
                         "autoUpgradeMinorVersion": "true",
                         "settings": {
                             "workspaceId": "[reference(parameters('WorkspaceResourceId'), '2015-03-20').customerId]",
-                            "azureResourceId": "[parameters('VmResourceId')]",
+                            "azureResourceId": "[resourceId('Microsoft.Compute/virtualMachines', variables('VMName'))]",
                             "stopOnMultipleConnections": "true"
                         },
                         "protectedSettings": {
