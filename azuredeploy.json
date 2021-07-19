@@ -675,13 +675,13 @@
             "metadata": {"description": "Temp Parameter for variable VMname"}
         },
         //Existing VM Onboarding Parameters
-        // "VmResourceId": {
-        //     "type": "String",
-        //     "defaultValue": "[resourceId('Microsoft.Compute/virtualMachines', parameters('tempVMName'))]", //Should be VM name
-        //     "metadata": {
-        //         "description": "VM Resource ID."
-        //     }
-        // },
+        "VmResourceId": {
+            "type": "String",
+            "defaultValue": "[resourceId('Microsoft.Compute/virtualMachines', parameters('tempVMName'))]", //Should be VM name
+            "metadata": {
+                "description": "VM Resource ID."
+            }
+        },
         "VmLocation": {
             "type": "String",
             "defaultValue": "eastus2",
@@ -841,23 +841,140 @@
             "resourceGroup": "[split(parameters('WorkspaceResourceId'),'/')[4]]"
         },
         //existing VM resources
+        // {
+        // "type": "Microsoft.Resources/deployments",
+        //     "apiVersion": "2019-10-01",
+        //     "dependsOn": [
+        //         "Microsoft.Resources/deployments/vmSetupParamsTemplate",
+        //         "Microsoft.Resources/deployments/controllerTemplate",
+        //         "Microsoft.Resources/deployments/networkTemplate",
+        //         "Microsoft.Resources/deployments/redisTemplate",
+        //         "Microsoft.Resources/deployments/dbTemplate"
+        //     ],
+        //     "name": "scaleSetTemplate",
+        //     "properties": {
+        //         "mode": "Incremental",
+        //         "parameters": {
+        //             "lampCommon": {
+        //                 "value": "[variables('lampCommon')]"
+        //             },
+        //             "subnetIdWeb": {
+        //                 "value": "[reference('networkTemplate').outputs.subnetIdWeb.value]"
+        //             },
+        //             "vmSetupParamsObj": {
+        //                 "value": "[reference('vmSetupParamsTemplate').outputs.vmSetupParamsObj.value]"
+        //             }
+        //         },
+        //         "templateLink": {
+        //             "uri": "[concat(variables('lampCommon').baseTemplateUrl,'webvmss.json',parameters('_artifactsLocationSasToken'))]"
+        //         }
+            
+        
+        //     // "type": "Microsoft.Compute/virtualMachines/extensions",
+        //     // "apiVersion": "2018-10-01",
+        //     // "name": "[variables('VmName')]",
+        //     // "location": "[parameters('VmLocation')]",
+        //     // "identity": {
+        //     //     "type": "SystemAssigned"
+        //     // },
+        //     // "resources": [
+        //         //{
+        //             "type": "Microsoft.Compute/virtualMachines/extensions",
+        //             "apiVersion": "2018-10-01",
+        //             "name": "[concat(variables('VmName'), '/', variables('DaExtensionName'))]",
+        //             "location": "[parameters('VmLocation')]",
+        //             // "dependsOn": [
+        //             //     "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
+        //             // ],
+        //             "properties": {
+        //                 "publisher": "Microsoft.Azure.Monitoring.DependencyAgent",
+        //                 "type": "[variables('DaExtensionType')]",
+        //                 "typeHandlerVersion": "[variables('DaExtensionVersion')]",
+        //                 "autoUpgradeMinorVersion": true,
+        //                 "settings": {}
+        //             }
+        // },
+        //         //},
+        //         {
+        //             "type": "Microsoft.Compute/virtualMachines/extensions",
+        //             "apiVersion": "2018-10-01",
+        //             "name": "[concat(variables('VmName'), '/', variables('MmaExtensionName'))]",
+        //             "location": "[parameters('VmLocation')]",
+        //             // "dependsOn": [
+        //             //     "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
+        //             // ],
+        //             "properties": {
+        //                 "publisher": "Microsoft.EnterpriseCloud.Monitoring",
+        //                 "type": "[variables('MmaExtensionType')]",
+        //                 "typeHandlerVersion": "[variables('MmaExtensionVersion')]",
+        //                 "autoUpgradeMinorVersion": "true",
+        //                 "settings": {
+        //                     "workspaceId": "[reference(parameters('WorkspaceResourceId'), '2015-03-20').customerId]",
+        //                     "azureResourceId": "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]",
+        //                     "stopOnMultipleConnections": "true"
+        //                 },
+        //                 "protectedSettings": {
+        //                     "workspaceKey": "[listKeys(parameters('WorkspaceResourceId'), '2015-03-20').primarySharedKey]"
+        //                 }
+        //             }
+        //         },
+        //         {
+        //             "type": "Microsoft.Compute/virtualMachines/extensions",
+        //             "apiVersion": "2018-10-01",
+        //             "name": "[concat(variables('VmName'), '/', variables('AmaExtensionName'))]",
+        //             "location": "[parameters('VmLocation')]",
+        //             // "dependsOn": [
+        //             //     "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
+        //             // ],
+        //             "properties": {
+        //                 "publisher": "Microsoft.Azure.Monitor",
+        //                 "type": "[variables('AmaExtensionType')]",
+        //                 "typeHandlerVersion": "[variables('AmaExtensionVersion')]",
+        //                 "autoUpgradeMinorVersion": true,
+        //                 "settings": {}
+        //             }
+        //         },
+        //         {
+        //             "type": "Microsoft.Compute/virtualMachines/providers/dataCollectionRuleAssociations",
+        //             "apiVersion": "2019-11-01-preview",
+        //             "name": "[concat(variables('VmName'), '/Microsoft.Insights/VMInsights-Dcr-Association')]",
+        //             // "dependsOn": [
+        //             //     "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
+        //             // ],
+        //             "properties": {
+        //                 "description": "Association of data collection rule for VM Insights.",
+        //                 "dataCollectionRuleId": "[parameters('DcrResourceId')]"
+        //             }
+        //         },
+        //     //]
         {
-            // "type": "Microsoft.Compute/virtualMachines/extensions",
-            // "apiVersion": "2018-10-01",
-            // "name": "[variables('VmName')]",
-            // "location": "[parameters('VmLocation')]",
-            // "identity": {
-            //     "type": "SystemAssigned"
-            // },
-            // "resources": [
-                //{
-                    "type": "Microsoft.Compute/virtualMachines/extensions",
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2018-10-01",
+            "name": "[variables('VmName')]",
+            "location": "[parameters('VmLocation')]",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {"storageProfile": {
+                        "imageReference": "[variables('lampCommon').osType]",
+                        "osDisk": {
+                            "caching": "ReadOnly",
+                            "createOption": "FromImage",
+                            "diskSizeGB": "[variables('lampCommon').OSDiskSizeInGB]",
+                            "managedDisk": {
+                                "storageAccountType": "[variables('lampCommon').osDiskStorageType]"
+                            }
+                        }
+                    }},
+            "resources": [
+                {
+                    "type": "extensions",
                     "apiVersion": "2018-10-01",
-                    "name": "[concat(variables('VmName'), '/', variables('DaExtensionName'))]",
+                    "name": "[variables('DaExtensionName')]",
                     "location": "[parameters('VmLocation')]",
-                    // "dependsOn": [
-                    //     "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
-                    // ],
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
+                    ],
                     "properties": {
                         "publisher": "Microsoft.Azure.Monitoring.DependencyAgent",
                         "type": "[variables('DaExtensionType')]",
@@ -865,16 +982,15 @@
                         "autoUpgradeMinorVersion": true,
                         "settings": {}
                     }
-        },
-                //},
+                },
                 {
-                    "type": "Microsoft.Compute/virtualMachines/extensions",
+                    "type": "extensions",
                     "apiVersion": "2018-10-01",
-                    "name": "[concat(variables('VmName'), '/', variables('MmaExtensionName'))]",
+                    "name": "[variables('MmaExtensionName')]",
                     "location": "[parameters('VmLocation')]",
-                    // "dependsOn": [
-                    //     "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
-                    // ],
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
+                    ],
                     "properties": {
                         "publisher": "Microsoft.EnterpriseCloud.Monitoring",
                         "type": "[variables('MmaExtensionType')]",
@@ -882,7 +998,7 @@
                         "autoUpgradeMinorVersion": "true",
                         "settings": {
                             "workspaceId": "[reference(parameters('WorkspaceResourceId'), '2015-03-20').customerId]",
-                            "azureResourceId": "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]",
+                            "azureResourceId": "[parameters('VmResourceId')]",
                             "stopOnMultipleConnections": "true"
                         },
                         "protectedSettings": {
@@ -891,13 +1007,13 @@
                     }
                 },
                 {
-                    "type": "Microsoft.Compute/virtualMachines/extensions",
+                    "type": "extensions",
                     "apiVersion": "2018-10-01",
-                    "name": "[concat(variables('VmName'), '/', variables('AmaExtensionName'))]",
+                    "name": "[variables('AmaExtensionName')]",
                     "location": "[parameters('VmLocation')]",
-                    // "dependsOn": [
-                    //     "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
-                    // ],
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
+                    ],
                     "properties": {
                         "publisher": "Microsoft.Azure.Monitor",
                         "type": "[variables('AmaExtensionType')]",
@@ -910,16 +1026,16 @@
                     "type": "Microsoft.Compute/virtualMachines/providers/dataCollectionRuleAssociations",
                     "apiVersion": "2019-11-01-preview",
                     "name": "[concat(variables('VmName'), '/Microsoft.Insights/VMInsights-Dcr-Association')]",
-                    // "dependsOn": [
-                    //     "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
-                    // ],
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
+                    ],
                     "properties": {
                         "description": "Association of data collection rule for VM Insights.",
                         "dataCollectionRuleId": "[parameters('DcrResourceId')]"
                     }
-                },
-            //]
-        
+                }
+            ]
+        },
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
