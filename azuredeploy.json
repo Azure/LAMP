@@ -836,7 +836,7 @@
                          {
                     "type": "Microsoft.Compute/virtualMachines/providers/dataCollectionRuleAssociations",
                     "apiVersion": "2019-11-01-preview",
-                    "name": "[concat(variables('VmName'), '/Microsoft.Insights/VMInsights-Dcr-Association')]",
+                    "name": "[concat(variables('lampCommon').ctlrVmName, '/Microsoft.Insights/VMInsights-Dcr-Association')]",
                     // "dependsOn": [
                     //     "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
                     // ],
