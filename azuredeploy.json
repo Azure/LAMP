@@ -770,18 +770,7 @@
             "resourceGroup": "[split(parameters('WorkspaceResourceId'),'/')[4]]"
         },
         //added DCR new stuff
-         {
-                    "type": "Microsoft.Compute/virtualMachines/providers/dataCollectionRuleAssociations",
-                    "apiVersion": "2019-11-01-preview",
-                    "name": "[concat(variables('VmName'), '/Microsoft.Insights/VMInsights-Dcr-Association')]",
-                    "dependsOn": [
-                        "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
-                    ],
-                    "properties": {
-                        "description": "Association of data collection rule for VM Insights.",
-                        "dataCollectionRuleId": "[parameters('DcrResourceId')]"
-                    }
-                },
+        
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2017-05-10",
@@ -842,7 +831,19 @@
                                     }
                                 ]
                             }
-                        }
+                        },
+                         {
+                    "type": "Microsoft.Compute/virtualMachines/providers/dataCollectionRuleAssociations",
+                    "apiVersion": "2019-11-01-preview",
+                    "name": "[concat(variables('VmName'), '/Microsoft.Insights/VMInsights-Dcr-Association')]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
+                    ],
+                    "properties": {
+                        "description": "Association of data collection rule for VM Insights.",
+                        "dataCollectionRuleId": "[parameters('DcrResourceId')]"
+                    }
+                },
                     ]
                 }
             },
