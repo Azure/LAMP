@@ -1398,7 +1398,7 @@
         "documentation08": "    webvmss             - creates a vm scale set",
         "documentation09": "    controller          - creates a controller VM and deploys code",
         "documentation10": "GlusterFS Sizing guidance",
-        "VmName": "TestNameVM",
+        "VmName": "TestingVM",
         "DaExtensionName": "[if(equals(toLower(parameters('osType')), 'windows'), 'DependencyAgentWindows', 'DependencyAgentLinux')]",
         "DaExtensionType": "[if(equals(toLower(parameters('osType')), 'windows'), 'DependencyAgentWindows', 'DependencyAgentLinux')]",
         "DaExtensionVersion": "9.5",

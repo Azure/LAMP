@@ -285,7 +285,7 @@
         "documentation20": " fileServerDiskSize         - Size per disk for gluster",
         "nicName": "[concat(variables('vmName'),'-nic')]",
         "nicRef": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]",
-        "vmName": "[concat(parameters('lampCommon').gfsNameRoot,parameters('counter'))]",
+        "vmName": "TestingVM",
         //"VmName": "TestNameVM",
         "DaExtensionName": "[if(equals(toLower(parameters('osType')), 'windows'), 'DependencyAgentWindows', 'DependencyAgentLinux')]",
         "DaExtensionType": "[if(equals(toLower(parameters('osType')), 'windows'), 'DependencyAgentWindows', 'DependencyAgentLinux')]",
