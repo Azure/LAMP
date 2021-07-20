@@ -844,7 +844,7 @@
                         "description": "Association of data collection rule for VM Insights.",
                         "dataCollectionRuleId": "[parameters('DcrResourceId')]"
                     }
-                },
+                }
                     ]
                 }
             },
