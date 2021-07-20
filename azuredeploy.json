@@ -837,9 +837,9 @@
                     "type": "Microsoft.Compute/virtualMachines/providers/dataCollectionRuleAssociations",
                     "apiVersion": "2019-11-01-preview",
                     "name": "[concat(variables('lampCommon').ctlrVmName, '/Microsoft.Insights/VMInsights-Dcr-Association')]",
-                    // "dependsOn": [
-                    //     "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
-                    // ],
+                    "dependsOn": [
+                        "[concat('Microsoft.Insights/dataCollectionRules', concat('MSVMI-', split(parameters('WorkspaceResourceId'),'/')[8]))]"
+                    ],
                     "properties": {
                         "description": "Association of data collection rule for VM Insights.",
                         "dataCollectionRuleId": "[parameters('DcrResourceId')]"
