@@ -669,11 +669,6 @@
                 "description": "Workspace Resource ID."
             }
         },
-        "tempVMName": {
-            "type": "string",
-            "defaultValue": "TestNameVM",
-            "metadata": {"description": "Temp Parameter for variable VMname"}
-        },
         //Existing VM Onboarding Parameters
         // "VmResourceId": {
         //     "type": "String",
