@@ -228,9 +228,6 @@
                     "apiVersion": "2018-10-01",
                     "name": "[variables('DaExtensionName')]",
                     "location": "[parameters('VmLocation')]",
-                    "dependsOn": [
-                        "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
-                    ],
                     "properties": {
                         "publisher": "Microsoft.Azure.Monitoring.DependencyAgent",
                         "type": "[variables('DaExtensionType')]",
@@ -244,9 +241,6 @@
                     "apiVersion": "2018-10-01",
                     "name": "[variables('MmaExtensionName')]",
                     "location": "[parameters('VmLocation')]",
-                    "dependsOn": [
-                        "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
-                    ],
                     "properties": {
                         "publisher": "Microsoft.EnterpriseCloud.Monitoring",
                         "type": "[variables('MmaExtensionType')]",
@@ -267,9 +261,6 @@
                     "apiVersion": "2018-10-01",
                     "name": "[variables('AmaExtensionName')]",
                     "location": "[parameters('VmLocation')]",
-                    "dependsOn": [
-                        "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
-                    ],
                     "properties": {
                         "publisher": "Microsoft.Azure.Monitor",
                         "type": "[variables('AmaExtensionType')]",
