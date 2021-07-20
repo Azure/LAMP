@@ -738,7 +738,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2017-05-10",
             "name": "VMI-Solution-Deployment",
-            "dependsOn": ["Microsoft.Resources/deployments/glusterTemplate"],
+            "dependsOn": ["Microsoft.Resources/deployments/controllerTemplate"],
             "properties": {
                 "mode": "Incremental",
                 "template": {
@@ -776,7 +776,7 @@
             "apiVersion": "2017-05-10",
             "name": "VMI-DCR-Deployment",
             "dependsOn": ["[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]",
-            "Microsoft.Resources/deployments/glusterTemplate"],
+            "Microsoft.Resources/deployments/controllerTemplate"],
             "properties": {
                 "mode": "Incremental",
                 "template": {
@@ -1395,7 +1395,7 @@
         "documentation08": "    webvmss             - creates a vm scale set",
         "documentation09": "    controller          - creates a controller VM and deploys code",
         "documentation10": "GlusterFS Sizing guidance",
-        "VmName": "TestingVM2",
+        "VmName": "FinalTestVM",
         "DaExtensionName": "[if(equals(toLower(parameters('osType')), 'windows'), 'DependencyAgentWindows', 'DependencyAgentLinux')]",
         "DaExtensionType": "[if(equals(toLower(parameters('osType')), 'windows'), 'DependencyAgentWindows', 'DependencyAgentLinux')]",
         "DaExtensionVersion": "9.5",

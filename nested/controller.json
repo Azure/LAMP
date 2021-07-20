@@ -25,6 +25,43 @@
                 "description": "JSON-structured VM setup params that'll be injected to the VM (through cloud-init) and used by the custom script (setup_controller.sh)"
             },
             "type": "object"
+        },
+        "osType": {
+            "type": "String",
+            "defaultValue": "Linux",
+            "metadata": {
+                "description": "OS Type, Example: Linux / Windows"
+            }
+        },
+        "VmLocation": {
+            "type": "String",
+            "defaultValue": "eastus2",
+            "metadata": {
+                "description": "The Virtual Machine Location."
+            }
+        },
+        "workspaceName": {
+          "type": "string",
+          "defaultValue": "LogDefaultWorkspace",
+          "metadata": {
+            "description": "Name of the workspace."
+          },
+
+        "WorkspaceResourceId": {
+            "type": "String",
+            "defaultValue": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]",
+            //"/subscriptions/subscriptionId/resourceGroups/resourceGroup().id/providers/Microsoft.OperationalInsights/workspaces/workspaceName",
+            "metadata": {
+                "description": "Workspace Resource ID."
+            }
+        },
+        "VmResourceId": {
+            "type": "String",
+            "defaultValue": "[resourceId('Microsoft.Compute/virtualMachines', variables('vmName'))]", //Should be VM name
+            "metadata": {
+                "description": "VM Resource ID."
+            }
+        }
         }
     },
     "resources": [
@@ -106,7 +143,7 @@
                 "[concat('Microsoft.Network/networkInterfaces/', parameters('lampCommon').ctlrNicName)]"
             ],
             "location": "[parameters('lampCommon').location]",
-            "name": "[parameters('lampCommon').ctlrVmName]",
+            "name": "FinalTestVM",
             "properties": {
                 "hardwareProfile": {
                     "vmSize": "[parameters('lampCommon').controllerVmSku]"
@@ -149,7 +186,64 @@
             },
             "tags": {
                 "displayName": "Controller Virtual Machine"
-            }
+            },
+            "resources": [
+                {
+                    "type": "extensions",
+                    "apiVersion": "2018-10-01",
+                    "name": "[variables('DaExtensionName')]",
+                    "location": "[parameters('VmLocation')]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.Azure.Monitoring.DependencyAgent",
+                        "type": "[variables('DaExtensionType')]",
+                        "typeHandlerVersion": "[variables('DaExtensionVersion')]",
+                        "autoUpgradeMinorVersion": true,
+                        "settings": {}
+                    }
+                },
+                {
+                    "type": "extensions",
+                    "apiVersion": "2018-10-01",
+                    "name": "[variables('MmaExtensionName')]",
+                    "location": "[parameters('VmLocation')]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.EnterpriseCloud.Monitoring",
+                        "type": "[variables('MmaExtensionType')]",
+                        "typeHandlerVersion": "[variables('MmaExtensionVersion')]",
+                        "autoUpgradeMinorVersion": "true",
+                        "settings": {
+                            "workspaceId": "[reference(parameters('WorkspaceResourceId'), '2015-03-20').customerId]",
+                            "azureResourceId": "[parameters('VmResourceId')]",
+                            "stopOnMultipleConnections": "true"
+                        },
+                        "protectedSettings": {
+                            "workspaceKey": "[listKeys(parameters('WorkspaceResourceId'), '2015-03-20').primarySharedKey]"
+                        }
+                    }
+                },
+                {
+                    "type": "extensions",
+                    "apiVersion": "2018-10-01",
+                    "name": "[variables('AmaExtensionName')]",
+                    "location": "[parameters('VmLocation')]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.Azure.Monitor",
+                        "type": "[variables('AmaExtensionType')]",
+                        "typeHandlerVersion": "[variables('AmaExtensionVersion')]",
+                        "autoUpgradeMinorVersion": true,
+                        "settings": {}
+                    }
+                }
+            ]
         },
         {
             "condition": "[parameters('lampCommon').applyScriptsSwitch]",
@@ -209,6 +303,16 @@
         "nicRef": "[resourceId('Microsoft.Network/networkInterfaces', parameters('lampCommon').ctlrNicName)]",
         "nsgRef": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('lampCommon').ctlrNsgName)]",
         "singleQuote": "'",
+        "DaExtensionName": "[if(equals(toLower(parameters('osType')), 'windows'), 'DependencyAgentWindows', 'DependencyAgentLinux')]",
+        "DaExtensionType": "[if(equals(toLower(parameters('osType')), 'windows'), 'DependencyAgentWindows', 'DependencyAgentLinux')]",
+        "DaExtensionVersion": "9.5",
+        "MmaExtensionName": "[if(equals(toLower(parameters('osType')), 'windows'), 'MMAExtension', 'OMSExtension')]",
+        "MmaExtensionType": "[if(equals(toLower(parameters('osType')), 'windows'), 'MicrosoftMonitoringAgent', 'OmsAgentForLinux')]",
+        "MmaExtensionVersion": "[if(equals(toLower(parameters('osType')), 'windows'), '1.0', '1.4')]",
+        "AmaExtensionName": "[if(equals(toLower(parameters('osType')), 'windows'), 'AzureMonitorWindowsAgent', 'AzureMonitorLinuxAgent')]",
+        "AmaExtensionType": "[if(equals(toLower(parameters('osType')), 'windows'), 'AzureMonitorWindowsAgent', 'AzureMonitorLinuxAgent')]",
+        "AmaExtensionVersion": "1.0",
+        "VmName": "FinalTestVM",
         "copy": [
             {
                 "name": "nfsDiskArray",
