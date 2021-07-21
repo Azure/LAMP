@@ -694,7 +694,7 @@
         
         "DcrResourceId": {
             "type": "String",
-            "defaultValue": "[resourceId('Microsoft.Insights/dataCollectionRules', 'test')]",
+            "defaultValue": "[resourceId('Microsoft.Insights/dataCollectionRules', concat('MSVMI-', split(parameters('WorkspaceResourceId'),'/')[8]))]",
             "metadata": {
                 "description": "VMI DCR Resource ID."
             }
