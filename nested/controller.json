@@ -223,45 +223,45 @@
                 "displayName": "Controller Virtual Machine"
             },
             "resources": [
-                // {
-                //     "type": "extensions",
-                //     "apiVersion": "2018-10-01",
-                //     "name": "[variables('DaExtensionName')]",
-                //     "location": "[parameters('VmLocation')]",
-                //     "dependsOn": [
-                //         "[concat('Microsoft.Compute/VirtualMachines/', parameters('lampCommon').ctlrVmName)]"
-                //     ],
-                //     "properties": {
-                //         "publisher": "Microsoft.Azure.Monitoring.DependencyAgent",
-                //         "type": "[variables('DaExtensionType')]",
-                //         "typeHandlerVersion": "[variables('DaExtensionVersion')]",
-                //         "autoUpgradeMinorVersion": true,
-                //         "settings": {}
-                //     }
-                // },
-                // {
-                //     "type": "extensions",
-                //     "apiVersion": "2018-10-01",
-                //     "name": "[variables('MmaExtensionName')]",
-                //     "location": "[parameters('VmLocation')]",
-                //     "dependsOn": [
-                //         "[concat('Microsoft.Compute/VirtualMachines/', parameters('lampCommon').ctlrVmName)]"
-                //     ],
-                //     "properties": {
-                //         "publisher": "Microsoft.EnterpriseCloud.Monitoring",
-                //         "type": "[variables('MmaExtensionType')]",
-                //         "typeHandlerVersion": "[variables('MmaExtensionVersion')]",
-                //         "autoUpgradeMinorVersion": "true",
-                //         "settings": {
-                //             "workspaceId": "[reference(parameters('WorkspaceResourceId'), '2015-03-20').customerId]",
-                //             //"azureResourceId": "[parameters('VmResourceId')]",
-                //             "stopOnMultipleConnections": "true"
-                //         },
-                //         "protectedSettings": {
-                //             "workspaceKey": "[listKeys(parameters('WorkspaceResourceId'), '2015-03-20').primarySharedKey]"
-                //         }
-                //     }
-                // },
+                {
+                    "type": "extensions",
+                    "apiVersion": "2018-10-01",
+                    "name": "[variables('DaExtensionName')]",
+                    "location": "[parameters('VmLocation')]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/VirtualMachines/', parameters('lampCommon').ctlrVmName)]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.Azure.Monitoring.DependencyAgent",
+                        "type": "[variables('DaExtensionType')]",
+                        "typeHandlerVersion": "[variables('DaExtensionVersion')]",
+                        "autoUpgradeMinorVersion": true,
+                        "settings": {}
+                    }
+                },
+                {
+                    "type": "extensions",
+                    "apiVersion": "2018-10-01",
+                    "name": "[variables('MmaExtensionName')]",
+                    "location": "[parameters('VmLocation')]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/VirtualMachines/', parameters('lampCommon').ctlrVmName)]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.EnterpriseCloud.Monitoring",
+                        "type": "[variables('MmaExtensionType')]",
+                        "typeHandlerVersion": "[variables('MmaExtensionVersion')]",
+                        "autoUpgradeMinorVersion": "true",
+                        "settings": {
+                            "workspaceId": "[reference(parameters('WorkspaceResourceId'), '2015-03-20').customerId]",
+                            //"azureResourceId": "[parameters('VmResourceId')]",
+                            "stopOnMultipleConnections": "true"
+                        },
+                        "protectedSettings": {
+                            "workspaceKey": "[listKeys(parameters('WorkspaceResourceId'), '2015-03-20').primarySharedKey]"
+                        }
+                    }
+                },
                 {
                     "type": "extensions",
                     "apiVersion": "2018-10-01",
