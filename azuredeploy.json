@@ -834,6 +834,7 @@
                             }
                         },
                          {
+                             //added here instead of nested loop and away from extensions
                     "type": "Microsoft.Compute/virtualMachines/providers/dataCollectionRuleAssociations",
                     "apiVersion": "2019-11-01-preview",
                     "name": "[concat(variables('lampCommon').ctlrVmName, '/Microsoft.Insights/VMInsights-Dcr-Association')]",
