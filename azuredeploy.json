@@ -809,9 +809,9 @@
                                     //Syslog DCR attempt
                                     "syslog": [
                                         {
-                                            "facilityNames": ["string"],
-                                            "logLevels": ["string"],
-                                            "name": "string",
+                                            "facilityNames": ["syslog"],
+                                            "logLevels": ["Info"],
+                                            "name": "TestSyslogDCR",
                                             "streams": ["Microsoft-Syslog"]
                                         }
                                     ]
