@@ -295,6 +295,6 @@
         "MmaExtensionVersion": "[if(equals(toLower(parameters('osType')), 'windows'), '1.0', '1.4')]",
         "AmaExtensionName": "[if(equals(toLower(parameters('osType')), 'windows'), 'AzureMonitorWindowsAgent', 'AzureMonitorLinuxAgent')]",
         "AmaExtensionType": "[if(equals(toLower(parameters('osType')), 'windows'), 'AzureMonitorWindowsAgent', 'AzureMonitorLinuxAgent')]",
-        "AmaExtensionVersion": "1.0",
+        "AmaExtensionVersion": "1.0"
     }
 }

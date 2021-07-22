@@ -805,6 +805,15 @@
                                                 "\\VmInsights\\DetailedMetrics"
                                             ]
                                         }
+                                    ],
+                                    //Syslog DCR attempt
+                                    "syslog": [
+                                        {
+                                            "facilityNames": ["string"],
+                                            "logLevels": ["string"],
+                                            "name": "string",
+                                            "streams": ["Microsoft-Syslog"]
+                                        }
                                     ]
                                 },
                                 "destinations": {
