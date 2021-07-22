@@ -173,6 +173,9 @@
         },
         {
             "type": "Microsoft.Compute/virtualMachines",
+            "identity": {
+                "type": "SystemAssigned"
+            },
             "apiVersion": "2019-07-01",
             "dependsOn": [
                 "[concat('Microsoft.Network/networkInterfaces/', parameters('lampCommon').ctlrNicName)]"
