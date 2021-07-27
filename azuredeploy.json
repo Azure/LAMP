@@ -769,7 +769,7 @@
             //"subscriptionId": "[subscription().subscriptionId]",
             "resourceGroup": "[split(parameters('WorkspaceResourceId'),'/')[4]]"
         },
-        //added DCR new stuff
+        //DCR for VM Insights and Syslog Info
         
         {
             "type": "Microsoft.Resources/deployments",
@@ -809,8 +809,8 @@
                                     //Syslog DCR attempt
                                     "syslog": [
                                         {
-                                            "facilityNames": ["syslog"],
-                                            "logLevels": ["Info"],
+                                            "facilityNames": ["syslog", "auth"],
+                                            "logLevels": ["Info", "Warning", "Error", "Critical", "Alert", "Emergency"],
                                             "name": "TestSyslogDCR",
                                             "streams": ["Microsoft-Syslog"]
                                         }
