@@ -628,13 +628,7 @@
             "description": "true to use resource or workspace permissions. false to require workspace permissions."
           }
       },
-        "subscriptionId": {
-            "type": "string",
-            "defaultValue": "[subscription().subscriptionId]",
-            "metadata": {
-            "description": "Get the current subscription Id"
-          }
-        },
+        
         "wordpressVersion": {
             "allowedValues": [
                 "5.4.1",
@@ -649,7 +643,8 @@
         },
         "location": {
             "type": "string",
-            "defaultValue": "[resourceGroup().location]",
+            // "defaultValue": "[resourceGroup().location]",
+            "defaultValue": "eastus2",
             "metadata": {
                 "description": "Azure Location for all resources."
             }
@@ -667,28 +662,6 @@
             //"/subscriptions/subscriptionId/resourceGroups/resourceGroup().id/providers/Microsoft.OperationalInsights/workspaces/workspaceName",
             "metadata": {
                 "description": "Workspace Resource ID."
-            }
-        },
-        //Existing VM Onboarding Parameters
-        // "VmResourceId": {
-        //     "type": "String",
-        //     "defaultValue": "[resourceId('Microsoft.Compute/virtualMachines', parameters('tempVMName'))]", //Should be VM name
-        //     "metadata": {
-        //         "description": "VM Resource ID."
-        //     }
-        // },
-        "VmLocation": {
-            "type": "String",
-            "defaultValue": "eastus2",
-            "metadata": {
-                "description": "The Virtual Machine Location."
-            }
-        },
-        "osType": {
-            "type": "String",
-            "defaultValue": "Linux",
-            "metadata": {
-                "description": "OS Type, Example: Linux / Windows"
             }
         },
         
@@ -766,7 +739,6 @@
                 }
             },
             "subscriptionId": "[split(parameters('WorkspaceResourceId'),'/')[2]]",
-            //"subscriptionId": "[subscription().subscriptionId]",
             "resourceGroup": "[split(parameters('WorkspaceResourceId'),'/')[4]]"
         },
         //DCR for VM Insights and Syslog Info
@@ -836,8 +808,6 @@
                                         ],
                                         "destinations": [
                                             "azureMonitorMetrics-default",
-                                            // "VMInsightsPerf-Logs-Dest",
-                                            //Ask engineer Rakshith about this
                                             "LogDefaultWorkspace"
                                         ]
                                     },
@@ -1220,15 +1190,6 @@
         "documentation08": "    webvmss             - creates a vm scale set",
         "documentation09": "    controller          - creates a controller VM and deploys code",
         "documentation10": "GlusterFS Sizing guidance",
-        "DaExtensionName": "[if(equals(toLower(parameters('osType')), 'windows'), 'DependencyAgentWindows', 'DependencyAgentLinux')]",
-        "DaExtensionType": "[if(equals(toLower(parameters('osType')), 'windows'), 'DependencyAgentWindows', 'DependencyAgentLinux')]",
-        "DaExtensionVersion": "9.5",
-        "MmaExtensionName": "[if(equals(toLower(parameters('osType')), 'windows'), 'MMAExtension', 'OMSExtension')]",
-        "MmaExtensionType": "[if(equals(toLower(parameters('osType')), 'windows'), 'MicrosoftMonitoringAgent', 'OmsAgentForLinux')]",
-        "MmaExtensionVersion": "[if(equals(toLower(parameters('osType')), 'windows'), '1.0', '1.4')]",
-        "AmaExtensionName": "[if(equals(toLower(parameters('osType')), 'windows'), 'AzureMonitorWindowsAgent', 'AzureMonitorLinuxAgent')]",
-        "AmaExtensionType": "[if(equals(toLower(parameters('osType')), 'windows'), 'AzureMonitorWindowsAgent', 'AzureMonitorLinuxAgent')]",
-        "AmaExtensionVersion": "1.0",
         "lampCommon": {
             "applicationDbName": "[parameters('CMSApplication')]",
             "cmsApplication": "[parameters('CMSApplication')]",
