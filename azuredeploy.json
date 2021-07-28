@@ -11,7 +11,7 @@
             "metadata": {
                 "description": "The base URI where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated."
             },
-            "defaultValue": "https://raw.githubusercontent.com/Leonard-Wang-2000/LAMP/LogAnalyticsWorkspaceCreation/"
+            "defaultValue": "https://raw.githubusercontent.com/Leonard-Wang-2000/LAMP/VMInsights/"
         },
         "_artifactsLocationSasToken": {
             "type": "securestring",
@@ -560,7 +560,7 @@
         },
         "workspaceName": {
           "type": "string",
-          "defaultValue": "DefaultLogWorkspace",
+          "defaultValue": "LogDefaultWorkspace",
           "metadata": {
             "description": "Name of the workspace."
           }
@@ -628,6 +628,7 @@
             "description": "true to use resource or workspace permissions. false to require workspace permissions."
           }
       },
+        
         "wordpressVersion": {
             "allowedValues": [
                 "5.4.1",
@@ -646,6 +647,29 @@
             "metadata": {
                 "description": "Azure Location for all resources."
             }
+        },
+        "WorkspaceLocation": { //need to insert variable of locationOfWorkspace into this
+            "type": "String",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Workspace Location."
+            }
+        },
+        "WorkspaceResourceId": {
+            "type": "String",
+            "defaultValue": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]",
+            //"/subscriptions/subscriptionId/resourceGroups/resourceGroup().id/providers/Microsoft.OperationalInsights/workspaces/workspaceName",
+            "metadata": {
+                "description": "Workspace Resource ID."
+            }
+        },
+        
+        "DcrResourceId": {
+            "type": "String",
+            "defaultValue": "[resourceId('Microsoft.Insights/dataCollectionRules', concat('MSVMI-', split(parameters('WorkspaceResourceId'),'/')[8]))]",
+            "metadata": {
+                "description": "VMI DCR Resource ID."
+            }
         }
     },
     "resources": [
@@ -662,6 +686,161 @@
                 }
             }
         },
+        //Log Analytic Workspace generator
+        {
+          "type": "Microsoft.OperationalInsights/workspaces",
+          "name": "[parameters('workspaceName')]",
+          "apiVersion": "2020-08-01",
+          "location": "[parameters('locationForWorkspace')]",
+          "properties": {
+              "sku": {
+                  "name": "[parameters('sku')]"
+              },
+              "retentionInDays": "[parameters('retentionInDays')]",
+              "features": {
+                  "searchVersion": 1,
+                  "legacy": 0,
+                  "enableLogAccessUsingOnlyResourcePermissions": "[parameters('resourcePermissions')]"
+              }
+          }
+      },
+        //VM Insights Workspace Creation 
+        {
+
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2017-05-10",
+            "name": "VMI-Solution-Deployment",
+            "dependsOn": ["Microsoft.Resources/deployments/controllerTemplate"],
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "variables": {},
+                    "resources": [
+                        {
+                            "apiVersion": "2015-11-01-preview",
+                            "type": "Microsoft.OperationsManagement/solutions",
+                            "location": "[parameters('WorkspaceLocation')]",
+                            "name": "[concat('ServiceMap', '(', split(parameters('WorkspaceResourceId'),'/')[8], ')')]",
+                            "properties": {
+                                "workspaceResourceId": "[parameters('WorkspaceResourceId')]"
+                            },
+                            "plan": {
+                                "name": "[concat('ServiceMap', '(', split(parameters('WorkspaceResourceId'),'/')[8], ')')]",
+                                "product": "[concat('OMSGallery/', 'ServiceMap')]",
+                                "promotionCode": "",
+                                "publisher": "Microsoft"
+                            }
+                        }
+                    ]
+                }
+            },
+            "subscriptionId": "[split(parameters('WorkspaceResourceId'),'/')[2]]",
+            "resourceGroup": "[split(parameters('WorkspaceResourceId'),'/')[4]]"
+        },
+        //DCR for VM Insights and Syslog Info
+        
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2017-05-10",
+            "name": "VMI-DCR-Deployment",
+            "dependsOn": ["[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]",
+            "Microsoft.Resources/deployments/controllerTemplate"],
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "variables": {},
+                    "resources": [
+                        {
+                            "type": "Microsoft.Insights/dataCollectionRules",
+                            "apiVersion": "2019-11-01-preview",
+                            "name": "[concat('MSVMI-', split(parameters('WorkspaceResourceId'),'/')[8])]",
+                            "location": "[parameters('WorkspaceLocation')]",
+                            "properties": {
+                                "description": "Data collection rule for VM Insights.",
+                                "dataSources": {
+                                    "performanceCounters": [
+                                        {
+                                            "name": "VMInsightsPerfCounters",
+                                            "streams": [
+                                                "Microsoft-InsightsMetrics"
+                                            ],
+                                            "scheduledTransferPeriod": "PT1M",
+                                            "samplingFrequencyInSeconds": 60,
+                                            "counterSpecifiers": [
+                                                "\\VmInsights\\DetailedMetrics"
+                                            ]
+                                        }
+                                    ],
+                                    //Syslog DCR attempt
+                                    "syslog": [
+                                        {
+                                            "facilityNames": ["syslog", "auth"],
+                                            "logLevels": ["Info", "Warning", "Error", "Critical", "Alert", "Emergency"],
+                                            "name": "TestSyslogDCR",
+                                            "streams": ["Microsoft-Syslog"]
+                                        }
+                                    ]
+                                },
+                                "destinations": {
+                                    "azureMonitorMetrics": {
+                                        "name": "azureMonitorMetrics-default"
+                                    },
+                                    "logAnalytics": [
+                                        {
+                                            "workspaceResourceId": "[parameters('WorkspaceResourceId')]",
+                                            "name": "LogDefaultWorkspace"
+                                            //"VMInsightsPerf-Logs-Dest"
+                                        }
+                                    ]
+                                },
+                                
+                                "dataFlows": [
+                                    {
+                                        "streams": [
+                                            "Microsoft-InsightsMetrics"
+                                        ],
+                                        "destinations": [
+                                            "azureMonitorMetrics-default",
+                                            "LogDefaultWorkspace"
+                                        ]
+                                    },
+                                     {
+                                        "streams": [
+                                            "Microsoft-Syslog"
+                                        ],
+                                        "destinations": [
+                                            "LogDefaultWorkspace"
+                                        ]
+                                    }
+                                ]
+                            }
+                        },
+                         {
+                             //added here instead of nested loop and away from extensions
+                    "type": "Microsoft.Compute/virtualMachines/providers/dataCollectionRuleAssociations",
+                    "apiVersion": "2019-11-01-preview",
+                    "name": "[concat(variables('lampCommon').ctlrVmName, '/Microsoft.Insights/VMInsights-Dcr-Association')]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Insights/dataCollectionRules/', concat('MSVMI-', split(parameters('WorkspaceResourceId'),'/')[8]))]"
+                    ],
+                    "properties": {
+                        "description": "Association of data collection rule for VM Insights.",
+                        "dataCollectionRuleId": "[parameters('DcrResourceId')]"
+                    }
+                }
+                    ]
+                }
+            },
+            "subscriptionId": "[split(parameters('WorkspaceResourceId'),'/')[2]]",
+            "resourceGroup": "[split(parameters('WorkspaceResourceId'),'/')[4]]"
+        },
+        
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
@@ -861,24 +1040,7 @@
                 }
             }
         },
-        //Log Analytic Workspace generator
-        {
-          "type": "Microsoft.OperationalInsights/workspaces",
-          "name": "[parameters('workspaceName')]",
-          "apiVersion": "2020-08-01",
-          "location": "[parameters('locationForWorkspace')]",
-          "properties": {
-              "sku": {
-                  "name": "[parameters('sku')]"
-              },
-              "retentionInDays": "[parameters('retentionInDays')]",
-              "features": {
-                  "searchVersion": 1,
-                  "legacy": 0,
-                  "enableLogAccessUsingOnlyResourcePermissions": "[parameters('resourcePermissions')]"
-              }
-          }
-      },
+        
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
