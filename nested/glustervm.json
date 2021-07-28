@@ -19,43 +19,6 @@
                 "description": "Azure resource ID of the subnet where this gluster cluster is to be deployed"
             },
             "type": "string"
-        },
-        "osType": {
-            "type": "String",
-            "defaultValue": "Linux",
-            "metadata": {
-                "description": "OS Type, Example: Linux / Windows"
-            }
-        },
-        "VmLocation": {
-            "type": "String",
-            "defaultValue": "eastus2",
-            "metadata": {
-                "description": "The Virtual Machine Location."
-            }
-        },
-        "workspaceName": {
-          "type": "string",
-          "defaultValue": "LogDefaultWorkspace",
-          "metadata": {
-            "description": "Name of the workspace."
-          },
-
-        "WorkspaceResourceId": {
-            "type": "String",
-            "defaultValue": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]",
-            //"/subscriptions/subscriptionId/resourceGroups/resourceGroup().id/providers/Microsoft.OperationalInsights/workspaces/workspaceName",
-            "metadata": {
-                "description": "Workspace Resource ID."
-            }
-        },
-        "VmResourceId": {
-            "type": "String",
-            "defaultValue": "[resourceId('Microsoft.Compute/virtualMachines', variables('vmName'))]", //Should be VM name
-            "metadata": {
-                "description": "VM Resource ID."
-            }
-        }
         }
     },
     "resources": [
@@ -144,75 +107,6 @@
                     ]
                 }
             },
-            "resources": [
-                {
-                    "type": "extensions",
-                    "apiVersion": "2018-10-01",
-                    "name": "[variables('DaExtensionName')]",
-                    "location": "[parameters('VmLocation')]",
-                    "dependsOn": [
-                        "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
-                    ],
-                    "properties": {
-                        "publisher": "Microsoft.Azure.Monitoring.DependencyAgent",
-                        "type": "[variables('DaExtensionType')]",
-                        "typeHandlerVersion": "[variables('DaExtensionVersion')]",
-                        "autoUpgradeMinorVersion": true,
-                        "settings": {}
-                    }
-                },
-                {
-                    "type": "extensions",
-                    "apiVersion": "2018-10-01",
-                    "name": "[variables('MmaExtensionName')]",
-                    "location": "[parameters('VmLocation')]",
-                    "dependsOn": [
-                        "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
-                    ],
-                    "properties": {
-                        "publisher": "Microsoft.EnterpriseCloud.Monitoring",
-                        "type": "[variables('MmaExtensionType')]",
-                        "typeHandlerVersion": "[variables('MmaExtensionVersion')]",
-                        "autoUpgradeMinorVersion": "true",
-                        "settings": {
-                            "workspaceId": "[reference(parameters('WorkspaceResourceId'), '2015-03-20').customerId]",
-                            "azureResourceId": "[parameters('VmResourceId')]",
-                            "stopOnMultipleConnections": "true"
-                        },
-                        "protectedSettings": {
-                            "workspaceKey": "[listKeys(parameters('WorkspaceResourceId'), '2015-03-20').primarySharedKey]"
-                        }
-                    }
-                },
-                {
-                    "type": "extensions",
-                    "apiVersion": "2018-10-01",
-                    "name": "[variables('AmaExtensionName')]",
-                    "location": "[parameters('VmLocation')]",
-                    "dependsOn": [
-                        "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
-                    ],
-                    "properties": {
-                        "publisher": "Microsoft.Azure.Monitor",
-                        "type": "[variables('AmaExtensionType')]",
-                        "typeHandlerVersion": "[variables('AmaExtensionVersion')]",
-                        "autoUpgradeMinorVersion": true,
-                        "settings": {}
-                    }
-                }
-                // {
-                //     "type": "Microsoft.Compute/virtualMachines/providers/dataCollectionRuleAssociations",
-                //     "apiVersion": "2019-11-01-preview",
-                //     "name": "[concat(variables('VmName'), '/Microsoft.Insights/VMInsights-Dcr-Association')]",
-                //     "dependsOn": [
-                //         "[concat('Microsoft.Compute/VirtualMachines/', variables('VmName'))]"
-                //     ],
-                //     "properties": {
-                //         "description": "Association of data collection rule for VM Insights.",
-                //         "dataCollectionRuleId": "[parameters('DcrResourceId')]"
-                //     }
-                // }
-            ],
             "tags": {
                 "displayName": "Gluster Virtual Machine"
             }
@@ -285,16 +179,6 @@
         "documentation20": " fileServerDiskSize         - Size per disk for gluster",
         "nicName": "[concat(variables('vmName'),'-nic')]",
         "nicRef": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]",
-        "vmName": "TestingVM2",
-        //"VmName": "TestNameVM",
-        "DaExtensionName": "[if(equals(toLower(parameters('osType')), 'windows'), 'DependencyAgentWindows', 'DependencyAgentLinux')]",
-        "DaExtensionType": "[if(equals(toLower(parameters('osType')), 'windows'), 'DependencyAgentWindows', 'DependencyAgentLinux')]",
-        "DaExtensionVersion": "9.5",
-        "MmaExtensionName": "[if(equals(toLower(parameters('osType')), 'windows'), 'MMAExtension', 'OMSExtension')]",
-        "MmaExtensionType": "[if(equals(toLower(parameters('osType')), 'windows'), 'MicrosoftMonitoringAgent', 'OmsAgentForLinux')]",
-        "MmaExtensionVersion": "[if(equals(toLower(parameters('osType')), 'windows'), '1.0', '1.4')]",
-        "AmaExtensionName": "[if(equals(toLower(parameters('osType')), 'windows'), 'AzureMonitorWindowsAgent', 'AzureMonitorLinuxAgent')]",
-        "AmaExtensionType": "[if(equals(toLower(parameters('osType')), 'windows'), 'AzureMonitorWindowsAgent', 'AzureMonitorLinuxAgent')]",
-        "AmaExtensionVersion": "1.0"
+        "vmName": "[concat(parameters('lampCommon').gfsNameRoot,parameters('counter'))]"
     }
 }
