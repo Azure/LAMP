@@ -643,15 +643,14 @@
         },
         "location": {
             "type": "string",
-            // "defaultValue": "[resourceGroup().location]",
-            "defaultValue": "eastus2",
+            "defaultValue": "[resourceGroup().location]",
             "metadata": {
                 "description": "Azure Location for all resources."
             }
         },
         "WorkspaceLocation": { //need to insert variable of locationOfWorkspace into this
             "type": "String",
-            "defaultValue": "eastus2",
+            "defaultValue": "[resourceGroup().location]",
             "metadata": {
                 "description": "Workspace Location."
             }

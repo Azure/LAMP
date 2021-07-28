@@ -35,7 +35,7 @@
         },
         "VmLocation": {
             "type": "String",
-            "defaultValue": "eastus2",
+            "defaultValue": "[resourceGroup().location]",
             "metadata": {
                 "description": "The Virtual Machine Location."
             }
@@ -54,49 +54,6 @@
             "metadata": {
                 "description": "Workspace Resource ID."
             }
-        },
-        "VmResourceId": {
-            "type": "String",
-            "defaultValue": "[resourceId('Microsoft.Compute/virtualMachines', variables('vmName'))]", //Should be VM name
-            "metadata": {
-                "description": "VM Resource ID."
-            }
-        },
-         "WorkspaceLocation": { //need to insert variable of locationOfWorkspace into this
-            "type": "String",
-            "defaultValue": "eastus2",
-            "metadata": {
-                "description": "Workspace Location."
-            }
-        },
-         "retentionInDays": {
-          "type": "int",
-          "defaultValue": 120,
-          "metadata": {
-            "description": "Number of days to retain data."
-          }
-        },
-        "resourcePermissions": {
-          "type": "bool",
-          "defaultValue": true,
-          "metadata": {
-            "description": "true to use resource or workspace permissions. false to require workspace permissions."
-          }
-      },
-       "sku": {
-          "type": "string",
-          "allowedValues": [
-            "pergb2018",
-            "Free",
-            "Standalone",
-            "PerNode",
-            "Standard",
-            "Premium"
-            ],
-          "defaultValue": "pergb2018",
-          "metadata": {
-          "description": "Pricing tier: PerGB2018 or legacy tiers (Free, Standalone, PerNode, Standard or Premium) which are not available to all customers."
-          }
         }
     },
     "resources": [
@@ -225,6 +182,7 @@
             "tags": {
                 "displayName": "Controller Virtual Machine"
             },
+            //adding in all the extensions
             "resources": [
                 {
                     "type": "extensions",
@@ -326,23 +284,7 @@
                 }
             }
         }
-    //     {
-    //       "type": "Microsoft.OperationalInsights/workspaces",
-    //       "name": "[parameters('workspaceName')]",
-    //       "apiVersion": "2020-08-01",
-    //       "location": "[parameters('WorkspaceLocation')]",
-    //       "properties": {
-    //           "sku": {
-    //               "name": "[parameters('sku')]"
-    //           },
-    //           "retentionInDays": "[parameters('retentionInDays')]",
-    //           "features": {
-    //               "searchVersion": 1,
-    //               "legacy": 0,
-    //               "enableLogAccessUsingOnlyResourcePermissions": "[parameters('resourcePermissions')]"
-    //           }
-    //       }
-    //   }
+    
     ],
     "variables": {
         "documentation01": "This sub-template drives the controller/jump-box which is used as the access-point for other VMs in the cluster",
@@ -367,7 +309,6 @@
         "AmaExtensionName": "[if(equals(toLower(parameters('osType')), 'windows'), 'AzureMonitorWindowsAgent', 'AzureMonitorLinuxAgent')]",
         "AmaExtensionType": "[if(equals(toLower(parameters('osType')), 'windows'), 'AzureMonitorWindowsAgent', 'AzureMonitorLinuxAgent')]",
         "AmaExtensionVersion": "1.0",
-        "VmName": "FinalTestVM",
         "copy": [
             {
                 "name": "nfsDiskArray",
