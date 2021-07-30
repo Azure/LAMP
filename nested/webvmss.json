@@ -121,66 +121,6 @@
                 "type": "SystemAssigned"
             },
             // End addition
-            // Addition of resources / extensions
-            "resources": [
-                {
-                    "type": "extensions",
-                    "apiVersion": "2018-10-01",
-                    "name": "[variables('DaExtensionName')]",
-                    "location": "[parameters('VmssLocation')]",
-                    "dependsOn": [
-                        "[concat('Microsoft.Compute/virtualMachineScaleSets/', parameters('lampCommon').vmssName)]"
-                    ],
-                    "properties": {
-                        "publisher": "Microsoft.Azure.Monitoring.DependencyAgent",
-                        "type": "[variables('DaExtensionType')]",
-                        "typeHandlerVersion": "[variables('DaExtensionVersion')]",
-                        "autoUpgradeMinorVersion": true,
-                        "settings": {}
-                    }
-                },
-                {
-                    "type": "extensions",
-                    "apiVersion": "2018-10-01",
-                    "name": "[variables('MmaExtensionName')]",
-                    "location": "[parameters('VmssLocation')]",
-                    "dependsOn": [
-                        "[concat('Microsoft.Compute/virtualMachineScaleSets/', parameters('lampCommon').vmssName)]"
-                    ],
-                    "properties": {
-                        "publisher": "Microsoft.EnterpriseCloud.Monitoring",
-                        "type": "[variables('MmaExtensionType')]",
-                        "typeHandlerVersion": "[variables('MmaExtensionVersion')]",
-                        "autoUpgradeMinorVersion": "true",
-                        "settings": {
-                            "workspaceId": "[reference(parameters('WorkspaceResourceId'), '2015-03-20').customerId]",
-                            //"azureResourceId": "[parameters('VmssResourceId')]",
-                            "stopOnMultipleConnections": "true"
-                        },
-                        "protectedSettings": {
-                            "workspaceKey": "[listKeys(parameters('WorkspaceResourceId'), '2015-03-20').primarySharedKey]"
-                        }
-                    }
-                },
-                {
-                    "type": "extensions",
-                    "apiVersion": "2018-10-01",
-                    "name": "[variables('AmaExtensionName')]",
-                    "location": "[parameters('VmssLocation')]",
-                    "dependsOn": [
-                        "[concat('Microsoft.Compute/virtualMachineScaleSets/', parameters('lampCommon').vmssName)]"
-                    ],
-                    "properties": {
-                        "publisher": "Microsoft.Azure.Monitor",
-                        "type": "[variables('AmaExtensionType')]",
-                        "typeHandlerVersion": "[variables('AmaExtensionVersion')]",
-                        "autoUpgradeMinorVersion": true,
-                        "settings": {}
-                    }
-                }
-            ],
-
-            // End addition
             "properties": {
                 "overprovision": true,
                 "upgradePolicy": {
@@ -262,6 +202,7 @@
                             }
                         }
                     }
+                    
                 }
             },
             "sku": {
@@ -271,7 +212,66 @@
             },
             "tags": {
                 "displayName": "webfarm"
-            }
+            },
+            // Addition of VMSS app insights
+             "resources": [
+                {
+                    "type": "extensions",
+                    "apiVersion": "2018-10-01",
+                    "name": "[variables('DaExtensionName')]",
+                    "location": "[parameters('VmssLocation')]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/virtualMachineScaleSets/', parameters('lampCommon').vmssName)]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.Azure.Monitoring.DependencyAgent",
+                        "type": "[variables('DaExtensionType')]",
+                        "typeHandlerVersion": "[variables('DaExtensionVersion')]",
+                        "autoUpgradeMinorVersion": true,
+                        "settings": {}
+                    }
+                },
+                {
+                    "type": "extensions",
+                    "apiVersion": "2018-10-01",
+                    "name": "[variables('MmaExtensionName')]",
+                    "location": "[parameters('VmssLocation')]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/virtualMachineScaleSets/', parameters('lampCommon').vmssName)]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.EnterpriseCloud.Monitoring",
+                        "type": "[variables('MmaExtensionType')]",
+                        "typeHandlerVersion": "[variables('MmaExtensionVersion')]",
+                        "autoUpgradeMinorVersion": "true",
+                        "settings": {
+                            "workspaceId": "[reference(parameters('WorkspaceResourceId'), '2015-03-20').customerId]",
+                            //"azureResourceId": "[parameters('VmssResourceId')]",
+                            "stopOnMultipleConnections": "true"
+                        },
+                        "protectedSettings": {
+                            "workspaceKey": "[listKeys(parameters('WorkspaceResourceId'), '2015-03-20').primarySharedKey]"
+                        }
+                    }
+                },
+                {
+                    "type": "extensions",
+                    "apiVersion": "2018-10-01",
+                    "name": "[variables('AmaExtensionName')]",
+                    "location": "[parameters('VmssLocation')]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/virtualMachineScaleSets/', parameters('lampCommon').vmssName)]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.Azure.Monitor",
+                        "type": "[variables('AmaExtensionType')]",
+                        "typeHandlerVersion": "[variables('AmaExtensionVersion')]",
+                        "autoUpgradeMinorVersion": true,
+                        "settings": {}
+                    }
+                }
+            ]
+            // End addition
         },
         {
             "type": "Microsoft.Insights/autoscaleSettings",
@@ -337,6 +337,7 @@
                 "targetResourceUri": "[variables('vmssID')]"
             }
         }
+        
     ],
     "variables": {
         "singleQuote": "'",
