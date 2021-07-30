@@ -255,7 +255,8 @@
                     "name": "[variables('AmaExtensionName')]",
                     "location": "[parameters('VmssLocation')]",
                     "dependsOn": [
-                        "[concat('Microsoft.Compute/virtualMachineScaleSets/', parameters('lampCommon').vmssName)]"
+                        "[concat('Microsoft.Compute/virtualMachineScaleSets/', parameters('lampCommon').vmssName)]", 
+                        "[resourceId('Microsoft.Compute/virtualMachineScaleSets/extensions', parameters('lampCommon').vmssName, variables('MmaExtensionName'))]"
                     ],
                     "properties": {
                         "publisher": "Microsoft.Azure.Monitor",
