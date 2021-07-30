@@ -29,26 +29,30 @@
         },
         "VmssLocation": {
             "type": "String",
+            "defaultValue": "[resourceGroup().location]",
             "metadata": {
                 "description": "The Virtual Machine Location."
             }
         },
         "osType": {
             "type": "String",
+            "defaultValue": "Linux",
             "metadata": {
                 "description": "OS Type, Example: Linux / Windows"
             }
         },
+        "workspaceName": {
+          "type": "string",
+          "defaultValue": "LogDefaultWorkspace",
+          "metadata": {
+            "description": "Name of the workspace."
+          }
+        },
         "WorkspaceResourceId": {
             "type": "String",
+            "defaultValue": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]",
             "metadata": {
                 "description": "Workspace Resource ID."
-            }
-        },
-        "DcrResourceId": {
-            "type": "String",
-            "metadata": {
-                "description": "VMI DCR Resource ID."
             }
         }
         // End addition
@@ -131,7 +135,8 @@
                         "publisher": "Microsoft.Azure.Monitoring.DependencyAgent",
                         "type": "[variables('DaExtensionType')]",
                         "typeHandlerVersion": "[variables('DaExtensionVersion')]",
-                        "autoUpgradeMinorVersion": true
+                        "autoUpgradeMinorVersion": true,
+                        "settings": {}
                     }
                 },
                 {
@@ -149,7 +154,7 @@
                         "autoUpgradeMinorVersion": "true",
                         "settings": {
                             "workspaceId": "[reference(parameters('WorkspaceResourceId'), '2015-03-20').customerId]",
-                            "azureResourceId": "[parameters('VmssResourceId')]",
+                            //"azureResourceId": "[parameters('VmssResourceId')]",
                             "stopOnMultipleConnections": "true"
                         },
                         "protectedSettings": {
@@ -169,22 +174,11 @@
                         "publisher": "Microsoft.Azure.Monitor",
                         "type": "[variables('AmaExtensionType')]",
                         "typeHandlerVersion": "[variables('AmaExtensionVersion')]",
-                        "autoUpgradeMinorVersion": true
-                    }
-                },
-                {
-                    "type": "Microsoft.Compute/virtualMachineScaleSets/providers/dataCollectionRuleAssociations"
-                    "apiVersion": "2019-11-01-preview",
-                    "name": "[concat(parameters('lampCommon').vmssName, '/Microsoft.Insights/VMInsights-Dcr-Association')]",
-                    "dependsOn": [
-                        "[concat('Microsoft.Compute/virtualMachineScaleSets/', parameters('lampCommon').vmssName)]"
-                    ],
-                    "properties": {
-                        "description": "Association of data collection rule for VM Insights.",
-                        "dataCollectionRuleId": "[parameters('DcrResourceId')]"
+                        "autoUpgradeMinorVersion": true,
+                        "settings": {}
                     }
                 }
-            ]
+            ],
 
             // End addition
             "properties": {
