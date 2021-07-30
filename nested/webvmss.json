@@ -246,7 +246,7 @@
                         "autoUpgradeMinorVersion": "true",
                         "settings": {
                             "workspaceId": "[reference(parameters('WorkspaceResourceId'), '2015-03-20').customerId]",
-                            //"azureResourceId": "[parameters('VmssResourceId')]",
+                            "azureResourceId": "[parameters('VmssResourceId')]",
                             "stopOnMultipleConnections": "true"
                         },
                         "protectedSettings": {

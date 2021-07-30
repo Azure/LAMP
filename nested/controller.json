@@ -25,7 +25,7 @@
                 "description": "JSON-structured VM setup params that'll be injected to the VM (through cloud-init) and used by the custom script (setup_controller.sh)"
             },
             "type": "object"
-        },
+        }/*,
         "osType": {
             "type": "String",
             "defaultValue": "Linux",
@@ -54,7 +54,7 @@
             "metadata": {
                 "description": "Workspace Resource ID."
             }
-        }
+        }*/
     },
     "resources": [
         {
@@ -181,7 +181,8 @@
             },
             "tags": {
                 "displayName": "Controller Virtual Machine"
-            },
+            }/*,
+            
             //adding in all the extensions
             "resources": [
                 {
@@ -239,7 +240,7 @@
                         "settings": {}
                     }
                 }
-            ]
+            ]*/
         },
         {
             "condition": "[parameters('lampCommon').applyScriptsSwitch]",
@@ -300,6 +301,7 @@
         "nicRef": "[resourceId('Microsoft.Network/networkInterfaces', parameters('lampCommon').ctlrNicName)]",
         "nsgRef": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('lampCommon').ctlrNsgName)]",
         "singleQuote": "'",
+        /*
         "DaExtensionName": "[if(equals(toLower(parameters('osType')), 'windows'), 'DependencyAgentWindows', 'DependencyAgentLinux')]",
         "DaExtensionType": "[if(equals(toLower(parameters('osType')), 'windows'), 'DependencyAgentWindows', 'DependencyAgentLinux')]",
         "DaExtensionVersion": "9.5",
@@ -309,6 +311,7 @@
         "AmaExtensionName": "[if(equals(toLower(parameters('osType')), 'windows'), 'AzureMonitorWindowsAgent', 'AzureMonitorLinuxAgent')]",
         "AmaExtensionType": "[if(equals(toLower(parameters('osType')), 'windows'), 'AzureMonitorWindowsAgent', 'AzureMonitorLinuxAgent')]",
         "AmaExtensionVersion": "1.0",
+        */
         "copy": [
             {
                 "name": "nfsDiskArray",
