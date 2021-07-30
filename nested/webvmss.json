@@ -19,7 +19,39 @@
                 "description": "JSON-structured VM setup params that'll be injected to the VM (through cloud-init) and used by the custom script (setup_webserver.sh)"
             },
             "type": "object"
+        },
+        // Addition of insights parameters for VMSS
+         "VmssResourceId": {
+            "type": "String",
+            "metadata": {
+                "description": "VM Resource ID."
+            }
+        },
+        "VmssLocation": {
+            "type": "String",
+            "metadata": {
+                "description": "The Virtual Machine Location."
+            }
+        },
+        "osType": {
+            "type": "String",
+            "metadata": {
+                "description": "OS Type, Example: Linux / Windows"
+            }
+        },
+        "WorkspaceResourceId": {
+            "type": "String",
+            "metadata": {
+                "description": "Workspace Resource ID."
+            }
+        },
+        "DcrResourceId": {
+            "type": "String",
+            "metadata": {
+                "description": "VMI DCR Resource ID."
+            }
         }
+        // End addition
     },
     "resources": [
         {
@@ -80,6 +112,81 @@
             ],
             "location": "[parameters('lampCommon').location]",
             "name": "[parameters('lampCommon').vmssName]",
+            // Addition of identity for VMSS insights
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            // End addition
+            // Addition of resources / extensions
+            "resources": [
+                {
+                    "type": "extensions",
+                    "apiVersion": "2018-10-01",
+                    "name": "[variables('DaExtensionName')]",
+                    "location": "[parameters('VmssLocation')]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/virtualMachineScaleSets/', parameters('lampCommon').vmssName)]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.Azure.Monitoring.DependencyAgent",
+                        "type": "[variables('DaExtensionType')]",
+                        "typeHandlerVersion": "[variables('DaExtensionVersion')]",
+                        "autoUpgradeMinorVersion": true
+                    }
+                },
+                {
+                    "type": "extensions",
+                    "apiVersion": "2018-10-01",
+                    "name": "[variables('MmaExtensionName')]",
+                    "location": "[parameters('VmssLocation')]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/virtualMachineScaleSets/', parameters('lampCommon').vmssName)]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.EnterpriseCloud.Monitoring",
+                        "type": "[variables('MmaExtensionType')]",
+                        "typeHandlerVersion": "[variables('MmaExtensionVersion')]",
+                        "autoUpgradeMinorVersion": "true",
+                        "settings": {
+                            "workspaceId": "[reference(parameters('WorkspaceResourceId'), '2015-03-20').customerId]",
+                            "azureResourceId": "[parameters('VmssResourceId')]",
+                            "stopOnMultipleConnections": "true"
+                        },
+                        "protectedSettings": {
+                            "workspaceKey": "[listKeys(parameters('WorkspaceResourceId'), '2015-03-20').primarySharedKey]"
+                        }
+                    }
+                },
+                {
+                    "type": "extensions",
+                    "apiVersion": "2018-10-01",
+                    "name": "[variables('AmaExtensionName')]",
+                    "location": "[parameters('VmssLocation')]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/virtualMachineScaleSets/', parameters('lampCommon').vmssName)]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.Azure.Monitor",
+                        "type": "[variables('AmaExtensionType')]",
+                        "typeHandlerVersion": "[variables('AmaExtensionVersion')]",
+                        "autoUpgradeMinorVersion": true
+                    }
+                },
+                {
+                    "type": "Microsoft.Compute/virtualMachineScaleSets/providers/dataCollectionRuleAssociations"
+                    "apiVersion": "2019-11-01-preview",
+                    "name": "[concat(parameters('lampCommon').vmssName, '/Microsoft.Insights/VMInsights-Dcr-Association')]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/virtualMachineScaleSets/', parameters('lampCommon').vmssName)]"
+                    ],
+                    "properties": {
+                        "description": "Association of data collection rule for VM Insights.",
+                        "dataCollectionRuleId": "[parameters('DcrResourceId')]"
+                    }
+                }
+            ]
+
+            // End addition
             "properties": {
                 "overprovision": true,
                 "upgradePolicy": {
@@ -250,6 +357,17 @@
         "appGwID": "[resourceId('Microsoft.Network/applicationGateways', parameters('lampCommon').appGwName)]",
         "appGwBePoolId": "[concat(variables('appGwID'), '/backendAddressPools/', parameters('lampCommon').appGwBePoolName)]",
         "vmssNsgNameId": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('lampCommon').vmssNsgName)]",
+        // Addition of insights variables. ToDo: Review ternary operator, we don't do windows ever
+        "DaExtensionName": "[if(equals(toLower(parameters('osType')), 'windows'), 'DependencyAgentWindows', 'DependencyAgentLinux')]",
+        "DaExtensionType": "[if(equals(toLower(parameters('osType')), 'windows'), 'DependencyAgentWindows', 'DependencyAgentLinux')]",
+        "DaExtensionVersion": "9.5",
+        "MmaExtensionName": "[if(equals(toLower(parameters('osType')), 'windows'), 'MMAExtension', 'OMSExtension')]",
+        "MmaExtensionType": "[if(equals(toLower(parameters('osType')), 'windows'), 'MicrosoftMonitoringAgent', 'OmsAgentForLinux')]",
+        "MmaExtensionVersion": "[if(equals(toLower(parameters('osType')), 'windows'), '1.0', '1.4')]",
+        "AmaExtensionName": "[if(equals(toLower(parameters('osType')), 'windows'), 'AzureMonitorWindowsAgent', 'AzureMonitorLinuxAgent')]",
+        "AmaExtensionType": "[if(equals(toLower(parameters('osType')), 'windows'), 'AzureMonitorWindowsAgent', 'AzureMonitorLinuxAgent')]",
+        "AmaExtensionVersion": "1.0",
+        // End Addition
         "lbBePoolArray": [
             {
                 "id": "[variables('extBeID')]"
