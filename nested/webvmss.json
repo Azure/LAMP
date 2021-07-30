@@ -21,12 +21,7 @@
             "type": "object"
         },
         // Addition of insights parameters for VMSS
-         "VmssResourceId": {
-            "type": "String",
-            "metadata": {
-                "description": "VM Resource ID."
-            }
-        },
+
         "VmssLocation": {
             "type": "String",
             "defaultValue": "[resourceGroup().location]",
@@ -246,7 +241,7 @@
                         "autoUpgradeMinorVersion": "true",
                         "settings": {
                             "workspaceId": "[reference(parameters('WorkspaceResourceId'), '2015-03-20').customerId]",
-                            "azureResourceId": "[parameters('VmssResourceId')]",
+                            //"azureResourceId": "[parameters('VmssResourceId')]",
                             "stopOnMultipleConnections": "true"
                         },
                         "protectedSettings": {
