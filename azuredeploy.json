@@ -710,7 +710,8 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2017-05-10",
             "name": "VMI-Solution-Deployment",
-            "dependsOn": ["Microsoft.Resources/deployments/controllerTemplate"],
+            //"dependsOn": ["Microsoft.Resources/deployments/controllerTemplate"],
+            "dependsOn": ["Microsoft.Resources/deployments/scaleSetTemplate"],
             "properties": {
                 "mode": "Incremental",
                 "template": {
@@ -746,8 +747,10 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2017-05-10",
             "name": "VMI-DCR-Deployment",
+            //"dependsOn": ["[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]",
+            //"Microsoft.Resources/deployments/controllerTemplate"],
             "dependsOn": ["[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]",
-            "Microsoft.Resources/deployments/controllerTemplate"],
+            "Microsoft.Resources/deployments/scaleSetTemplate"],
             "properties": {
                 "mode": "Incremental",
                 "template": {
@@ -825,7 +828,8 @@
                              //added here instead of nested loop and away from extensions
                     "type": "Microsoft.Compute/virtualMachines/providers/dataCollectionRuleAssociations",
                     "apiVersion": "2019-11-01-preview",
-                    "name": "[concat(variables('lampCommon').ctlrVmName, '/Microsoft.Insights/VMInsights-Dcr-Association')]",
+                    //"name": "[concat(variables('lampCommon').ctlrVmName, '/Microsoft.Insights/VMInsights-Dcr-Association')]",
+                    "name": "[concat(variables('lampCommon').vmssName, '/Microsoft.Insights/VMInsights-Dcr-Association')]",
                     "dependsOn": [
                         "[concat('Microsoft.Insights/dataCollectionRules/', concat('MSVMI-', split(parameters('WorkspaceResourceId'),'/')[8]))]"
                     ],
