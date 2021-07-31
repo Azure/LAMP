@@ -232,7 +232,8 @@
                     "name": "[variables('MmaExtensionName')]",
                     "location": "[parameters('VmssLocation')]",
                     "dependsOn": [
-                        "[concat('Microsoft.Compute/virtualMachineScaleSets/', parameters('lampCommon').vmssName)]"
+                        "[concat('Microsoft.Compute/virtualMachineScaleSets/', parameters('lampCommon').vmssName)]",
+                        "[resourceId('Microsoft.Compute/virtualMachineScaleSets/extensions', parameters('lampCommon').vmssName, variables('DaExtensionName'))]"
                     ],
                     "properties": {
                         "publisher": "Microsoft.EnterpriseCloud.Monitoring",
