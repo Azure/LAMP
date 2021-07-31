@@ -827,12 +827,13 @@
                         },
                          {
                              //added here instead of nested loop and away from extensions
-                    "type": "Microsoft.Compute/virtualMachines/providers/dataCollectionRuleAssociations",
+                    "type": "Microsoft.Compute/virtualMachineScaleSets/providers/dataCollectionRuleAssociations",
                     "apiVersion": "2019-11-01-preview",
                     //"name": "[concat(variables('lampCommon').ctlrVmName, '/Microsoft.Insights/VMInsights-Dcr-Association')]",
                     "name": "[concat(variables('lampCommon').vmssName, '/Microsoft.Insights/VMInsights-Dcr-Association')]",
                     "dependsOn": [
-                        "[concat('Microsoft.Insights/dataCollectionRules/', concat('MSVMI-', split(parameters('WorkspaceResourceId'),'/')[8]))]"
+                        //"[concat('Microsoft.Insights/dataCollectionRules/', concat('MSVMI-', split(parameters('WorkspaceResourceId'),'/')[8]))]"
+                        "[concat('Microsoft.Compute/virtualMachineScaleSets/', variables('lampCommon').vmssName)]"
                     ],
                     "properties": {
                         "description": "Association of data collection rule for VM Insights.",
