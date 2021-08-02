@@ -834,8 +834,8 @@
                     //"name": "[concat(variables('lampCommon').ctlrVmName, '/Microsoft.Insights/VMInsights-Dcr-Association')]",
                     "name": "[concat(variables('lampCommon').vmssName, '/Microsoft.Insights/VMInsights-Dcr-Association')]",
                     "dependsOn": [
-                        "[concat('Microsoft.Insights/dataCollectionRules/', concat('MSVMI-', split(parameters('WorkspaceResourceId'),'/')[8]))]",
-                        "[concat('Microsoft.Compute/virtualMachineScaleSets/', variables('lampCommon').vmssName)]"
+                        "[concat('Microsoft.Insights/dataCollectionRules/', concat('MSVMI-', split(parameters('WorkspaceResourceId'),'/')[8]))]"
+                        //"[concat('Microsoft.Compute/virtualMachineScaleSets/', variables('lampCommon').vmssName)]"
                     ],
                     "properties": {
                         "description": "Association of data collection rule for VM Insights.",
