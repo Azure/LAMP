@@ -750,8 +750,8 @@
             //"dependsOn": ["[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]",
             //"Microsoft.Resources/deployments/controllerTemplate"],
             "dependsOn": ["[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]",
-            "[resourceId('Microsoft.Resources/deployments', 'VMI-Solution-Deployment')]",
-            "[resourceId('Microsoft.Resources/deployments', 'scaleSetTemplate')]"
+            //"[resourceId('Microsoft.Resources/deployments', 'VMI-Solution-Deployment')]",
+            "Microsoft.Resources/deployments/VMI-Solution-Deployment"
             ],
             "properties": {
                 "mode": "Incremental",
