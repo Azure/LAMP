@@ -750,7 +750,8 @@
             //"dependsOn": ["[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]",
             //"Microsoft.Resources/deployments/controllerTemplate"],
             "dependsOn": ["[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]",
-            "[resourceId('Microsoft.Resources/deployments', 'VMI-Solution-Deployment')]"
+            "[resourceId('Microsoft.Resources/deployments', 'VMI-Solution-Deployment')]",
+            "[resourceId('Microsoft.Resources/deployments', 'scaleSetTemplate')]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -833,7 +834,7 @@
                     //"name": "[concat(variables('lampCommon').ctlrVmName, '/Microsoft.Insights/VMInsights-Dcr-Association')]",
                     "name": "[concat(variables('lampCommon').vmssName, '/Microsoft.Insights/VMInsights-Dcr-Association')]",
                     "dependsOn": [
-                        //"[concat('Microsoft.Insights/dataCollectionRules/', concat('MSVMI-', split(parameters('WorkspaceResourceId'),'/')[8]))]"
+                        "[concat('Microsoft.Insights/dataCollectionRules/', concat('MSVMI-', split(parameters('WorkspaceResourceId'),'/')[8]))]",
                         "[concat('Microsoft.Compute/virtualMachineScaleSets/', variables('lampCommon').vmssName)]"
                     ],
                     "properties": {
