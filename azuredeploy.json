@@ -580,40 +580,7 @@
           "description": "Pricing tier: PerGB2018 or legacy tiers (Free, Standalone, PerNode, Standard or Premium) which are not available to all customers."
           }
         },
-        "locationForWorkspace": {
-          "type": "string",
-          "defaultValue": "eastus2",
-          "allowedValues": [
-          "australiacentral", 
-          "australiaeast", 
-          "australiasoutheast", 
-          "brazilsouth",
-          "canadacentral", 
-          "centralindia", 
-          "centralus", 
-          "eastasia", 
-          "eastus", 
-          "eastus2", 
-          "francecentral", 
-          "japaneast", 
-          "koreacentral", 
-          "northcentralus", 
-          "northeurope", 
-          "southafricanorth", 
-          "southcentralus", 
-          "southeastasia",
-          "switzerlandnorth",
-          "switzerlandwest",
-          "uksouth", 
-          "ukwest", 
-          "westcentralus", 
-          "westeurope", 
-          "westus2" 
-          ],
-          "metadata": {
-              "description": "Specifies the location for the workspace."
-              }
-        },
+        
         "retentionInDays": {
           "type": "int",
           "defaultValue": 120,
@@ -648,13 +615,14 @@
                 "description": "Azure Location for all resources."
             }
         },
-        "WorkspaceLocation": { //need to insert variable of locationOfWorkspace into this
+        "WorkspaceLocation": { 
             "type": "String",
             "defaultValue": "[resourceGroup().location]",
             "metadata": {
                 "description": "Workspace Location."
             }
         },
+        //ID to reference Log Analytics Workspace
         "WorkspaceResourceId": {
             "type": "String",
             "defaultValue": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]",
@@ -663,7 +631,7 @@
                 "description": "Workspace Resource ID."
             }
         },
-        
+        //Gets the ID of the Performance + Syslog Data collection Rules we make
         "DcrResourceId": {
             "type": "String",
             "defaultValue": "[resourceId('Microsoft.Insights/dataCollectionRules', concat('MSVMI-', split(parameters('WorkspaceResourceId'),'/')[8]))]",
@@ -691,7 +659,7 @@
           "type": "Microsoft.OperationalInsights/workspaces",
           "name": "[parameters('workspaceName')]",
           "apiVersion": "2020-08-01",
-          "location": "[parameters('locationForWorkspace')]",
+          "location": "[parameters('location')]",
           "properties": {
               "sku": {
                   "name": "[parameters('sku')]"
