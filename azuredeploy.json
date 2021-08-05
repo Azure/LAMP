@@ -580,40 +580,7 @@
           "description": "Pricing tier: PerGB2018 or legacy tiers (Free, Standalone, PerNode, Standard or Premium) which are not available to all customers."
           }
         },
-        "locationForWorkspace": {
-          "type": "string",
-          "defaultValue": "eastus2",
-          "allowedValues": [
-          "australiacentral", 
-          "australiaeast", 
-          "australiasoutheast", 
-          "brazilsouth",
-          "canadacentral", 
-          "centralindia", 
-          "centralus", 
-          "eastasia", 
-          "eastus", 
-          "eastus2", 
-          "francecentral", 
-          "japaneast", 
-          "koreacentral", 
-          "northcentralus", 
-          "northeurope", 
-          "southafricanorth", 
-          "southcentralus", 
-          "southeastasia",
-          "switzerlandnorth",
-          "switzerlandwest",
-          "uksouth", 
-          "ukwest", 
-          "westcentralus", 
-          "westeurope", 
-          "westus2" 
-          ],
-          "metadata": {
-              "description": "Specifies the location for the workspace."
-              }
-        },
+        
         "retentionInDays": {
           "type": "int",
           "defaultValue": 120,
@@ -648,13 +615,14 @@
                 "description": "Azure Location for all resources."
             }
         },
-        "WorkspaceLocation": { //need to insert variable of locationOfWorkspace into this
+        "WorkspaceLocation": { 
             "type": "String",
             "defaultValue": "[resourceGroup().location]",
             "metadata": {
                 "description": "Workspace Location."
             }
         },
+        //ID to reference Log Analytics Workspace
         "WorkspaceResourceId": {
             "type": "String",
             "defaultValue": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]",
@@ -663,7 +631,7 @@
                 "description": "Workspace Resource ID."
             }
         },
-        
+        //Gets the ID of the Performance + Syslog Data collection Rules we make
         "DcrResourceId": {
             "type": "String",
             "defaultValue": "[resourceId('Microsoft.Insights/dataCollectionRules', concat('MSVMI-', split(parameters('WorkspaceResourceId'),'/')[8]))]",
@@ -691,7 +659,7 @@
           "type": "Microsoft.OperationalInsights/workspaces",
           "name": "[parameters('workspaceName')]",
           "apiVersion": "2020-08-01",
-          "location": "[parameters('locationForWorkspace')]",
+          "location": "[parameters('location')]",
           "properties": {
               "sku": {
                   "name": "[parameters('sku')]"
@@ -710,7 +678,8 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2017-05-10",
             "name": "VMI-Solution-Deployment",
-            "dependsOn": ["Microsoft.Resources/deployments/controllerTemplate"],
+            //"dependsOn": ["Microsoft.Resources/deployments/controllerTemplate"],
+            "dependsOn": ["Microsoft.Resources/deployments/scaleSetTemplate"],
             "properties": {
                 "mode": "Incremental",
                 "template": {
@@ -746,8 +715,12 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2017-05-10",
             "name": "VMI-DCR-Deployment",
+            //"dependsOn": ["[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]",
+            //"Microsoft.Resources/deployments/controllerTemplate"],
             "dependsOn": ["[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]",
-            "Microsoft.Resources/deployments/controllerTemplate"],
+            //"[resourceId('Microsoft.Resources/deployments', 'VMI-Solution-Deployment')]",
+            "Microsoft.Resources/deployments/VMI-Solution-Deployment"
+            ],
             "properties": {
                 "mode": "Incremental",
                 "template": {
@@ -822,12 +795,15 @@
                             }
                         },
                          {
-                             //added here instead of nested loop and away from extensions
-                    "type": "Microsoft.Compute/virtualMachines/providers/dataCollectionRuleAssociations",
+                    //added here instead of nested loop and away from extensions
+                    //"type": "Microsoft.Compute/virtualMachines/providers/dataCollectionRuleAssociations",
+                    "type": "Microsoft.Compute/virtualMachineScaleSets/providers/dataCollectionRuleAssociations",
                     "apiVersion": "2019-11-01-preview",
-                    "name": "[concat(variables('lampCommon').ctlrVmName, '/Microsoft.Insights/VMInsights-Dcr-Association')]",
+                    //"name": "[concat(variables('lampCommon').ctlrVmName, '/Microsoft.Insights/VMInsights-Dcr-Association')]",
+                    "name": "[concat(variables('lampCommon').vmssName, '/Microsoft.Insights/VMInsights-Dcr-Association')]",
                     "dependsOn": [
                         "[concat('Microsoft.Insights/dataCollectionRules/', concat('MSVMI-', split(parameters('WorkspaceResourceId'),'/')[8]))]"
+                        //"[concat('Microsoft.Compute/virtualMachineScaleSets/', variables('lampCommon').vmssName)]"
                     ],
                     "properties": {
                         "description": "Association of data collection rule for VM Insights.",

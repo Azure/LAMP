@@ -33,6 +33,7 @@ This template set deploys the following infrastructure core to your LAMP instanc
 - [Azure Load balancer](https://azure.microsoft.com/en-us/services/load-balancer/) to balance across the autoscaling instances
 - [Azure Database for MySQL](https://azure.microsoft.com/en-us/services/mysql/) or [Azure Database for PostgreSQL](https://azure.microsoft.com/en-us/services/postgresql/) or [Azure SQL Database](https://azure.microsoft.com/en-us/services/sql-database/)
 - Dual [GlusterFS](https://www.gluster.org/) nodes or NFS for highly available access to LAMP files
+- [VM Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/vm/vminsights-performance) for monitoring
 
 # Next Steps
 
@@ -155,6 +156,19 @@ At this point, your app is setup to use in the LAMP cluster. If you'd like to in
 Once you completed the steps above and you can see your WordPress website running in the browser, please follow the instructions here to complete configuring a database and finishing a [WordPress install](https://codex.wordpress.org/Installing_WordPress#Famous_5-Minute_Installation).
 
 If you chose `true` for the `htmlLocalCopy` switch, WordPress will be running from a read-only directory, so the installer won't be able to create a `wp-config.php` file for you. However, the installer will provide you with the full content of the required config file. On the controller VM, copy that content into the file `/azlamp/html/wpsitename.mydomain.com/wp-config.php`. You then need to trigger a replication of the data, by running the script `/usr/local/bin/update_last_modified_time.azlamp.sh` again from the controller VM, as root. Data will be replicated in around one minute.
+
+### Monitoring Best Practices
+
+Under the tab "Insights", you can view, analyze, and export infrastructure data regarding your application. Syslog information can be queried under the "Logs" tab, with the basic query of 
+
+Syslog
+| take 100
+
+Under "Metrics", you have a variety of host metrics by default under "Virtual Machine Host". Switching the metric namespace to "insights.virtualmachines" will provide you with specific metrics on your VMSS deployment.
+
+Documentation for [metric alerts](https://docs.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-metric) and [log alerts](https://docs.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-log).
+
+All data is processed through the [Azure Monitoring Agent](https://docs.microsoft.com/en-us/azure/azure-monitor/agents/azure-monitor-agent-overview?tabs=PowerShellWindows).
 
 ## Code of Conduct
 
