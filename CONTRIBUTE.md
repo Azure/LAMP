@@ -51,16 +51,9 @@ That said, this is not a democracy. Consensus does not mean everyone
 has to agree. It merely means that nobody is objecting *and* offering
 an alternative.
 
-What this means, in practive, is that she who does the work makes the
-decisions. We'd rather discuss how to improve imperfect code than
-argue over what would make perfect code. So if you have an objection
-to the way we are doing things issue a pull request.
+What this means, in practice, is that she who does the work makes the decisions. We'd rather discuss how to improve imperfect code than argue over what would make perfect code. So if you have an objection to the way we are doing things issue a pull request.
 
-In the unlikely event that we cannot reach consensus through consensus
-then the project maintainers (as identified by their having the admin
-bit on GitHub) will make a judgetment call. But normally their
-role is to guide the community to consensus action, not to make
-decisions on bhalf of the community.
+In the unlikely event that we cannot reach consensus through consensus building then the project maintainers (as identified by their having the admin bit on GitHub) will make a judgement call. But normally their role is to guide the community to consensus action, not to make decisions on behalf of the community.
 
 ## Minimum Bar for Contributions
 
