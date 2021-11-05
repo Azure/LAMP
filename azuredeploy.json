@@ -584,7 +584,14 @@
                 "description": "Name for the Application DB."
             }
         },
-         "ctlrVmOsImageReferenceOfferName": {
+        "ctlrVmName": {
+            "type": "string",
+            "defaultValue": "[variables('defaults').ctlrVmName]",
+            "metadata": {
+                "description": "Name of the controller VM."
+            }
+        },
+        "ctlrVmOsImageReferenceOfferName": {
             "type": "string",
             "defaultValue": "UbuntuServer",
             "allowedValues": [ "UbuntuServer" ],
@@ -619,11 +626,22 @@
                 "description": "The version of the markeplate OS image used to create Controller VM."
             }
         },
-        "ctlrVmName": {
+        "ctlrVmOsDiskStorageType": {
             "type": "string",
-            "defaultValue": "[variables('defaults').ctlrVmName]",
+            "defaultValue": "Premium_LRS",
+            "allowedValues": [
+                "Premium_LRS",
+                "Standard_LRS"
+            ],
             "metadata": {
-                "description": "Name of the controller VM."
+                "description": "Azure storage type for controller VM's OS disk. With htmlLocalCopySwith true, Premium_LRS (SSD) is strongly recommended, as PHP files will be served from OS disks."
+            }
+        },
+        "ctlrVmOsDiskSizeInGB": {
+            "type": "int",
+            "defaultValue": 30,
+            "metadata": {
+                "description": "Size of OS Disk for Controller VM."
             }
         },
         "dbUsername": {
@@ -1115,13 +1133,15 @@
             "ctlrNicName": "[concat('controller-vm-nic-',variables('resourceprefix'))]",
             "ctlrNsgName": "[concat('controller-nsg-',variables('resourceprefix'))]",
             "ctlrPipName": "[concat('controller-pubip-',variables('resourceprefix'))]",
+            "ctlrVmName": "[parameters('ctlrVmName')]",
             "ctlrVmOsType": {
                 "offer": "[parameters('ctlrVmOsImageReferenceOfferName')]",
                 "publisher": "[parameters('ctlrVmOsImageReferencePublisherName')]",
                 "sku": "[parameters('ctlrVmOsImageReferenceSkuName')]",
                 "version": "[parameters('ctlrVmOsImageReferenceVersionName')]"
             },
-            "ctlrVmName": "[parameters('ctlrVmName')]",
+            "ctlrVmOsDiskStorageType": "[parameters('ctlrVmOsDiskStorageType')]",
+            "ctlrVmOsDiskSizeInGB": "[parameters('ctlrVmOsDiskSizeInGB')]",
             "vmssNsgName": "[concat('vmss-nsg-',variables('resourceprefix'))]",
             "ctlrVmSecrets": "[take(variables('ctlrVmSecretsArray'), if(empty(parameters('keyVaultResourceId')), 0, 1))]",
             "dbLogin": "[parameters('dbLogin')]",

@@ -139,8 +139,9 @@
                     "imageReference": "[parameters('lampCommon').ctlrVmOsType]",
                     "osDisk": {
                         "createOption": "FromImage",
+                        "diskSizeGB": "[parameters('lampCommon').ctlrVmOsDiskSizeInGB]",
                         "managedDisk": {
-                            "storageAccountType": "[parameters('lampCommon').osDiskStorageType]"
+                            "storageAccountType": "[parameters('lampCommon').ctlrVmOsDiskStorageType]"
                         },
                         "name": "[parameters('lampCommon').ctlrVmName]"
                     },
