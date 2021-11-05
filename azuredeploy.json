@@ -2,9 +2,9 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "TypeOfTemplate":{
-            "defaultValue":"LAMP ARM TEMPLATE",
-            "type":"string"
+        "TypeOfTemplate": {
+            "defaultValue": "LAMP ARM TEMPLATE",
+            "type": "string"
         },
         "_artifactsLocation": {
             "type": "string",
@@ -149,12 +149,12 @@
         },
         "UbuntuVersion": {
             "defaultValue": "18.04-LTS",
-            "allowedValues":[
+            "allowedValues": [
                 "16.04-LTS",
                 "18.04-LTS"
             ],
             "type": "string",
-            "metadata":{
+            "metadata": {
                 "description": "Select Ubuntu version. By default it will take 16.04-LTS"
             }
         },
@@ -907,10 +907,6 @@
             "type": "string",
             "value": "[variables('lampCommon').dbUsername]"
         },
-        "databaseAdminPassword": {
-            "type": "string",
-            "value": "[variables('lampCommon').dbLoginPassword]"
-        },
         "firstFrontendVmIP": {
             "type": "string",
             "value": "[reference('scaleSetTemplate').outputs.webvm1IP.value]"
@@ -926,6 +922,470 @@
         "loadBalancerTier": {
             "type": "string",
             "value": "[variables('lampCommon').lbTier]"
+        },
+        "applicationDbName": {
+            "type": "string",
+            "value": "[variables('lampCommon').applicationDbName]"
+        },
+        "cmsApplication": {
+            "type": "string",
+            "value": "[variables('lampCommon').cmsApplication]"
+        },
+        "scriptLocation": {
+            "type": "string",
+            "value": "[variables('lampCommon').scriptLocation]"
+        },
+        "appGwBePoolName": {
+            "type": "string",
+            "value": "[variables('lampCommon').appGwBePoolName]"
+        },
+        "appGwName": {
+            "type": "string",
+            "value": "[variables('lampCommon').appGwName]"
+        },
+        "appGwPipName": {
+            "type": "string",
+            "value": "[variables('lampCommon').appGwPipName]"
+        },
+        "appGwSslCertKeyVaultResourceId": {
+            "type": "string",
+            "value": "[variables('lampCommon').appGwSslCertKeyVaultResourceId]"
+        },
+        "appGwSslCertKeyVaultSecretName": {
+            "type": "string",
+            "value": "[variables('lampCommon').appGwSslCertKeyVaultSecretName]"
+        },
+        "appGwSkuCapacity": {
+            "type": "string",
+            "value": "[variables('lampCommon').appGwSkuCapacity]"
+        },
+        "appGwSkuName": {
+            "type": "string",
+            "value": "[variables('lampCommon').appGwSkuName]"
+        },
+        "appGwSkuTier": {
+            "type": "string",
+            "value": "[variables('lampCommon').appGwSkuTier]"
+        },
+        "applyScriptsSwitch": {
+            "type": "string",
+            "value": "[variables('lampCommon').applyScriptsSwitch]"
+        },
+        "autoscaleVmCountMax": {
+            "type": "string",
+            "value": "[variables('lampCommon').autoscaleVmCountMax]"
+        },
+        "autoscaleVmCountMin": {
+            "type": "string",
+            "value": "[variables('lampCommon').autoscaleVmCountMin]"
+        },
+        "autoscaleVmSku": {
+            "type": "string",
+            "value": "[variables('lampCommon').autoscaleVmSku]"
+        },
+        "azureBackupSwitch": {
+            "type": "string",
+            "value": "[variables('lampCommon').azureBackupSwitch]"
+        },
+        "commonFunctionsScriptUri": {
+            "type": "string",
+            "value": "[variables('lampCommon').commonFunctionsScriptUri]"
+        },
+        "controllerVmSku": {
+            "type": "string",
+            "value": "[variables('lampCommon').controllerVmSku]"
+        },
+        "customVnetId": {
+            "type": "string",
+            "value": "[variables('lampCommon').customVnetId]"
+        },
+        "ctlrNicName": {
+            "type": "string",
+            "value": "[variables('lampCommon').ctlrNicName]"
+        },
+        "ctlrNsgName": {
+            "type": "string",
+            "value": "[variables('lampCommon').ctlrNsgName]"
+        },
+        "ctlrPipName": {
+            "type": "string",
+            "value": "[variables('lampCommon').ctlrPipName]"
+        },
+        "ctlrVmName": {
+            "type": "string",
+            "value": "[variables('lampCommon').ctlrVmName]"
+        },
+        "vmssNsgName": {
+            "type": "string",
+            "value": "[variables('lampCommon').vmssNsgName]"
+        },
+        "dbLogin": {
+            "type": "string",
+            "value": "[variables('lampCommon').dbLogin]"
+        },
+        "dbServerType": {
+            "type": "string",
+            "value": "[variables('lampCommon').dbServerType]"
+        },
+        "ddosPlanName": {
+            "type": "string",
+            "value": "[variables('lampCommon').ddosPlanName]"
+        },
+        "ddosSwitch": {
+            "type": "string",
+            "value": "[variables('lampCommon').ddosSwitch]"
+        },
+        "enableAccelNwForCtlrVmSwitch": {
+            "type": "string",
+            "value": "[variables('lampCommon').enableAccelNwForCtlrVmSwitch]"
+        },
+        "enableAccelNwForOtherVmsSwitch": {
+            "type": "string",
+            "value": "[variables('lampCommon').enableAccelNwForOtherVmsSwitch]"
+        },
+        "extBeName": {
+            "type": "string",
+            "value": "[variables('lampCommon').extBeName]"
+        },
+        "extFeName": {
+            "type": "string",
+            "value": "[variables('lampCommon').extFeName]"
+        },
+        "extOutName001": {
+            "type": "string",
+            "value": "[variables('lampCommon').extOutName001]"
+        },
+        "extOutName002": {
+            "type": "string",
+            "value": "[variables('lampCommon').extOutName002]"
+        },
+        "extNatPool": {
+            "type": "string",
+            "value": "[variables('lampCommon').extNatPool]"
+        },
+        "extProbeHTTP": {
+            "type": "string",
+            "value": "[variables('lampCommon').extProbeHTTP]"
+        },
+        "extProbeHTTPS": {
+            "type": "string",
+            "value": "[variables('lampCommon').extProbeHTTPS]"
+        },
+        "fileServerDiskCount": {
+            "type": "string",
+            "value": "[variables('lampCommon').fileServerDiskCount]"
+        },
+        "fileServerDiskSize": {
+            "type": "string",
+            "value": "[variables('lampCommon').fileServerDiskSize]"
+        },
+        "OSDiskSizeInGB": {
+            "type": "string",
+            "value": "[variables('lampCommon').OSDiskSizeInGB]"
+        },
+        "fileServerType": {
+            "type": "string",
+            "value": "[variables('lampCommon').fileServerType]"
+        },
+        "fileServerVmCount": {
+            "type": "string",
+            "value": "[variables('lampCommon').fileServerVmCount]"
+        },
+        "fileServerVmSku": {
+            "type": "string",
+            "value": "[variables('lampCommon').fileServerVmSku]"
+        },
+        "gatewayName": {
+            "type": "string",
+            "value": "[variables('lampCommon').gatewayName]"
+        },
+        "gatewayPublicIPName": {
+            "type": "string",
+            "value": "[variables('lampCommon').gatewayPublicIPName]"
+        },
+        "gatewayType": {
+            "type": "string",
+            "value": "[variables('lampCommon').gatewayType]"
+        },
+        "gfsNameRoot": {
+            "type": "string",
+            "value": "[variables('lampCommon').gfsNameRoot]"
+        },
+        "gfsAvailabilitySetName": {
+            "type": "string",
+            "value": "[variables('lampCommon').gfsAvailabilitySetName]"
+        },
+        "glusterScriptFilename": {
+            "type": "string",
+            "value": "[variables('lampCommon').glusterScriptFilename]"
+        },
+        "htmlLocalCopySwitch": {
+            "type": "string",
+            "value": "[variables('lampCommon').htmlLocalCopySwitch]"
+        },
+        "httpsTermination": {
+            "type": "string",
+            "value": "[variables('lampCommon').httpsTermination]"
+        },
+        "lbName": {
+            "type": "string",
+            "value": "[variables('lampCommon').lbName]"
+        },
+        "lbOutName001": {
+            "type": "string",
+            "value": "[variables('lampCommon').lbOutName001]"
+        },
+        "lbOutName002": {
+            "type": "string",
+            "value": "[variables('lampCommon').lbOutName002]"
+        },
+        "lbPipName": {
+            "type": "string",
+            "value": "[variables('lampCommon').lbPipName]"
+        },
+        "lbOutPipName001": {
+            "type": "string",
+            "value": "[variables('lampCommon').lbOutPipName001]"
+        },
+        "lbOutPipName002": {
+            "type": "string",
+            "value": "[variables('lampCommon').lbOutPipName002]"
+        },
+        "location": {
+            "type": "string",
+            "value": "[variables('lampCommon').location]"
+        },
+        "controllerInstallScriptFilename": {
+            "type": "string",
+            "value": "[variables('lampCommon').controllerInstallScriptFilename]"
+        },
+        "lampOnAzureConfigsJsonPath": {
+            "type": "string",
+            "value": "[variables('lampCommon').lampOnAzureConfigsJsonPath]"
+        },
+        "mssqlDbServiceObjectiveName": {
+            "type": "string",
+            "value": "[variables('lampCommon').mssqlDbServiceObjectiveName]"
+        },
+        "mssqlDbSize": {
+            "type": "string",
+            "value": "[variables('lampCommon').mssqlDbSize]"
+        },
+        "mssqlDbEdition": {
+            "type": "string",
+            "value": "[variables('lampCommon').mssqlDbEdition]"
+        },
+        "mssqlVersion": {
+            "type": "string",
+            "value": "[variables('lampCommon').mssqlVersion]"
+        },
+        "mysqlPgresSkuHwFamily": {
+            "type": "string",
+            "value": "[variables('lampCommon').mysqlPgresSkuHwFamily]"
+        },
+        "mysqlPgresSkuName": {
+            "type": "string",
+            "value": "[variables('lampCommon').mysqlPgresSkuName]"
+        },
+        "mysqlPgresSkuTier": {
+            "type": "string",
+            "value": "[variables('lampCommon').mysqlPgresSkuTier]"
+        },
+        "mysqlPgresStgSizeGB": {
+            "type": "string",
+            "value": "[variables('lampCommon').mysqlPgresStgSizeGB]"
+        },
+        "mysqlPgresVcores": {
+            "type": "string",
+            "value": "[variables('lampCommon').mysqlPgresVcores]"
+        },
+        "mysqlVersion": {
+            "type": "string",
+            "value": "[variables('lampCommon').mysqlVersion]"
+        },
+        "nfsByoIpExportPath": {
+            "type": "string",
+            "value": "[variables('lampCommon').nfsByoIpExportPath]"
+        },
+        "nfsHaClientsIPRange": {
+            "type": "string",
+            "value": "[variables('lampCommon').nfsHaClientsIPRange]"
+        },
+        "nfsHaExportPath": {
+            "type": "string",
+            "value": "[variables('lampCommon').nfsHaExportPath]"
+        },
+        "nfsHaLbIP": {
+            "type": "string",
+            "value": "[variables('lampCommon').nfsHaLbIP]"
+        },
+        "nfsHaNode0IP": {
+            "type": "string",
+            "value": "[variables('lampCommon').nfsHaNode0IP]"
+        },
+        "nfsHaNode1IP": {
+            "type": "string",
+            "value": "[variables('lampCommon').nfsHaNode1IP]"
+        },
+        "osDiskStorageType": {
+            "type": "string",
+            "value": "[variables('lampCommon').osDiskStorageType]"
+        },
+        "phpVersion": {
+            "type": "string",
+            "value": "[variables('lampCommon').phpVersion]"
+        },
+        "policyName": {
+            "type": "string",
+            "value": "[variables('lampCommon').policyName]"
+        },
+        "postgresVersion": {
+            "type": "string",
+            "value": "[variables('lampCommon').postgresVersion]"
+        },
+        "redisCacheName": {
+            "type": "string",
+            "value": "[variables('lampCommon').redisCacheName]"
+        },
+        "redisDeploySwitch": {
+            "type": "string",
+            "value": "[variables('lampCommon').redisDeploySwitch]"
+        },
+        "redisDns": {
+            "type": "string",
+            "value": "[variables('lampCommon').redisDns]"
+        },
+        "resourcesPrefix": {
+            "type": "string",
+            "value": "[variables('lampCommon').resourcesPrefix]"
+        },
+        "serverName": {
+            "type": "string",
+            "value": "[variables('lampCommon').serverName]"
+        },
+        "sshPublicKey": {
+            "type": "string",
+            "value": "[variables('lampCommon').sshPublicKey]"
+        },
+        "sshUsername": {
+            "type": "string",
+            "value": "[variables('lampCommon').sshUsername]"
+        },
+        "sslEnforcement": {
+            "type": "string",
+            "value": "[variables('lampCommon').sslEnforcement]"
+        },
+        "storageAccountName": {
+            "type": "string",
+            "value": "[variables('lampCommon').storageAccountName]"
+        },
+        "storageAccountType": {
+            "type": "string",
+            "value": "[variables('lampCommon').storageAccountType]"
+        },
+        "subnetAppGw": {
+            "type": "string",
+            "value": "[variables('lampCommon').subnetAppGw]"
+        },
+        "subnetAppGwPrefix": {
+            "type": "string",
+            "value": "[variables('lampCommon').subnetAppGwPrefix]"
+        },
+        "subnetAppGwRange": {
+            "type": "string",
+            "value": "[variables('lampCommon').subnetAppGwRange]"
+        },
+        "subnetGateway": {
+            "type": "string",
+            "value": "[variables('lampCommon').subnetGateway]"
+        },
+        "subnetGatewayPrefix": {
+            "type": "string",
+            "value": "[variables('lampCommon').subnetGatewayPrefix]"
+        },
+        "subnetGatewayRange": {
+            "type": "string",
+            "value": "[variables('lampCommon').subnetGatewayRange]"
+        },
+        "subnetRedis": {
+            "type": "string",
+            "value": "[variables('lampCommon').subnetRedis]"
+        },
+        "subnetRedisPrefix": {
+            "type": "string",
+            "value": "[variables('lampCommon').subnetRedisPrefix]"
+        },
+        "subnetRedisRange": {
+            "type": "string",
+            "value": "[variables('lampCommon').subnetRedisRange]"
+        },
+        "subnetSan": {
+            "type": "string",
+            "value": "[variables('lampCommon').subnetSan]"
+        },
+        "subnetSanPrefix": {
+            "type": "string",
+            "value": "[variables('lampCommon').subnetSanPrefix]"
+        },
+        "subnetSanRange": {
+            "type": "string",
+            "value": "[variables('lampCommon').subnetSanRange]"
+        },
+        "subnetWeb": {
+            "type": "string",
+            "value": "[variables('lampCommon').subnetWeb]"
+        },
+        "subnetWebPrefix": {
+            "type": "string",
+            "value": "[variables('lampCommon').subnetWebPrefix]"
+        },
+        "subnetWebRange": {
+            "type": "string",
+            "value": "[variables('lampCommon').subnetWebRange]"
+        },
+        "thumbprintSslCert": {
+            "type": "string",
+            "value": "[variables('lampCommon').thumbprintSslCert]"
+        },
+        "thumbprintCaCert": {
+            "type": "string",
+            "value": "[variables('lampCommon').thumbprintCaCert]"
+        },
+        "vNetAddressSpace": {
+            "type": "string",
+            "value": "[variables('lampCommon').vNetAddressSpace]"
+        },
+        "vaultName": {
+            "type": "string",
+            "value": "[variables('lampCommon').vaultName]"
+        },
+        "vmssName": {
+            "type": "string",
+            "value": "[variables('lampCommon').vmssName]"
+        },
+        "vmssdStorageAccounttName": {
+            "type": "string",
+            "value": "[variables('lampCommon').vmssdStorageAccounttName]"
+        },
+        "vnetGwDeploySwitch": {
+            "type": "string",
+            "value": "[variables('lampCommon').vnetGwDeploySwitch]"
+        },
+        "vnetName": {
+            "type": "string",
+            "value": "[variables('lampCommon').vnetName]"
+        },
+        "vpnType": {
+            "type": "string",
+            "value": "[variables('lampCommon').vpnType]"
+        },
+        "webServerSetupScriptFilename": {
+            "type": "string",
+            "value": "[variables('lampCommon').webServerSetupScriptFilename]"
+        },
+        "wpVersion": {
+            "type": "string",
+            "value": "[variables('lampCommon').wpVersion]"
         }
     },
     "variables": {
