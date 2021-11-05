@@ -597,14 +597,14 @@
         },
         "applicationDbName": {
             "type": "string",
-            "defaultValue": "[variables('defaults').applicationDbName]",
+            "defaultValue": "",
             "metadata": {
                 "description": "Name for the Application DB."
             }
         },
         "ctlrVmName": {
             "type": "string",
-            "defaultValue": "[variables('defaults').ctlrVmName]",
+            "defaultValue": "",
             "metadata": {
                 "description": "Name of the controller VM."
             }
@@ -664,21 +664,21 @@
         },
         "dbUsername": {
             "type": "string",
-            "defaultValue": "[variables('defaults').dbLoginPassword]",
+            "defaultValue": "",
             "metadata": {
                 "description": "Name of the user to be used for DB."
             }
         },
         "dbLoginPassword": {
             "type": "string",
-            "defaultValue": "[variables('defaults').dbLoginPassword]",
+            "defaultValue": "",
             "metadata": {
                 "description": "Password for DB Server."
             }
         },
         "redisCacheName": {
             "type": "string",
-            "defaultValue": "[variables('defaults').redisCacheName]",
+            "defaultValue": "",
             "metadata": {
                 "description": "Name to be used for cache resource."
             }
@@ -759,7 +759,7 @@
         },
         "vmssName": {
             "type": "string",
-            "defaultValue": "[variables('defaults').vmssName]",
+            "defaultValue": "",
             "metadata": {
                 "description": "Name of the VMSS resource created for web server nodes."
             }
@@ -1127,7 +1127,7 @@
         "documentation09": "    controller          - creates a controller VM and deploys code",
         "documentation10": "GlusterFS Sizing guidance",
         "lampCommon": {
-            "applicationDbName": "[parameters('applicationDbName')]",
+            "applicationDbName": "[AzureLAMP.IfFirstEmptyTakeSecond(parameters('applicationDbName'), variables('defaults').applicationDbName)]",
             "cmsApplication": "[parameters('CMSApplication')]",
             "baseTemplateUrl": "[concat(parameters('_artifactsLocation'), 'nested/')]",
             "scriptLocation": "[concat(parameters('_artifactsLocation'), 'scripts/')]",
@@ -1151,7 +1151,7 @@
             "ctlrNicName": "[concat('controller-vm-nic-',variables('resourceprefix'))]",
             "ctlrNsgName": "[concat('controller-nsg-',variables('resourceprefix'))]",
             "ctlrPipName": "[concat('controller-pubip-',variables('resourceprefix'))]",
-            "ctlrVmName": "[parameters('ctlrVmName')]",
+            "ctlrVmName": "[AzureLAMP.IfFirstEmptyTakeSecond(parameters('ctlrVmName'), variables('defaults').ctlrVmName)]",
             "ctlrVmOsType": {
                 "offer": "[parameters('ctlrVmOsImageReferenceOfferName')]",
                 "publisher": "[parameters('ctlrVmOsImageReferencePublisherName')]",
@@ -1163,9 +1163,9 @@
             "vmssNsgName": "[concat('vmss-nsg-',variables('resourceprefix'))]",
             "ctlrVmSecrets": "[take(variables('ctlrVmSecretsArray'), if(empty(parameters('keyVaultResourceId')), 0, 1))]",
             "dbLogin": "[parameters('dbLogin')]",
-            "dbLoginPassword": "[parameters('dbLoginPassword')]",
+            "dbLoginPassword": "[AzureLAMP.IfFirstEmptyTakeSecond(parameters('dbLoginPassword'), variables('defaults').dbLoginPassword)]",
             "dbServerType": "[parameters('dbServerType')]",
-            "dbUsername": "[parameters('dbUsername')]",
+            "dbUsername": "[AzureLAMP.IfFirstEmptyTakeSecond(parameters('dbUsername'), variables('defaults').dbUsername)]",
             "ddosPlanName": "[concat('ddos-plan-',variables('resourceprefix'))]",
             "ddosSwitch": "[parameters('ddosSwitch')]",
             "enableAccelNwForCtlrVmSwitch": "[parameters('enableAccelNwForCtlrVmSwitch')]",
@@ -1231,7 +1231,7 @@
             "phpVersion": "[parameters('phpVersion')]",
             "policyName": "[concat('policy-',variables('resourceprefix'))]",
             "postgresVersion": "[parameters('postgresVersion')]",
-            "redisCacheName": "[parameters('redisCacheName')]",
+            "redisCacheName": "[AzureLAMP.IfFirstEmptyTakeSecond(parameters('redisCacheName'), variables('defaults').redisCacheName)]",
             "redisDeploySwitch": "[parameters('redisDeploySwitch')]",
             "redisDns": "[concat('redis-',variables('resourceprefix'),'.redis.cache.windows.net')]",
             "redisSku": {
@@ -1272,7 +1272,7 @@
                 "sku": "[parameters('vmssOsImageReferenceSkuName')]",
                 "version": "[parameters('vmssOsImageReferenceVersionName')]"
             },
-            "vmssName": "[parameters('vmssName')]",
+            "vmssName": "[AzureLAMP.IfFirstEmptyTakeSecond(parameters('vmssName'), variables('defaults').vmssName)]",
             "vmssdStorageAccounttName": "[concat('vmss',uniqueString(resourceGroup().id))]",
             "vnetGwDeploySwitch": "[parameters('vnetGwDeploySwitch')]",
             "vnetName": "[concat('vnet-',variables('resourceprefix'))]",
@@ -1311,5 +1311,28 @@
             "redisCacheName": "[concat('redis-',variables('resourceprefix'))]",
             "vmssName": "[concat('vmss-', variables('resourceprefix'))]"
         }
-    }
+    },
+    "functions": [
+        {
+            "namespace": "AzureLAMP",
+            "members": {
+                "IfFirstEmptyTakeSecond": {
+                    "parameters": [
+                        {
+                            "name": "firstParameter",
+                            "type": "string"
+                        },
+                        {
+                            "name": "secondParameter",
+                            "type": "string"
+                        }
+                    ],
+                    "output": {
+                        "value": "[if(empty(parameters('firstParameter')), parameters('secondParameter'), parameters('firstParameter'))]",
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    ]
 }
