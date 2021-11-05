@@ -584,6 +584,41 @@
                 "description": "Name for the Application DB."
             }
         },
+         "ctlrVmOsImageReferenceOfferName": {
+            "type": "string",
+            "defaultValue": "UbuntuServer",
+            "allowedValues": [ "UbuntuServer" ],
+            "metadata": {
+                "description": "Specifies the offer of the markeplate OS image used to create Controller VM."
+            }
+        },
+        "ctlrVmOsImageReferencePublisherName": {
+            "type": "string",
+            "defaultValue": "Canonical",
+            "allowedValues": [ "Canonical" ],
+            "metadata": {
+                "description": "The image publisher of the markeplate OS image used to create Controller VM."
+            }
+        },
+        "ctlrVmOsImageReferenceSkuName": {
+            "type": "string",
+            "defaultValue": "18.04-LTS",
+            "allowedValues": [
+                "16.04-LTS",
+                "18.04-LTS"
+            ],
+            "metadata": {
+                "description": "The image SKU of the markeplate OS image used to create Controller VM."
+            }
+        },
+        "ctlrVmOsImageReferenceVersionName": {
+            "type": "string",
+            "defaultValue": "latest",
+            "allowedValues": [ "latest" ],
+            "metadata": {
+                "description": "The version of the markeplate OS image used to create Controller VM."
+            }
+        },
         "ctlrVmName": {
             "type": "string",
             "defaultValue": "[variables('defaults').ctlrVmName]",
@@ -1080,6 +1115,12 @@
             "ctlrNicName": "[concat('controller-vm-nic-',variables('resourceprefix'))]",
             "ctlrNsgName": "[concat('controller-nsg-',variables('resourceprefix'))]",
             "ctlrPipName": "[concat('controller-pubip-',variables('resourceprefix'))]",
+            "ctlrVmOsType": {
+                "offer": "[parameters('ctlrVmOsImageReferenceOfferName')]",
+                "publisher": "[parameters('ctlrVmOsImageReferencePublisherName')]",
+                "sku": "[parameters('ctlrVmOsImageReferenceSkuName')]",
+                "version": "[parameters('ctlrVmOsImageReferenceVersionName')]"
+            },
             "ctlrVmName": "[parameters('ctlrVmName')]",
             "vmssNsgName": "[concat('vmss-nsg-',variables('resourceprefix'))]",
             "ctlrVmSecrets": "[take(variables('ctlrVmSecretsArray'), if(empty(parameters('keyVaultResourceId')), 0, 1))]",

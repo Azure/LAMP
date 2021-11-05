@@ -136,7 +136,7 @@
                     }
                 },
                 "storageProfile": {
-                    "imageReference": "[parameters('lampCommon').osType]",
+                    "imageReference": "[parameters('lampCommon').ctlrVmOsType]",
                     "osDisk": {
                         "createOption": "FromImage",
                         "managedDisk": {
