@@ -359,6 +359,24 @@
             },
             "type": "string"
         },
+        "nfsOnCtlrVmDiskStorageType": {
+            "type": "string",
+            "defaultValue": "Premium_LRS",
+            "allowedValues": [
+                "Premium_LRS",
+                "Standard_LRS"
+            ],
+            "metadata": {
+                "description": "Azure storage type for NFS Disks created on controller VM. Applicable only when parameter 'fileServerType' has value 'nfs'."
+            }
+        },
+        "nfsOnCtlrVmDiskSizeGB": {
+            "type": "int",
+            "defaultValue": 127,
+            "metadata": {
+                "description": "Size of NFS Disks created on controller VM. Applicable only when parameter 'fileServerType' has value 'nfs'."
+            }
+        },
         "OSDiskSizeInGB": {
             "defaultValue": 256,
             "metadata": {
@@ -369,7 +387,7 @@
         "fileServerDiskSize": {
             "defaultValue": 127,
             "metadata": {
-                "description": "Size per disk for gluster nodes or nfs server"
+                "description": "Size per disk for gluster nodes."
             },
             "type": "int"
         },
@@ -639,7 +657,7 @@
         },
         "ctlrVmOsDiskSizeInGB": {
             "type": "int",
-            "defaultValue": 30,
+            "defaultValue": 256,
             "metadata": {
                 "description": "Size of OS Disk for Controller VM."
             }
@@ -1201,6 +1219,8 @@
             "nfsHaLbIP": "[concat(variables('subnetSanPrefix'), '.100')]",
             "nfsHaNode0IP": "[concat(variables('subnetSanPrefix'), '.110')]",
             "nfsHaNode1IP": "[concat(variables('subnetSanPrefix'), '.120')]",
+            "nfsOnCtlrVmDiskStorageType": "[parameters('nfsOnCtlrVmDiskStorageType')]",
+            "nfsOnCtlrVmDiskSizeGB": "[parameters('nfsOnCtlrVmDiskSizeGB')]",
             "osDiskStorageType": "[parameters('osDiskStorageType')]",
             "osType": {
                 "offer": "UbuntuServer",

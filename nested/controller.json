@@ -216,9 +216,9 @@
                 "count": 8,
                 "input": {
                     "managedDisk": {
-                        "storageAccountType": "Premium_LRS"
+                        "storageAccountType": "[parameters('lampCommon').nfsOnCtlrVmDiskStorageType]"
                     },
-                    "diskSizeGB": "[parameters('lampCommon').fileServerDiskSize]",
+                    "diskSizeGB": "[parameters('lampCommon').nfsOnCtlrVmDiskSizeGB]",
                     "lun": "[copyIndex('nfsDiskArray')]",
                     "createOption": "Empty"
                 }
