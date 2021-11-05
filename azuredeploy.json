@@ -612,6 +612,45 @@
                 "description": "Name to be used for cache resource."
             }
         },
+        "redisSkuCapcity": {
+            "type": "int",
+            "defaultValue": "[variables('defaults').redisSku.capacity]",
+            "allowedValues": [
+                0, 
+                1, 
+                2, 
+                3, 
+                4, 
+                5, 
+                6
+            ],
+            "metadata": {
+                "description": "The size of the Redis cache to deploy. Applicable only if parameter 'redisDeploySwitch' is true."
+            }
+        },
+        "redisSkuFamily": {
+            "type": "string",
+            "defaultValue": "[variables('defaults').redisSku.family]",
+            "allowedValues": [
+                "C",
+                "P"
+            ],
+            "metadata": {
+                "description": "The SKU family to use for Redis cache. Applicable only if parameter 'redisDeploySwitch' is true."
+            }
+        },
+        "redisSkuName": {
+            "type": "string",
+            "defaultValue": "[variables('defaults').redisSku.name]",
+            "allowedValues": [
+                "Basic", 
+                "Standard", 
+                "Premium"
+            ],
+            "metadata": {
+                "description": "The type of Redis cache to deploy. Applicable only if parameter 'redisDeploySwitch' is true."
+            }
+        },
         "vmssName": {
             "type": "string",
             "defaultValue": "[variables('defaults').vmssName]",
@@ -1079,6 +1118,11 @@
             "redisCacheName": "[parameters('redisCacheName')]",
             "redisDeploySwitch": "[parameters('redisDeploySwitch')]",
             "redisDns": "[concat('redis-',variables('resourceprefix'),'.redis.cache.windows.net')]",
+            "redisSku": {
+                "capacity": "[parameters('redisSkuCapcity')]",
+                "family": "[parameters('redisSkuFamily')]",
+                "name": "[parameters('redisSkuName')]"
+            },
             "resourcesPrefix": "[variables('resourceprefix')]",
             "serverName": "[concat(parameters('dbServerType'), '-',variables('resourceprefix'))]",
             "siteURL": "[if(or(empty(parameters('siteURL')), equals(parameters('siteURL'), 'www.example.org')), concat(if(equals(parameters('httpsTermination'), 'AppGw'),'appgw-','lb-'),variables('resourceprefix'),'.',parameters('location'),'.cloudapp.azure.com'), parameters('siteURL'))]",
@@ -1143,6 +1187,11 @@
             "dbLoginPassword": "[concat(substring(uniqueString(resourceGroup().id, deployment().name), 2, 11), '*7', toUpper('pfiwb'))]",
             "dbUsername": "[concat(parameters('dbLogin'), '@', parameters('dbServerType'), '-', variables('resourceprefix'))]",
             "redisCacheName": "[concat('redis-',variables('resourceprefix'))]",
+            "redisSku": {
+                "capacity": 1,
+                "family": "P",
+                "name": "Premium"
+            },
             "vmssName": "[concat('vmss-', variables('resourceprefix'))]"
         }
     }
