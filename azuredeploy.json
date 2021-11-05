@@ -2,9 +2,9 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "TypeOfTemplate":{
-            "defaultValue":"LAMP ARM TEMPLATE",
-            "type":"string"
+        "TypeOfTemplate": {
+            "defaultValue": "LAMP ARM TEMPLATE",
+            "type": "string"
         },
         "_artifactsLocation": {
             "type": "string",
@@ -149,12 +149,12 @@
         },
         "UbuntuVersion": {
             "defaultValue": "18.04-LTS",
-            "allowedValues":[
+            "allowedValues": [
                 "16.04-LTS",
                 "18.04-LTS"
             ],
             "type": "string",
-            "metadata":{
+            "metadata": {
                 "description": "Select Ubuntu version. By default it will take 16.04-LTS"
             }
         },
@@ -614,14 +614,14 @@
         },
         "redisSkuCapcity": {
             "type": "int",
-            "defaultValue": "[variables('defaults').redisSku.capacity]",
+            "defaultValue": 1,
             "allowedValues": [
-                0, 
-                1, 
-                2, 
-                3, 
-                4, 
-                5, 
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
                 6
             ],
             "metadata": {
@@ -630,7 +630,7 @@
         },
         "redisSkuFamily": {
             "type": "string",
-            "defaultValue": "[variables('defaults').redisSku.family]",
+            "defaultValue": "P",
             "allowedValues": [
                 "C",
                 "P"
@@ -641,14 +641,49 @@
         },
         "redisSkuName": {
             "type": "string",
-            "defaultValue": "[variables('defaults').redisSku.name]",
+            "defaultValue": "Premium",
             "allowedValues": [
-                "Basic", 
-                "Standard", 
+                "Basic",
+                "Standard",
                 "Premium"
             ],
             "metadata": {
                 "description": "The type of Redis cache to deploy. Applicable only if parameter 'redisDeploySwitch' is true."
+            }
+        },
+        "vmssOsImageReferenceOfferName": {
+            "type": "string",
+            "defaultValue": "UbuntuServer",
+            "allowedValues": [ "UbuntuServer" ],
+            "metadata": {
+                "description": "Specifies the offer of the markeplate OS image used to create instance of the VMSS resource for web server."
+            }
+        },
+        "vmssOsImageReferencePublisherName": {
+            "type": "string",
+            "defaultValue": "Canonical",
+            "allowedValues": [ "Canonical" ],
+            "metadata": {
+                "description": "The image publisher of the markeplate OS image used to create instance of the VMSS resource for web server."
+            }
+        },
+        "vmssOsImageReferenceSkuName": {
+            "type": "string",
+            "defaultValue": "18.04-LTS",
+            "allowedValues": [
+                "16.04-LTS",
+                "18.04-LTS"
+            ],
+            "metadata": {
+                "description": "The image SKU of the markeplate OS image used to create instance of the VMSS resource for web server."
+            }
+        },
+        "vmssOsImageReferenceVersionName": {
+            "type": "string",
+            "defaultValue": "latest",
+            "allowedValues": [ "latest" ],
+            "metadata": {
+                "description": "The version of the markeplate OS image used to create instance of the VMSS resource for web server."
             }
         },
         "vmssName": {
@@ -1150,6 +1185,12 @@
             "thumbprintCaCert": "[if(or(empty(parameters('keyVaultResourceId')), empty(parameters('caCertThumbprint'))), 'None', parameters('caCertThumbprint'))]",
             "vNetAddressSpace": "[parameters('vNetAddressSpace')]",
             "vaultName": "[concat('vault-',variables('resourceprefix'))]",
+            "vmssOsType": {
+                "offer": "[parameters('vmssOsImageReferenceOfferName')]",
+                "publisher": "[parameters('vmssOsImageReferencePublisherName')]",
+                "sku": "[parameters('vmssOsImageReferenceSkuName')]",
+                "version": "[parameters('vmssOsImageReferenceVersionName')]"
+            },
             "vmssName": "[parameters('vmssName')]",
             "vmssdStorageAccounttName": "[concat('vmss',uniqueString(resourceGroup().id))]",
             "vnetGwDeploySwitch": "[parameters('vnetGwDeploySwitch')]",
@@ -1187,11 +1228,6 @@
             "dbLoginPassword": "[concat(substring(uniqueString(resourceGroup().id, deployment().name), 2, 11), '*7', toUpper('pfiwb'))]",
             "dbUsername": "[concat(parameters('dbLogin'), '@', parameters('dbServerType'), '-', variables('resourceprefix'))]",
             "redisCacheName": "[concat('redis-',variables('resourceprefix'))]",
-            "redisSku": {
-                "capacity": 1,
-                "family": "P",
-                "name": "Premium"
-            },
             "vmssName": "[concat('vmss-', variables('resourceprefix'))]"
         }
     }

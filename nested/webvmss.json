@@ -151,7 +151,7 @@
                         }
                     },
                     "storageProfile": {
-                        "imageReference": "[parameters('lampCommon').osType]",
+                        "imageReference": "[parameters('lampCommon').vmssOsType]",
                         "osDisk": {
                             "caching": "ReadOnly",
                             "createOption": "FromImage",
