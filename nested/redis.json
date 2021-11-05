@@ -38,6 +38,10 @@
         "redisResourceId": "[resourceId('Microsoft.Cache/Redis', parameters('lampCommon').redisCacheName)]"
     },
     "outputs": {
+        "redisResourceId": {
+            "value": "[variables('redisResourceId')]",
+            "type": "string"
+        },
         "redisKey": {
             "value": "[listKeys(variables('redisResourceId'), '2019-07-01').primaryKey]",
             "type": "string"

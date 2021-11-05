@@ -1028,6 +1028,63 @@
                 "webServerSetupScriptFilename": "[variables('lampCommon').webServerSetupScriptFilename]",
                 "wpVersion": "[variables('lampCommon').wpVersion]"
             }
+        },
+        "webNodesProfile": {
+            "type": "object",
+            "value": {
+                "nodeResourceIds": "[resourceId('Microsoft.Compute/virtualMachineScaleSets', variables('lampCommon').vmssName)]"
+            }
+        },
+        "controllerProfile": {
+            "type": "object",
+            "value": {
+                "nodeResourceIds": "[resourceId('Microsoft.Compute/virtualMachines', variables('lampCommon').ctlrVmName)]",
+                "publicIpResourceId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('lampCommon').ctlrPipName)]"
+            }
+        },
+        "networkProfile": {
+            "type": "object",
+            "value": {
+                "vNetResourceId": "[resourceId('Microsoft.Network/virtualNetworks', variables('lampCommon').vnetName)]",
+                "loadBalancerResourceId": "[resourceId('Microsoft.Network/loadBalancers', variables('lampCommon').lbName)]",
+                "vnetGatewayPublicIpResourceId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('lampCommon').gatewayPublicIPName)]",
+                "loadBalancerPublicIpResourceId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('lampCommon').lbPipName)]",
+                "loadBalancerOutputPublicIp": {
+                    "001OutboundPublicIpResourceId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('lampCommon').lbOutPipName001)]",
+                    "002OutboundPublicIpResourceId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('lampCommon').lbOutPipName002)]"
+                },
+                "appGatewayPublicIpResourceId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('lampCommon').appGwPipName)]"
+            }
+        },
+        "databaseProfile": {
+            "type": "object",
+            "value": {
+                "msSqlServerResourceId": "[resourceId('Microsoft.Sql/servers', variables('lampCommon').serverName)]",
+                "mySqlServerResourceId": "[resourceId('Microsoft.DBforMySQL/servers', variables('lampCommon').serverName)]",
+                "postgressServerResourceId": "[resourceId('Microsoft.Storage/storageAccounts', variables('lampCommon').serverName)]"
+            }
+        },
+        "azureFileShareProfile": {
+            "condition": "[equals(parameters('fileServerType'),'azurefiles')]",
+            "type": "object",
+            "value": {
+                "azureFileShareResourceId": "[resourceId('Microsoft.Network/loadBalancers', reference('storageAccountTemplate').outputs.storageAccountName.value)]"
+
+            }
+        },
+        "cacheProfile": {
+            "condition": "[parameters('redisDeploySwitch')]",
+            "type": "object",
+            "value": {
+                "redisResourceId": "[reference('redisTemplate').outputs.redisResourceId.value]"
+            }
+        },
+        "backupProfile": {
+            "condition": "[parameters('azureBackupSwitch')]",
+            "type": "object",
+            "value": {
+                "recoveryServicesVaultResourceId": "[resourceId('Microsoft.RecoveryServices/vaults', variables('lampCommon').vaultName)]"
+            }
         }
     },
     "variables": {
