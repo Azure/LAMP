@@ -576,6 +576,48 @@
             "metadata": {
                 "description": "Azure Location for all resources."
             }
+        },
+        "applicationDbName": {
+            "type": "string",
+            "defaultValue": "[variables('defaults').applicationDbName]",
+            "metadata": {
+                "description": "Name for the Application DB."
+            }
+        },
+        "ctlrVmName": {
+            "type": "string",
+            "defaultValue": "[variables('defaults').ctlrVmName]",
+            "metadata": {
+                "description": "Name of the controller VM."
+            }
+        },
+        "dbUsername": {
+            "type": "string",
+            "defaultValue": "[variables('defaults').dbLoginPassword]",
+            "metadata": {
+                "description": "Name of the user to be used for DB."
+            }
+        },
+        "dbLoginPassword": {
+            "type": "string",
+            "defaultValue": "[variables('defaults').dbLoginPassword]",
+            "metadata": {
+                "description": "Password for DB Server."
+            }
+        },
+        "redisCacheName": {
+            "type": "string",
+            "defaultValue": "[variables('defaults').redisCacheName]",
+            "metadata": {
+                "description": "Name to be used for cache resource."
+            }
+        },
+        "vmssName": {
+            "type": "string",
+            "defaultValue": "[variables('defaults').vmssName]",
+            "metadata": {
+                "description": "Name of the VMSS resource created for web server nodes."
+            }
         }
     },
     "resources": [
@@ -940,7 +982,7 @@
         "documentation09": "    controller          - creates a controller VM and deploys code",
         "documentation10": "GlusterFS Sizing guidance",
         "lampCommon": {
-            "applicationDbName": "[parameters('CMSApplication')]",
+            "applicationDbName": "[parameters('applicationDbName')]",
             "cmsApplication": "[parameters('CMSApplication')]",
             "baseTemplateUrl": "[concat(parameters('_artifactsLocation'), 'nested/')]",
             "scriptLocation": "[concat(parameters('_artifactsLocation'), 'scripts/')]",
@@ -964,13 +1006,13 @@
             "ctlrNicName": "[concat('controller-vm-nic-',variables('resourceprefix'))]",
             "ctlrNsgName": "[concat('controller-nsg-',variables('resourceprefix'))]",
             "ctlrPipName": "[concat('controller-pubip-',variables('resourceprefix'))]",
-            "ctlrVmName": "[concat('controller-vm-',variables('resourceprefix'))]",
+            "ctlrVmName": "[parameters('ctlrVmName')]",
             "vmssNsgName": "[concat('vmss-nsg-',variables('resourceprefix'))]",
             "ctlrVmSecrets": "[take(variables('ctlrVmSecretsArray'), if(empty(parameters('keyVaultResourceId')), 0, 1))]",
             "dbLogin": "[parameters('dbLogin')]",
-            "dbLoginPassword": "[concat(substring(uniqueString(resourceGroup().id, deployment().name), 2, 11), '*7', toUpper('pfiwb'))]",
+            "dbLoginPassword": "[parameters('dbLoginPassword')]",
             "dbServerType": "[parameters('dbServerType')]",
-            "dbUsername": "[concat(parameters('dbLogin'), '@', parameters('dbServerType'), '-', variables('resourceprefix'))]",
+            "dbUsername": "[parameters('dbUsername')]",
             "ddosPlanName": "[concat('ddos-plan-',variables('resourceprefix'))]",
             "ddosSwitch": "[parameters('ddosSwitch')]",
             "enableAccelNwForCtlrVmSwitch": "[parameters('enableAccelNwForCtlrVmSwitch')]",
@@ -1034,7 +1076,7 @@
             "phpVersion": "[parameters('phpVersion')]",
             "policyName": "[concat('policy-',variables('resourceprefix'))]",
             "postgresVersion": "[parameters('postgresVersion')]",
-            "redisCacheName": "[concat('redis-',variables('resourceprefix'))]",
+            "redisCacheName": "[parameters('redisCacheName')]",
             "redisDeploySwitch": "[parameters('redisDeploySwitch')]",
             "redisDns": "[concat('redis-',variables('resourceprefix'),'.redis.cache.windows.net')]",
             "resourcesPrefix": "[variables('resourceprefix')]",
@@ -1064,7 +1106,7 @@
             "thumbprintCaCert": "[if(or(empty(parameters('keyVaultResourceId')), empty(parameters('caCertThumbprint'))), 'None', parameters('caCertThumbprint'))]",
             "vNetAddressSpace": "[parameters('vNetAddressSpace')]",
             "vaultName": "[concat('vault-',variables('resourceprefix'))]",
-            "vmssName": "[concat('vmss-',variables('resourceprefix'))]",
+            "vmssName": "[parameters('vmssName')]",
             "vmssdStorageAccounttName": "[concat('vmss',uniqueString(resourceGroup().id))]",
             "vnetGwDeploySwitch": "[parameters('vnetGwDeploySwitch')]",
             "vnetName": "[concat('vnet-',variables('resourceprefix'))]",
@@ -1093,6 +1135,15 @@
         "octets": "[split(parameters('vNetAddressSpace'), '.')]",
         "resourceprefix": "[substring(uniqueString(resourceGroup().id, deployment().name), 3, 6)]",
         "subnetSanPrefix": "[concat( variables('octets')[0], '.', variables('octets')[1], '.', string(add(int(variables('octets')[2]),2)))]",
-        "subnetWebRange": "[concat( variables('octets')[0], '.', variables('octets')[1], '.', string(add(int(variables('octets')[2]),0)), '.0/24')]"
+        "subnetWebRange": "[concat( variables('octets')[0], '.', variables('octets')[1], '.', string(add(int(variables('octets')[2]),0)), '.0/24')]",
+        "defaults": {
+            "documentation01": "This variable contains default values computed dynamically for various parameters.",
+            "applicationDbName": "[parameters('CMSApplication')]",
+            "ctlrVmName": "[concat('controller-vm-',variables('resourceprefix'))]",
+            "dbLoginPassword": "[concat(substring(uniqueString(resourceGroup().id, deployment().name), 2, 11), '*7', toUpper('pfiwb'))]",
+            "dbUsername": "[concat(parameters('dbLogin'), '@', parameters('dbServerType'), '-', variables('resourceprefix'))]",
+            "redisCacheName": "[concat('redis-',variables('resourceprefix'))]",
+            "vmssName": "[concat('vmss-', variables('resourceprefix'))]"
+        }
     }
 }
