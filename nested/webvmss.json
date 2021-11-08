@@ -208,7 +208,7 @@
                                     "cooldown": "PT30M",
                                     "direction": "Increase",
                                     "type": "ChangeCount",
-                                    "value": "2"
+                                    "value": "1"
                                 }
                             },
                             {
