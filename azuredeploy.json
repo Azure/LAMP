@@ -230,6 +230,17 @@
             },
             "type": "int"
         },
+        "mysqlPgresType": {
+            "allowedValues": [
+                "SingleServers",
+                "FlexibleServers"
+            ],
+            "defaultValue": "SingleServers",
+            "metadata": {
+                "description": "MySql/Postgresql single server"
+            },
+            "type": "string"
+        },
         "mysqlPgresStgSizeGB": {
             "defaultValue": 125,
             "minValue": 5,
@@ -1061,6 +1072,7 @@
             "mysqlPgresSkuHwFamily": "[parameters('mysqlPgresSkuHwFamily')]",
             "mysqlPgresSkuName": "[if(not(empty(parameters('mysqlPgresSkuName'))), parameters('mysqlPgresSkuName'), concat(if(equals(parameters('mysqlPgresSkuTier'),'Basic'),'B', if(equals(parameters('mysqlPgresSkuTier'),'GeneralPurpose'),'GP', 'MO')), '_', parameters('mysqlPgresSkuHwFamily'), '_', string(parameters('mysqlPgresVcores'))))]",
             "mysqlPgresSkuTier": "[parameters('mysqlPgresSkuTier')]",
+            "mysqlPgresType": "[parameters('mysqlPgresType')]",
             "mysqlPgresStgSizeGB": "[parameters('mysqlPgresStgSizeGB')]",
             "mysqlPgresStorageIops": "[parameters('mysqlPgresStorageIops')]",
             "mysqlPgresVcores": "[parameters('mysqlPgresVcores')]",
