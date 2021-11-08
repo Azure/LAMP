@@ -663,7 +663,7 @@
             }
         },
         "dbLoginPassword": {
-            "type": "string",
+            "type": "securestring",
             "defaultValue": "",
             "metadata": {
                 "description": "Password for DB Server."
@@ -1131,7 +1131,7 @@
         "documentation09": "    controller          - creates a controller VM and deploys code",
         "documentation10": "GlusterFS Sizing guidance",
         "lampCommon": {
-            "applicationDbName": "[AzureLAMP.IfFirstEmptyTakeSecond(parameters('applicationDbName'), variables('defaults').applicationDbName)]",
+            "applicationDbName": "[if(not(empty(parameters('applicationDbName'))), parameters('applicationDbName'), variables('defaults').applicationDbName)]",
             "cmsApplication": "[parameters('CMSApplication')]",
             "baseTemplateUrl": "[concat(parameters('_artifactsLocation'), 'nested/')]",
             "scriptLocation": "[concat(parameters('_artifactsLocation'), 'scripts/')]",
@@ -1155,7 +1155,7 @@
             "ctlrNicName": "[concat('controller-vm-nic-',variables('resourceprefix'))]",
             "ctlrNsgName": "[concat('controller-nsg-',variables('resourceprefix'))]",
             "ctlrPipName": "[concat('controller-pubip-',variables('resourceprefix'))]",
-            "ctlrVmName": "[AzureLAMP.IfFirstEmptyTakeSecond(parameters('ctlrVmName'), variables('defaults').ctlrVmName)]",
+            "ctlrVmName": "[if(not(empty(parameters('ctlrVmName'))), parameters('ctlrVmName'), variables('defaults').ctlrVmName)]",
             "ctlrVmOsType": {
                 "offer": "[parameters('ctlrVmOsImageReferenceOfferName')]",
                 "publisher": "[parameters('ctlrVmOsImageReferencePublisherName')]",
@@ -1167,9 +1167,9 @@
             "vmssNsgName": "[concat('vmss-nsg-',variables('resourceprefix'))]",
             "ctlrVmSecrets": "[take(variables('ctlrVmSecretsArray'), if(empty(parameters('keyVaultResourceId')), 0, 1))]",
             "dbLogin": "[parameters('dbLogin')]",
-            "dbLoginPassword": "[AzureLAMP.IfFirstEmptyTakeSecond(parameters('dbLoginPassword'), variables('defaults').dbLoginPassword)]",
+            "dbLoginPassword": "[if(not(empty(parameters('dbLoginPassword'))),parameters('dbLoginPassword'),variables('defaults').dbLoginPassword)]",
             "dbServerType": "[parameters('dbServerType')]",
-            "dbUsername": "[AzureLAMP.IfFirstEmptyTakeSecond(parameters('dbUsername'), variables('defaults').dbUsername)]",
+            "dbUsername": "[if(not(empty(parameters('dbUsername'))),parameters('dbUsername'),variables('defaults').dbUsername)]",
             "ddosPlanName": "[concat('ddos-plan-',variables('resourceprefix'))]",
             "ddosSwitch": "[parameters('ddosSwitch')]",
             "enableAccelNwForCtlrVmSwitch": "[parameters('enableAccelNwForCtlrVmSwitch')]",
@@ -1234,7 +1234,7 @@
             "phpVersion": "[parameters('phpVersion')]",
             "policyName": "[concat('policy-',variables('resourceprefix'))]",
             "postgresVersion": "[parameters('postgresVersion')]",
-            "redisCacheName": "[AzureLAMP.IfFirstEmptyTakeSecond(parameters('redisCacheName'), variables('defaults').redisCacheName)]",
+            "redisCacheName": "[if(not(empty(parameters('redisCacheName'))),parameters('redisCacheName'),variables('defaults').redisCacheName)]",
             "redisDeploySwitch": "[parameters('redisDeploySwitch')]",
             "redisDns": "[concat('redis-',variables('resourceprefix'),'.redis.cache.windows.net')]",
             "redisSku": {
@@ -1276,7 +1276,7 @@
                 "sku": "[parameters('vmssOsImageReferenceSkuName')]",
                 "version": "[parameters('vmssOsImageReferenceVersionName')]"
             },
-            "vmssName": "[AzureLAMP.IfFirstEmptyTakeSecond(parameters('vmssName'), variables('defaults').vmssName)]",
+            "vmssName": "[if(not(empty(parameters('vmssName'))), parameters('vmssName'), variables('defaults').vmssName)]",
             "vmssdStorageAccounttName": "[concat('vmss',uniqueString(resourceGroup().id))]",
             "vnetGwDeploySwitch": "[parameters('vnetGwDeploySwitch')]",
             "vnetName": "[concat('vnet-',variables('resourceprefix'))]",
@@ -1315,28 +1315,5 @@
             "redisCacheName": "[concat('redis-',variables('resourceprefix'))]",
             "vmssName": "[concat('vmss-', variables('resourceprefix'))]"
         }
-    },
-    "functions": [
-        {
-            "namespace": "AzureLAMP",
-            "members": {
-                "IfFirstEmptyTakeSecond": {
-                    "parameters": [
-                        {
-                            "name": "firstParameter",
-                            "type": "string"
-                        },
-                        {
-                            "name": "secondParameter",
-                            "type": "string"
-                        }
-                    ],
-                    "output": {
-                        "value": "[if(empty(parameters('firstParameter')), parameters('secondParameter'), parameters('firstParameter'))]",
-                        "type": "string"
-                    }
-                }
-            }
-        }
-    ]
+    }
 }
