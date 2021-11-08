@@ -715,6 +715,17 @@
                 "description": "The type of Redis cache to deploy. Applicable only if parameter 'redisDeploySwitch' is true."
             }
         },
+        "vmssInstanceOsDiskStorageType": {
+            "type": "string",
+            "defaultValue": "Premium_LRS",
+            "allowedValues": [
+                "Premium_LRS",
+                "Standard_LRS"
+            ],
+            "metadata": {
+                "description": "Azure storage type for VMSS instance VM's OS disk."
+            }
+        },
         "vmssOsImageReferenceOfferName": {
             "type": "string",
             "defaultValue": "UbuntuServer",
@@ -1258,6 +1269,7 @@
             "thumbprintCaCert": "[if(or(empty(parameters('keyVaultResourceId')), empty(parameters('caCertThumbprint'))), 'None', parameters('caCertThumbprint'))]",
             "vNetAddressSpace": "[parameters('vNetAddressSpace')]",
             "vaultName": "[concat('vault-',variables('resourceprefix'))]",
+            "vmssInstanceOsDiskStorageType": "[parameters('vmssInstanceOsDiskStorageType')]",
             "vmssOsType": {
                 "offer": "[parameters('vmssOsImageReferenceOfferName')]",
                 "publisher": "[parameters('vmssOsImageReferencePublisherName')]",

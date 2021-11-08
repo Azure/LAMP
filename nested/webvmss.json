@@ -157,7 +157,7 @@
                             "createOption": "FromImage",
                             "diskSizeGB": "[parameters('lampCommon').OSDiskSizeInGB]",
                             "managedDisk": {
-                                "storageAccountType": "[parameters('lampCommon').osDiskStorageType]"
+                                "storageAccountType": "[parameters('lampCommon').vmssInstanceOsDiskStorageType]"
                             }
                         }
                     }
