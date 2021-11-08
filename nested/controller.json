@@ -216,7 +216,7 @@
                 "count": 8,
                 "input": {
                     "managedDisk": {
-                        "storageAccountType": "[parameters('lampCommon').nfsOnCtlrVmDiskStorageType]"
+                        "storageAccountType": "[parameters('lampCommon').fileServerDiskStorageType]"
                     },
                     "diskSizeGB": "[parameters('lampCommon').fileServerDiskSize]",
                     "lun": "[copyIndex('nfsDiskArray')]",

@@ -112,6 +112,17 @@
             },
             "type": "int"
         },
+        "dataDiskStorageType": {
+            "defaultValue": "Premium_LRS",
+            "allowedValues": [
+                "Premium_LRS",
+                "Standard_LRS"
+            ],
+            "metadata": {
+                "description": "Azure storage type of each disk in an NFS Server."
+            },
+            "type": "string"
+        },
         "resourcesUniqueString": {
             "metadata": {
                 "description": "Unique string of fixed length (e.g., 6) identifying related resources"
@@ -208,7 +219,7 @@
                             "count": "[parameters('dataDiskCountPerVM')]",
                             "input": {
                                 "managedDisk": {
-                                    "storageAccountType": "Premium_LRS"
+                                    "storageAccountType": "[parameters('dataDiskStorageType')]"
                                 },
                                 "diskSizeGB": "[parameters('dataDiskSizeInGB')]",
                                 "lun": "[copyIndex('dataDisks')]",

@@ -359,17 +359,6 @@
             },
             "type": "string"
         },
-        "nfsOnCtlrVmDiskStorageType": {
-            "type": "string",
-            "defaultValue": "Premium_LRS",
-            "allowedValues": [
-                "Premium_LRS",
-                "Standard_LRS"
-            ],
-            "metadata": {
-                "description": "Azure storage type for NFS Disks created on controller VM. Applicable only when parameter 'fileServerType' has value 'nfs'."
-            }
-        },
         "OSDiskSizeInGB": {
             "defaultValue": 256,
             "metadata": {
@@ -383,6 +372,17 @@
                 "description": "Size per disk for gluster nodes/nfs/fileshare."
             },
             "type": "int"
+        },
+        "fileServerDiskStorageType": {
+            "type": "string",
+            "defaultValue": "Premium_LRS",
+            "allowedValues": [
+                "Premium_LRS",
+                "Standard_LRS"
+            ],
+            "metadata": {
+                "description": "Azure storage type for Disks created for nfs/azurefiles/gluster file server."
+            }
         },
         "fileServerDiskCount": {
             "defaultValue": 4,
@@ -959,8 +959,8 @@
                     "dataDiskSizeInGB": {
                         "value": "[parameters('fileServerDiskSize')]"
                     },
-                    "OSDiskSizeInGB": {
-                        "value": "[parameters('OSDiskSizeInGB')]"
+                    "dataDiskStorageType": {
+                        "value": "[parameters('fileServerDiskStorageType')]"
                     },
                     "resourcesUniqueString": {
                         "value": "[variables('resourceprefix')]"
@@ -1172,6 +1172,7 @@
             "extProbeHTTPS": "[concat('lb-probe-https-',variables('resourceprefix'))]",
             "fileServerDiskCount": "[parameters('fileServerDiskCount')]",
             "fileServerDiskSize": "[parameters('fileServerDiskSize')]",
+            "fileServerDiskStorageType": "[parameters('fileServerDiskStorageType')]",
             "OSDiskSizeInGB": "[parameters('OSDiskSizeInGB')]",
             "fileServerType": "[parameters('fileServerType')]",
             "fileServerVmCount": 2,
@@ -1212,7 +1213,6 @@
             "nfsHaLbIP": "[concat(variables('subnetSanPrefix'), '.100')]",
             "nfsHaNode0IP": "[concat(variables('subnetSanPrefix'), '.110')]",
             "nfsHaNode1IP": "[concat(variables('subnetSanPrefix'), '.120')]",
-            "nfsOnCtlrVmDiskStorageType": "[parameters('nfsOnCtlrVmDiskStorageType')]",
             "osDiskStorageType": "[parameters('osDiskStorageType')]",
             "osType": {
                 "offer": "UbuntuServer",

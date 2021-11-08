@@ -97,7 +97,7 @@
                             "count": "[parameters('lampCommon').fileServerDiskCount]",
                             "input": {
                                 "managedDisk": {
-                                    "storageAccountType": "Premium_LRS"
+                                    "storageAccountType": "[parameters('lampCommon').fileServerDiskStorageType]"
                                 },
                                 "diskSizeGB": "[parameters('lampCommon').fileServerDiskSize]",
                                 "lun": "[copyIndex('dataDisks')]",
