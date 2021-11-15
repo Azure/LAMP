@@ -34,6 +34,13 @@
             },
             "type": "bool"
         },
+        "azureFrontDoorSwitch": {
+            "defaultValue": false,
+            "metadata": {
+                "description": "Switch to configure azure front door."
+            },
+            "type": "bool"
+        },
         "redisDeploySwitch": {
             "defaultValue": false,
             "metadata": {
@@ -76,8 +83,27 @@
             },
             "type": "bool"
         },
+        "mysqlPgresHASwitch": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Switch to enable or disable High Availability for MySQL/PostgresSql. Only applicable when Flexible Server is used for DB."
+            }
+        },
+        "azureFrontDoorSkuName": {
+            "type": "string",
+            "defaultValue": "",
+            "allowedValues": [
+                "Standard_AzureFrontDoor",
+                "Premium_AzureFrontDoor"
+            ],
+            "metadata": {
+                "description": "Name of the SKU to be used for Azure Front Door."
+            }
+        },
         "httpsTermination": {
             "allowedValues": [
+                "AzureFrontDoor",
                 "VMSS",
                 "AppGw",
                 "None"
@@ -204,6 +230,17 @@
             },
             "type": "int"
         },
+        "mysqlPgresType": {
+            "allowedValues": [
+                "SingleServers",
+                "FlexibleServers"
+            ],
+            "defaultValue": "SingleServers",
+            "metadata": {
+                "description": "MySql/Postgresql single server"
+            },
+            "type": "string"
+        },
         "mysqlPgresStgSizeGB": {
             "defaultValue": 125,
             "minValue": 5,
@@ -213,9 +250,26 @@
             },
             "type": "int"
         },
+        "mysqlPgresStorageIops": {
+            "defaultValue": 20000,
+            "minValue": 640,
+            "maxValue": 20000,
+            "metadata": {
+                "description": "MySql/Postgresql storage IOPS."
+            },
+            "type": "int"
+        },
+        "mysqlPgresSkuName": {
+            "defaultValue": "",
+            "metadata": {
+                "description": "MySql/Postgresql sku name."
+            },
+            "type": "string"
+        },
         "mysqlPgresSkuTier": {
             "allowedValues": [
                 "Basic",
+                "Burstable",
                 "GeneralPurpose",
                 "MemoryOptimized"
             ],
@@ -958,6 +1012,8 @@
             "autoscaleVmCountMin": "[parameters('autoscaleVmCountMin')]",
             "autoscaleVmSku": "[parameters('autoscaleVmSku')]",
             "azureBackupSwitch": "[parameters('azureBackupSwitch')]",
+            "azureFrontDoorSwitch": "[parameters('azureFrontDoorSwitch')]",
+            "azureFrontDoorSkuName": "[parameters('azureFrontDoorSkuName')]",
             "commonFunctionsScriptUri": "[concat(parameters('_artifactsLocation'),'scripts/helper_functions.sh',parameters('_artifactsLocationSasToken'))]",
             "controllerVmSku": "[parameters('controllerVmSku')]",
             "customVnetId": "[parameters('customVnetId')]",
@@ -1012,10 +1068,13 @@
             "mssqlDbSize": "[parameters('mssqlDbSize')]",
             "mssqlDbEdition": "[parameters('mssqlDbEdition')]",
             "mssqlVersion": "[parameters('mssqlVersion')]",
+            "mysqlPgresHASwitch": "[parameters('mysqlPgresHASwitch')]",
             "mysqlPgresSkuHwFamily": "[parameters('mysqlPgresSkuHwFamily')]",
-            "mysqlPgresSkuName": "[concat(if(equals(parameters('mysqlPgresSkuTier'),'Basic'),'B', if(equals(parameters('mysqlPgresSkuTier'),'GeneralPurpose'),'GP', 'MO')), '_', parameters('mysqlPgresSkuHwFamily'), '_', string(parameters('mysqlPgresVcores')))]",
+            "mysqlPgresSkuName": "[if(not(empty(parameters('mysqlPgresSkuName'))), parameters('mysqlPgresSkuName'), concat(if(equals(parameters('mysqlPgresSkuTier'),'Basic'),'B', if(equals(parameters('mysqlPgresSkuTier'),'GeneralPurpose'),'GP', 'MO')), '_', parameters('mysqlPgresSkuHwFamily'), '_', string(parameters('mysqlPgresVcores'))))]",
             "mysqlPgresSkuTier": "[parameters('mysqlPgresSkuTier')]",
+            "mysqlPgresType": "[parameters('mysqlPgresType')]",
             "mysqlPgresStgSizeGB": "[parameters('mysqlPgresStgSizeGB')]",
+            "mysqlPgresStorageIops": "[parameters('mysqlPgresStorageIops')]",
             "mysqlPgresVcores": "[parameters('mysqlPgresVcores')]",
             "mysqlVersion": "[parameters('mysqlVersion')]",
             "nfsByoIpExportPath": "[parameters('nfsByoIpExportPath')]",
