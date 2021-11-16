@@ -579,11 +579,5 @@
         "nfsHaLbRuleName": "nfs-ha-lb-rule",
         "nfsHaLbProbeName": "nfs-ha-lb-probe",
         "nfsHaLbProbeId": "[resourceId('Microsoft.Network/loadBalancers/probes', variables('nfsHaLbName'), variables('nfsHaLbProbeName'))]"
-    },
-    "outputs": {
-        "nfsHaLbName": {
-            "type": "string",
-            "value": "[variables('nfsHaLbName')]"
-        }
     }
 }
