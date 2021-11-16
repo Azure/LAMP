@@ -136,11 +136,12 @@
                     }
                 },
                 "storageProfile": {
-                    "imageReference": "[parameters('lampCommon').osType]",
+                    "imageReference": "[parameters('lampCommon').ctlrVmOsType]",
                     "osDisk": {
                         "createOption": "FromImage",
+                        "diskSizeGB": "[parameters('lampCommon').ctlrVmOsDiskSizeInGB]",
                         "managedDisk": {
-                            "storageAccountType": "[parameters('lampCommon').osDiskStorageType]"
+                            "storageAccountType": "[parameters('lampCommon').ctlrVmOsDiskStorageType]"
                         },
                         "name": "[parameters('lampCommon').ctlrVmName]"
                     },
@@ -215,7 +216,7 @@
                 "count": 8,
                 "input": {
                     "managedDisk": {
-                        "storageAccountType": "Premium_LRS"
+                        "storageAccountType": "[parameters('lampCommon').fileServerDiskStorageType]"
                     },
                     "diskSizeGB": "[parameters('lampCommon').fileServerDiskSize]",
                     "lun": "[copyIndex('nfsDiskArray')]",

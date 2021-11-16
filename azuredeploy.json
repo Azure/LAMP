@@ -2,9 +2,9 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "TypeOfTemplate":{
-            "defaultValue":"LAMP ARM TEMPLATE",
-            "type":"string"
+        "TypeOfTemplate": {
+            "defaultValue": "LAMP ARM TEMPLATE",
+            "type": "string"
         },
         "_artifactsLocation": {
             "type": "string",
@@ -149,12 +149,12 @@
         },
         "UbuntuVersion": {
             "defaultValue": "18.04-LTS",
-            "allowedValues":[
+            "allowedValues": [
                 "16.04-LTS",
                 "18.04-LTS"
             ],
             "type": "string",
-            "metadata":{
+            "metadata": {
                 "description": "Select Ubuntu version. By default it will take 16.04-LTS"
             }
         },
@@ -369,9 +369,20 @@
         "fileServerDiskSize": {
             "defaultValue": 127,
             "metadata": {
-                "description": "Size per disk for gluster nodes or nfs server"
+                "description": "Size per disk for gluster nodes/nfs/fileshare."
             },
             "type": "int"
+        },
+        "fileServerDiskStorageType": {
+            "type": "string",
+            "defaultValue": "Premium_LRS",
+            "allowedValues": [
+                "Premium_LRS",
+                "Standard_LRS"
+            ],
+            "metadata": {
+                "description": "Azure storage type for Disks created for nfs/azurefiles/gluster file server."
+            }
         },
         "fileServerDiskCount": {
             "defaultValue": 4,
@@ -576,6 +587,186 @@
             "metadata": {
                 "description": "Azure Location for all resources."
             }
+        },
+        "applicationDbName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Name for the Application DB."
+            }
+        },
+        "ctlrVmName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Name of the controller VM."
+            }
+        },
+        "ctlrVmOsImageReferenceOfferName": {
+            "type": "string",
+            "defaultValue": "UbuntuServer",
+            "allowedValues": [ "UbuntuServer" ],
+            "metadata": {
+                "description": "Specifies the offer of the markeplate OS image used to create Controller VM."
+            }
+        },
+        "ctlrVmOsImageReferencePublisherName": {
+            "type": "string",
+            "defaultValue": "Canonical",
+            "allowedValues": [ "Canonical" ],
+            "metadata": {
+                "description": "The image publisher of the markeplate OS image used to create Controller VM."
+            }
+        },
+        "ctlrVmOsImageReferenceSkuName": {
+            "type": "string",
+            "defaultValue": "18.04-LTS",
+            "allowedValues": [
+                "16.04-LTS",
+                "18.04-LTS"
+            ],
+            "metadata": {
+                "description": "The image SKU of the markeplate OS image used to create Controller VM."
+            }
+        },
+        "ctlrVmOsImageReferenceVersionName": {
+            "type": "string",
+            "defaultValue": "latest",
+            "allowedValues": [ "latest" ],
+            "metadata": {
+                "description": "The version of the markeplate OS image used to create Controller VM."
+            }
+        },
+        "ctlrVmOsDiskStorageType": {
+            "type": "string",
+            "defaultValue": "Premium_LRS",
+            "allowedValues": [
+                "Premium_LRS",
+                "Standard_LRS"
+            ],
+            "metadata": {
+                "description": "Azure storage type for controller VM's OS disk. With htmlLocalCopySwith true, Premium_LRS (SSD) is strongly recommended, as PHP files will be served from OS disks."
+            }
+        },
+        "ctlrVmOsDiskSizeInGB": {
+            "type": "int",
+            "defaultValue": 256,
+            "metadata": {
+                "description": "Size of OS Disk for Controller VM."
+            }
+        },
+        "dbUsername": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Name of the user to be used for DB."
+            }
+        },
+        "dbLoginPassword": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Password for DB Server."
+            }
+        },
+        "redisCacheName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Name to be used for cache resource."
+            }
+        },
+        "redisSkuCapcity": {
+            "type": "int",
+            "defaultValue": 1,
+            "allowedValues": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+            ],
+            "metadata": {
+                "description": "The size of the Redis cache to deploy. Applicable only if parameter 'redisDeploySwitch' is true."
+            }
+        },
+        "redisSkuFamily": {
+            "type": "string",
+            "defaultValue": "P",
+            "allowedValues": [
+                "C",
+                "P"
+            ],
+            "metadata": {
+                "description": "The SKU family to use for Redis cache. Applicable only if parameter 'redisDeploySwitch' is true."
+            }
+        },
+        "redisSkuName": {
+            "type": "string",
+            "defaultValue": "Premium",
+            "allowedValues": [
+                "Basic",
+                "Standard",
+                "Premium"
+            ],
+            "metadata": {
+                "description": "The type of Redis cache to deploy. Applicable only if parameter 'redisDeploySwitch' is true."
+            }
+        },
+        "vmssInstanceOsDiskStorageType": {
+            "type": "string",
+            "defaultValue": "Premium_LRS",
+            "allowedValues": [
+                "Premium_LRS",
+                "Standard_LRS"
+            ],
+            "metadata": {
+                "description": "Azure storage type for VMSS instance VM's OS disk."
+            }
+        },
+        "vmssOsImageReferenceOfferName": {
+            "type": "string",
+            "defaultValue": "UbuntuServer",
+            "allowedValues": [ "UbuntuServer" ],
+            "metadata": {
+                "description": "Specifies the offer of the markeplate OS image used to create instance of the VMSS resource for web server."
+            }
+        },
+        "vmssOsImageReferencePublisherName": {
+            "type": "string",
+            "defaultValue": "Canonical",
+            "allowedValues": [ "Canonical" ],
+            "metadata": {
+                "description": "The image publisher of the markeplate OS image used to create instance of the VMSS resource for web server."
+            }
+        },
+        "vmssOsImageReferenceSkuName": {
+            "type": "string",
+            "defaultValue": "18.04-LTS",
+            "allowedValues": [
+                "16.04-LTS",
+                "18.04-LTS"
+            ],
+            "metadata": {
+                "description": "The image SKU of the markeplate OS image used to create instance of the VMSS resource for web server."
+            }
+        },
+        "vmssOsImageReferenceVersionName": {
+            "type": "string",
+            "defaultValue": "latest",
+            "allowedValues": [ "latest" ],
+            "metadata": {
+                "description": "The version of the markeplate OS image used to create instance of the VMSS resource for web server."
+            }
+        },
+        "vmssName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Name of the VMSS resource created for web server nodes."
+            }
         }
     },
     "resources": [
@@ -779,8 +970,8 @@
                     "dataDiskSizeInGB": {
                         "value": "[parameters('fileServerDiskSize')]"
                     },
-                    "OSDiskSizeInGB": {
-                        "value": "[parameters('OSDiskSizeInGB')]"
+                    "dataDiskStorageType": {
+                        "value": "[parameters('fileServerDiskStorageType')]"
                     },
                     "resourcesUniqueString": {
                         "value": "[variables('resourceprefix')]"
@@ -940,7 +1131,7 @@
         "documentation09": "    controller          - creates a controller VM and deploys code",
         "documentation10": "GlusterFS Sizing guidance",
         "lampCommon": {
-            "applicationDbName": "[parameters('CMSApplication')]",
+            "applicationDbName": "[if(not(empty(parameters('applicationDbName'))), parameters('applicationDbName'), variables('defaults').applicationDbName)]",
             "cmsApplication": "[parameters('CMSApplication')]",
             "baseTemplateUrl": "[concat(parameters('_artifactsLocation'), 'nested/')]",
             "scriptLocation": "[concat(parameters('_artifactsLocation'), 'scripts/')]",
@@ -964,13 +1155,21 @@
             "ctlrNicName": "[concat('controller-vm-nic-',variables('resourceprefix'))]",
             "ctlrNsgName": "[concat('controller-nsg-',variables('resourceprefix'))]",
             "ctlrPipName": "[concat('controller-pubip-',variables('resourceprefix'))]",
-            "ctlrVmName": "[concat('controller-vm-',variables('resourceprefix'))]",
+            "ctlrVmName": "[if(not(empty(parameters('ctlrVmName'))), parameters('ctlrVmName'), variables('defaults').ctlrVmName)]",
+            "ctlrVmOsType": {
+                "offer": "[parameters('ctlrVmOsImageReferenceOfferName')]",
+                "publisher": "[parameters('ctlrVmOsImageReferencePublisherName')]",
+                "sku": "[parameters('ctlrVmOsImageReferenceSkuName')]",
+                "version": "[parameters('ctlrVmOsImageReferenceVersionName')]"
+            },
+            "ctlrVmOsDiskStorageType": "[parameters('ctlrVmOsDiskStorageType')]",
+            "ctlrVmOsDiskSizeInGB": "[parameters('ctlrVmOsDiskSizeInGB')]",
             "vmssNsgName": "[concat('vmss-nsg-',variables('resourceprefix'))]",
             "ctlrVmSecrets": "[take(variables('ctlrVmSecretsArray'), if(empty(parameters('keyVaultResourceId')), 0, 1))]",
             "dbLogin": "[parameters('dbLogin')]",
-            "dbLoginPassword": "[concat(substring(uniqueString(resourceGroup().id, deployment().name), 2, 11), '*7', toUpper('pfiwb'))]",
+            "dbLoginPassword": "[if(not(empty(parameters('dbLoginPassword'))),parameters('dbLoginPassword'),variables('defaults').dbLoginPassword)]",
             "dbServerType": "[parameters('dbServerType')]",
-            "dbUsername": "[concat(parameters('dbLogin'), '@', parameters('dbServerType'), '-', variables('resourceprefix'))]",
+            "dbUsername": "[if(not(empty(parameters('dbUsername'))),parameters('dbUsername'),variables('defaults').dbUsername)]",
             "ddosPlanName": "[concat('ddos-plan-',variables('resourceprefix'))]",
             "ddosSwitch": "[parameters('ddosSwitch')]",
             "enableAccelNwForCtlrVmSwitch": "[parameters('enableAccelNwForCtlrVmSwitch')]",
@@ -984,6 +1183,7 @@
             "extProbeHTTPS": "[concat('lb-probe-https-',variables('resourceprefix'))]",
             "fileServerDiskCount": "[parameters('fileServerDiskCount')]",
             "fileServerDiskSize": "[parameters('fileServerDiskSize')]",
+            "fileServerDiskStorageType": "[parameters('fileServerDiskStorageType')]",
             "OSDiskSizeInGB": "[parameters('OSDiskSizeInGB')]",
             "fileServerType": "[parameters('fileServerType')]",
             "fileServerVmCount": 2,
@@ -1034,9 +1234,14 @@
             "phpVersion": "[parameters('phpVersion')]",
             "policyName": "[concat('policy-',variables('resourceprefix'))]",
             "postgresVersion": "[parameters('postgresVersion')]",
-            "redisCacheName": "[concat('redis-',variables('resourceprefix'))]",
+            "redisCacheName": "[if(not(empty(parameters('redisCacheName'))),parameters('redisCacheName'),variables('defaults').redisCacheName)]",
             "redisDeploySwitch": "[parameters('redisDeploySwitch')]",
             "redisDns": "[concat('redis-',variables('resourceprefix'),'.redis.cache.windows.net')]",
+            "redisSku": {
+                "capacity": "[parameters('redisSkuCapcity')]",
+                "family": "[parameters('redisSkuFamily')]",
+                "name": "[parameters('redisSkuName')]"
+            },
             "resourcesPrefix": "[variables('resourceprefix')]",
             "serverName": "[concat(parameters('dbServerType'), '-',variables('resourceprefix'))]",
             "siteURL": "[if(or(empty(parameters('siteURL')), equals(parameters('siteURL'), 'www.example.org')), concat(if(equals(parameters('httpsTermination'), 'AppGw'),'appgw-','lb-'),variables('resourceprefix'),'.',parameters('location'),'.cloudapp.azure.com'), parameters('siteURL'))]",
@@ -1064,7 +1269,14 @@
             "thumbprintCaCert": "[if(or(empty(parameters('keyVaultResourceId')), empty(parameters('caCertThumbprint'))), 'None', parameters('caCertThumbprint'))]",
             "vNetAddressSpace": "[parameters('vNetAddressSpace')]",
             "vaultName": "[concat('vault-',variables('resourceprefix'))]",
-            "vmssName": "[concat('vmss-',variables('resourceprefix'))]",
+            "vmssInstanceOsDiskStorageType": "[parameters('vmssInstanceOsDiskStorageType')]",
+            "vmssOsType": {
+                "offer": "[parameters('vmssOsImageReferenceOfferName')]",
+                "publisher": "[parameters('vmssOsImageReferencePublisherName')]",
+                "sku": "[parameters('vmssOsImageReferenceSkuName')]",
+                "version": "[parameters('vmssOsImageReferenceVersionName')]"
+            },
+            "vmssName": "[if(not(empty(parameters('vmssName'))), parameters('vmssName'), variables('defaults').vmssName)]",
             "vmssdStorageAccounttName": "[concat('vmss',uniqueString(resourceGroup().id))]",
             "vnetGwDeploySwitch": "[parameters('vnetGwDeploySwitch')]",
             "vnetName": "[concat('vnet-',variables('resourceprefix'))]",
@@ -1093,6 +1305,15 @@
         "octets": "[split(parameters('vNetAddressSpace'), '.')]",
         "resourceprefix": "[substring(uniqueString(resourceGroup().id, deployment().name), 3, 6)]",
         "subnetSanPrefix": "[concat( variables('octets')[0], '.', variables('octets')[1], '.', string(add(int(variables('octets')[2]),2)))]",
-        "subnetWebRange": "[concat( variables('octets')[0], '.', variables('octets')[1], '.', string(add(int(variables('octets')[2]),0)), '.0/24')]"
+        "subnetWebRange": "[concat( variables('octets')[0], '.', variables('octets')[1], '.', string(add(int(variables('octets')[2]),0)), '.0/24')]",
+        "defaults": {
+            "documentation01": "This variable contains default values computed dynamically for various parameters.",
+            "applicationDbName": "[parameters('CMSApplication')]",
+            "ctlrVmName": "[concat('controller-vm-',variables('resourceprefix'))]",
+            "dbLoginPassword": "[concat(substring(uniqueString(resourceGroup().id, deployment().name), 2, 11), '*7', toUpper('pfiwb'))]",
+            "dbUsername": "[concat(parameters('dbLogin'), '@', parameters('dbServerType'), '-', variables('resourceprefix'))]",
+            "redisCacheName": "[concat('redis-',variables('resourceprefix'))]",
+            "vmssName": "[concat('vmss-', variables('resourceprefix'))]"
+        }
     }
 }

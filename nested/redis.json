@@ -24,9 +24,9 @@
             "properties": {
                 "enableNonSslPort": true,
                 "sku": {
-                    "capacity": 1,
-                    "family": "P",
-                    "name": "Premium"
+                    "capacity": "[parameters('lampCommon').redisSku.capacity]",
+                    "family": "[parameters('lampCommon').redisSku.family]",
+                    "name": "[parameters('lampCommon').redisSku.name]"
                 },
                 "subnetId": "[parameters('subnetIdRedis')]"
             }

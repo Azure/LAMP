@@ -151,13 +151,13 @@
                         }
                     },
                     "storageProfile": {
-                        "imageReference": "[parameters('lampCommon').osType]",
+                        "imageReference": "[parameters('lampCommon').vmssOsType]",
                         "osDisk": {
                             "caching": "ReadOnly",
                             "createOption": "FromImage",
                             "diskSizeGB": "[parameters('lampCommon').OSDiskSizeInGB]",
                             "managedDisk": {
-                                "storageAccountType": "[parameters('lampCommon').osDiskStorageType]"
+                                "storageAccountType": "[parameters('lampCommon').vmssInstanceOsDiskStorageType]"
                             }
                         }
                     }
@@ -208,7 +208,7 @@
                                     "cooldown": "PT30M",
                                     "direction": "Increase",
                                     "type": "ChangeCount",
-                                    "value": "2"
+                                    "value": "1"
                                 }
                             },
                             {
