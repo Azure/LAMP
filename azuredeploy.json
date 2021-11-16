@@ -1082,10 +1082,6 @@
         }
     ],
     "outputs": {
-        "siteURL": {
-            "type": "string",
-            "value": "[variables('lampCommon').siteURL]"
-        },
         "controllerInstanceIP": {
             "type": "string",
             "value": "[reference('controllerTemplate').outputs.controllerIP.value]"
@@ -1094,29 +1090,192 @@
             "type": "string",
             "value": "[reference('dbTemplate').outputs.dbFQDN.value]"
         },
-        "databaseAdminUsername": {
-            "type": "string",
-            "value": "[variables('lampCommon').dbUsername]"
-        },
-        "databaseAdminPassword": {
-            "type": "string",
-            "value": "[variables('lampCommon').dbLoginPassword]"
-        },
         "firstFrontendVmIP": {
             "type": "string",
             "value": "[reference('scaleSetTemplate').outputs.webvm1IP.value]"
         },
-        "loadBalancerDNS": {
-            "type": "string",
-            "value": "[variables('lampCommon').lbDns]"
+        "lampCommon": {
+            "type": "object",
+            "value": {
+                "applicationDbName": "[variables('lampCommon').applicationDbName]",
+                "cmsApplication": "[variables('lampCommon').cmsApplication]",
+                "scriptLocation": "[variables('lampCommon').scriptLocation]",
+                "appGwBePoolName": "[variables('lampCommon').appGwBePoolName]",
+                "appGwName": "[variables('lampCommon').appGwName]",
+                "appGwPipName": "[variables('lampCommon').appGwPipName]",
+                "appGwSslCertKeyVaultResourceId": "[variables('lampCommon').appGwSslCertKeyVaultResourceId]",
+                "appGwSslCertKeyVaultSecretName": "[variables('lampCommon').appGwSslCertKeyVaultSecretName]",
+                "appGwSkuCapacity": "[variables('lampCommon').appGwSkuCapacity]",
+                "appGwSkuName": "[variables('lampCommon').appGwSkuName]",
+                "appGwSkuTier": "[variables('lampCommon').appGwSkuTier]",
+                "applyScriptsSwitch": "[variables('lampCommon').applyScriptsSwitch]",
+                "autoscaleVmCountMax": "[variables('lampCommon').autoscaleVmCountMax]",
+                "autoscaleVmCountMin": "[variables('lampCommon').autoscaleVmCountMin]",
+                "autoscaleVmSku": "[variables('lampCommon').autoscaleVmSku]",
+                "azureBackupSwitch": "[variables('lampCommon').azureBackupSwitch]",
+                "commonFunctionsScriptUri": "[variables('lampCommon').commonFunctionsScriptUri]",
+                "controllerVmSku": "[variables('lampCommon').controllerVmSku]",
+                "customVnetId": "[variables('lampCommon').customVnetId]",
+                "ctlrNicName": "[variables('lampCommon').ctlrNicName]",
+                "ctlrNsgName": "[variables('lampCommon').ctlrNsgName]",
+                "ctlrPipName": "[variables('lampCommon').ctlrPipName]",
+                "ctlrVmName": "[variables('lampCommon').ctlrVmName]",
+                "vmssNsgName": "[variables('lampCommon').vmssNsgName]",
+                "dbLogin": "[variables('lampCommon').dbLogin]",
+                "dbServerType": "[variables('lampCommon').dbServerType]",
+                "dbUsername": "[variables('lampCommon').dbUsername]",
+                "ddosPlanName": "[variables('lampCommon').ddosPlanName]",
+                "ddosSwitch": "[variables('lampCommon').ddosSwitch]",
+                "enableAccelNwForCtlrVmSwitch": "[variables('lampCommon').enableAccelNwForCtlrVmSwitch]",
+                "enableAccelNwForOtherVmsSwitch": "[variables('lampCommon').enableAccelNwForOtherVmsSwitch]",
+                "extBeName": "[variables('lampCommon').extBeName]",
+                "extFeName": "[variables('lampCommon').extFeName]",
+                "extOutName001": "[variables('lampCommon').extOutName001]",
+                "extOutName002": "[variables('lampCommon').extOutName002]",
+                "extNatPool": "[variables('lampCommon').extNatPool]",
+                "extProbeHTTP": "[variables('lampCommon').extProbeHTTP]",
+                "extProbeHTTPS": "[variables('lampCommon').extProbeHTTPS]",
+                "fileServerDiskCount": "[variables('lampCommon').fileServerDiskCount]",
+                "fileServerDiskSize": "[variables('lampCommon').fileServerDiskSize]",
+                "OSDiskSizeInGB": "[variables('lampCommon').OSDiskSizeInGB]",
+                "fileServerType": "[variables('lampCommon').fileServerType]",
+                "fileServerVmCount": "[variables('lampCommon').fileServerVmCount]",
+                "fileServerVmSku": "[variables('lampCommon').fileServerVmSku]",
+                "gatewayName": "[variables('lampCommon').gatewayName]",
+                "gatewayPublicIPName": "[variables('lampCommon').gatewayPublicIPName]",
+                "gatewayType": "[variables('lampCommon').gatewayType]",
+                "gfsNameRoot": "[variables('lampCommon').gfsNameRoot]",
+                "gfsAvailabilitySetName": "[variables('lampCommon').gfsAvailabilitySetName]",
+                "glusterScriptFilename": "[variables('lampCommon').glusterScriptFilename]",
+                "htmlLocalCopySwitch": "[variables('lampCommon').htmlLocalCopySwitch]",
+                "httpsTermination": "[variables('lampCommon').httpsTermination]",
+                "lbDns": "[variables('lampCommon').lbDns]",
+                "lbName": "[variables('lampCommon').lbName]",
+                "lbOutName001": "[variables('lampCommon').lbOutName001]",
+                "lbOutName002": "[variables('lampCommon').lbOutName002]",
+                "lbPipName": "[variables('lampCommon').lbPipName]",
+                "lbOutPipName001": "[variables('lampCommon').lbOutPipName001]",
+                "lbOutPipName002": "[variables('lampCommon').lbOutPipName002]",
+                "lbSku": "[variables('lampCommon').lbSku]",
+                "lbTier": "[variables('lampCommon').lbTier]",
+                "location": "[variables('lampCommon').location]",
+                "controllerInstallScriptFilename": "[variables('lampCommon').controllerInstallScriptFilename]",
+                "lampOnAzureConfigsJsonPath": "[variables('lampCommon').lampOnAzureConfigsJsonPath]",
+                "mssqlDbServiceObjectiveName": "[variables('lampCommon').mssqlDbServiceObjectiveName]",
+                "mssqlDbSize": "[variables('lampCommon').mssqlDbSize]",
+                "mssqlDbEdition": "[variables('lampCommon').mssqlDbEdition]",
+                "mssqlVersion": "[variables('lampCommon').mssqlVersion]",
+                "mysqlPgresSkuHwFamily": "[variables('lampCommon').mysqlPgresSkuHwFamily]",
+                "mysqlPgresSkuName": "[variables('lampCommon').mysqlPgresSkuName]",
+                "mysqlPgresSkuTier": "[variables('lampCommon').mysqlPgresSkuTier]",
+                "mysqlPgresStgSizeGB": "[variables('lampCommon').mysqlPgresStgSizeGB]",
+                "mysqlPgresVcores": "[variables('lampCommon').mysqlPgresVcores]",
+                "mysqlVersion": "[variables('lampCommon').mysqlVersion]",
+                "nfsByoIpExportPath": "[variables('lampCommon').nfsByoIpExportPath]",
+                "nfsHaClientsIPRange": "[variables('lampCommon').nfsHaClientsIPRange]",
+                "nfsHaExportPath": "[variables('lampCommon').nfsHaExportPath]",
+                "nfsHaLbIP": "[variables('lampCommon').nfsHaLbIP]",
+                "nfsHaNode0IP": "[variables('lampCommon').nfsHaNode0IP]",
+                "nfsHaNode1IP": "[variables('lampCommon').nfsHaNode1IP]",
+                "osDiskStorageType": "[variables('lampCommon').osDiskStorageType]",
+                "phpVersion": "[variables('lampCommon').phpVersion]",
+                "policyName": "[variables('lampCommon').policyName]",
+                "postgresVersion": "[variables('lampCommon').postgresVersion]",
+                "redisCacheName": "[variables('lampCommon').redisCacheName]",
+                "redisDeploySwitch": "[variables('lampCommon').redisDeploySwitch]",
+                "redisDns": "[variables('lampCommon').redisDns]",
+                "resourcesPrefix": "[variables('lampCommon').resourcesPrefix]",
+                "serverName": "[variables('lampCommon').serverName]",
+                "siteURL": "[variables('lampCommon').siteURL]",
+                "sshPublicKey": "[variables('lampCommon').sshPublicKey]",
+                "sshUsername": "[variables('lampCommon').sshUsername]",
+                "sslEnforcement": "[variables('lampCommon').sslEnforcement]",
+                "storageAccountName": "[variables('lampCommon').storageAccountName]",
+                "storageAccountType": "[variables('lampCommon').storageAccountType]",
+                "subnetAppGw": "[variables('lampCommon').subnetAppGw]",
+                "subnetAppGwPrefix": "[variables('lampCommon').subnetAppGwPrefix]",
+                "subnetAppGwRange": "[variables('lampCommon').subnetAppGwRange]",
+                "subnetGateway": "[variables('lampCommon').subnetGateway]",
+                "subnetGatewayPrefix": "[variables('lampCommon').subnetGatewayPrefix]",
+                "subnetGatewayRange": "[variables('lampCommon').subnetGatewayRange]",
+                "subnetRedis": "[variables('lampCommon').subnetRedis]",
+                "subnetRedisPrefix": "[variables('lampCommon').subnetRedisPrefix]",
+                "subnetRedisRange": "[variables('lampCommon').subnetRedisRange]",
+                "subnetSan": "[variables('lampCommon').subnetSan]",
+                "subnetSanPrefix": "[variables('lampCommon').subnetSanPrefix]",
+                "subnetSanRange": "[variables('lampCommon').subnetSanRange]",
+                "subnetWeb": "[variables('lampCommon').subnetWeb]",
+                "subnetWebPrefix": "[variables('lampCommon').subnetWebPrefix]",
+                "subnetWebRange": "[variables('lampCommon').subnetWebRange]",
+                "thumbprintSslCert": "[variables('lampCommon').thumbprintSslCert]",
+                "thumbprintCaCert": "[variables('lampCommon').thumbprintCaCert]",
+                "vNetAddressSpace": "[variables('lampCommon').vNetAddressSpace]",
+                "vaultName": "[variables('lampCommon').vaultName]",
+                "vmssName": "[variables('lampCommon').vmssName]",
+                "vmssdStorageAccounttName": "[variables('lampCommon').vmssdStorageAccounttName]",
+                "vnetGwDeploySwitch": "[variables('lampCommon').vnetGwDeploySwitch]",
+                "vnetName": "[variables('lampCommon').vnetName]",
+                "vpnType": "[variables('lampCommon').vpnType]",
+                "webServerSetupScriptFilename": "[variables('lampCommon').webServerSetupScriptFilename]",
+                "wpVersion": "[variables('lampCommon').wpVersion]"
+            }
         },
-        "loadBalancerSku": {
-            "type": "string",
-            "value": "[variables('lampCommon').lbSku]"
+        "webNodesProfile": {
+            "type": "object",
+            "value": {
+                "nodeResourceIds": "[resourceId('Microsoft.Compute/virtualMachineScaleSets', variables('lampCommon').vmssName)]"
+            }
         },
-        "loadBalancerTier": {
-            "type": "string",
-            "value": "[variables('lampCommon').lbTier]"
+        "controllerProfile": {
+            "type": "object",
+            "value": {
+                "nodeResourceIds": "[resourceId('Microsoft.Compute/virtualMachines', variables('lampCommon').ctlrVmName)]",
+                "publicIpResourceId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('lampCommon').ctlrPipName)]"
+            }
+        },
+        "networkProfile": {
+            "type": "object",
+            "value": {
+                "vNetResourceId": "[resourceId('Microsoft.Network/virtualNetworks', variables('lampCommon').vnetName)]",
+                "loadBalancerResourceId": "[resourceId('Microsoft.Network/loadBalancers', variables('lampCommon').lbName)]",
+                "vnetGatewayPublicIpResourceId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('lampCommon').gatewayPublicIPName)]",
+                "loadBalancerPublicIpResourceId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('lampCommon').lbPipName)]",
+                "loadBalancerOutputPublicIp": {
+                    "001OutboundPublicIpResourceId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('lampCommon').lbOutPipName001)]",
+                    "002OutboundPublicIpResourceId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('lampCommon').lbOutPipName002)]"
+                },
+                "appGatewayPublicIpResourceId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('lampCommon').appGwPipName)]"
+            }
+        },
+        "databaseProfile": {
+            "type": "object",
+            "value": {
+                "msSqlServerResourceId": "[resourceId('Microsoft.Sql/servers', variables('lampCommon').serverName)]",
+                "mySqlServerResourceId": "[resourceId('Microsoft.DBforMySQL/servers', variables('lampCommon').serverName)]",
+                "postgressServerResourceId": "[resourceId('Microsoft.Storage/storageAccounts', variables('lampCommon').serverName)]"
+            }
+        },
+        "azureFileShareProfile": {
+            "condition": "[equals(parameters('fileServerType'),'azurefiles')]",
+            "type": "object",
+            "value": {
+                "azureFileShareResourceId": "[resourceId('Microsoft.Network/loadBalancers', reference('storageAccountTemplate').outputs.storageAccountName.value)]"
+
+            }
+        },
+        "cacheProfile": {
+            "condition": "[parameters('redisDeploySwitch')]",
+            "type": "object",
+            "value": {
+                "redisResourceId": "[reference('redisTemplate').outputs.redisResourceId.value]"
+            }
+        },
+        "backupProfile": {
+            "condition": "[parameters('azureBackupSwitch')]",
+            "type": "object",
+            "value": {
+                "recoveryServicesVaultResourceId": "[resourceId('Microsoft.RecoveryServices/vaults', variables('lampCommon').vaultName)]"
+            }
         }
     },
     "variables": {
