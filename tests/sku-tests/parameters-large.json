@@ -1,0 +1,57 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "_artifactsLocation": {
+      "value": "https://raw.githubusercontent.com/shishir-msft/LAMP/TestMerge/"
+    },
+    "redisDeploySwitch": {
+      "value": true
+    },
+    "sshPublicKey": {
+      "value": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCrf4x/JdxFdzZ7nmwQux6r/UrOPsmeKdLjHXeG1tjRMRk/mhma6T6VIXT0/VdSgFX0o99EY92BM3Gi7iXITryJDjsveHT0/2XMipTjAGxuuE4/Niyzk/GQaUsquc4MA8sjccx92Q/+NfKmHXfJqS80z5Luwgq9PRV0O7ptihb9jNFQ/U3VBUjtuFIBz4og6ih7klPga7o6HaJkMFFdWpKoNcmKTaZ21cfR9GnGZufWLKnggpp9WIV+Aok+AfRVTSUgxiMzo0a5lpkG2mU3ZtLVeNGcrQF4oOfxWD0Iwa2RQjd8m+OGlVIyJ/zMZ04Uuz9WYdZi0mAk8EoqjeGmnlYnNQ+XLdiT/4WimnmZWUgvAi6CdDG29uDlMJzPW/3h53fgZu/6gdsigmWgYbrAoPphD2OU1vxZV+11vF4GUAAvhUAkXuaNsVE9Xt6NizaM4KbzF5X2nOHe1h5yqUgXJw4/v0IV+mW/YQrWAy2SFCDEpMNy7cBvNcuAeil03L2ic4bDDBebdkiwAnhWkXaIswZGjqewn8CqgBTFHhMa1EvaIx/8B/Cebdq5TzKWVdLD7yyoMj2eZFsO/K5/u4o0lFBu0iReNP55WEJ+jWntORw8VeGGiPDbmjdiNuiF+IW3gxdjpWdPt6HddcTSvPK624zQwj+tX/XG4tnDBPNdfntB1Q== a@DESKTOP-0MBDJ1Q"
+    },
+    "controllerVmSku": {
+      "value": "Standard_DS1_v2"
+    },
+    "autoscaleVmSku": {
+      "value": "Standard_F16s_v2"
+    },
+    "autoscaleVmCountMax": {
+      "value": 100
+    },
+    "autoscaleVmCountMin": {
+      "value": 2
+    },
+    "fileServerType": {
+      "value": "azurefiles"
+    },
+    "fileServerDiskSize": {
+      "value": 4096
+    },
+    "fileServerDiskStorageType": {
+      "value": "Premium_LRS"
+    },
+    "loadBalancerSku": {
+      "value": "Standard"
+    },
+    "wordpressVersion": {
+      "value": "5.4.2"
+    },
+    "ctlrVmOsDiskStorageType": {
+      "value": "Standard_LRS"
+    },
+    "redisSkuCapcity": {
+      "value": 2
+    },
+    "redisSkuFamily": {
+      "value": "P"
+    },
+    "redisSkuName": {
+      "value": "Premium"
+    },
+    "vmssInstanceOsDiskStorageType": {
+      "value": "Premium_LRS"
+    }
+  }
+}
