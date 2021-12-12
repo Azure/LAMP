@@ -1236,6 +1236,7 @@
         "networkProfile": {
             "type": "object",
             "value": {
+                "httpsTermination": "[parameters('httpsTermination')]",
                 "vNetResourceId": "[resourceId('Microsoft.Network/virtualNetworks', variables('lampCommon').vnetName)]",
                 "loadBalancerResourceId": "[resourceId('Microsoft.Network/loadBalancers', variables('lampCommon').lbName)]",
                 "vnetGatewayPublicIpResourceId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('lampCommon').gatewayPublicIPName)]",
