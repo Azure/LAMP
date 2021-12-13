@@ -1236,6 +1236,7 @@
         "networkProfile": {
             "type": "object",
             "value": {
+                "httpsTermination": "[parameters('httpsTermination')]",
                 "vNetResourceId": "[resourceId('Microsoft.Network/virtualNetworks', variables('lampCommon').vnetName)]",
                 "loadBalancerResourceId": "[resourceId('Microsoft.Network/loadBalancers', variables('lampCommon').lbName)]",
                 "vnetGatewayPublicIpResourceId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('lampCommon').gatewayPublicIPName)]",
@@ -1250,6 +1251,7 @@
         "databaseProfile": {
             "type": "object",
             "value": {
+                "dbServerType": "[variables('lampCommon').dbServerType]",
                 "msSqlServerResourceId": "[resourceId('Microsoft.Sql/servers', variables('lampCommon').serverName)]",
                 "mySqlServerResourceId": "[resourceId('Microsoft.DBforMySQL/servers', variables('lampCommon').serverName)]",
                 "postgressServerResourceId": "[resourceId('Microsoft.Storage/storageAccounts', variables('lampCommon').serverName)]"
