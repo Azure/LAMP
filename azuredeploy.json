@@ -182,6 +182,13 @@
             },
             "type": "string"
         },
+        "dbServerName": {
+            "defaultValue": "",
+            "type": "string",
+            "metadata": {
+                "description": "Name of the DB Server."
+            }
+        },
         "dbLogin": {
             "defaultValue": "dbadmin",
             "metadata": {
@@ -1292,7 +1299,7 @@
         "documentation09": "    controller          - creates a controller VM and deploys code",
         "documentation10": "GlusterFS Sizing guidance",
         "lampCommon": {
-            "applicationDbName": "[if(not(empty(parameters('applicationDbName'))), parameters('applicationDbName'), variables('defaults').applicationDbName)]",
+            "applicationDbName": "[variables('defaults').applicationDbName]",
             "cmsApplication": "[parameters('CMSApplication')]",
             "baseTemplateUrl": "[concat(parameters('_artifactsLocation'), 'nested/')]",
             "scriptLocation": "[concat(parameters('_artifactsLocation'), 'scripts/')]",
@@ -1404,7 +1411,7 @@
                 "name": "[parameters('redisSkuName')]"
             },
             "resourcesPrefix": "[variables('resourceprefix')]",
-            "serverName": "[concat(parameters('dbServerType'), '-',variables('resourceprefix'))]",
+            "serverName": "[if(not(empty(parameters('dbServerName'))), parameters('dbServerName'), variables('defaults').serverName)]",
             "siteURL": "[if(or(empty(parameters('siteURL')), equals(parameters('siteURL'), 'www.example.org')), concat(if(equals(parameters('httpsTermination'), 'AppGw'),'appgw-','lb-'),variables('resourceprefix'),'.',parameters('location'),'.cloudapp.azure.com'), parameters('siteURL'))]",
             "sshPublicKey": "[parameters('sshPublicKey')]",
             "sshUsername": "[parameters('sshUsername')]",
@@ -1474,6 +1481,7 @@
             "dbLoginPassword": "[concat(substring(uniqueString(resourceGroup().id, deployment().name), 2, 11), '*7', toUpper('pfiwb'))]",
             "dbUsername": "[concat(parameters('dbLogin'), '@', parameters('dbServerType'), '-', variables('resourceprefix'))]",
             "redisCacheName": "[concat('redis-',variables('resourceprefix'))]",
+            "serverName": "[concat(parameters('dbServerType'), '-',variables('resourceprefix'))]",
             "vmssName": "[concat('vmss-', variables('resourceprefix'))]"
         }
     }
