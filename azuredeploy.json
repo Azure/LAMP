@@ -595,13 +595,6 @@
                 "description": "Azure Location for all resources."
             }
         },
-        "applicationDbName": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Name for the Application DB."
-            }
-        },
         "ctlrVmName": {
             "type": "string",
             "defaultValue": "",
