@@ -380,17 +380,6 @@
             },
             "type": "int"
         },
-        "fileServerDiskStorageType": {
-            "type": "string",
-            "defaultValue": "Premium_LRS",
-            "allowedValues": [
-                "Premium_LRS",
-                "Standard_LRS"
-            ],
-            "metadata": {
-                "description": "Azure storage type for Disks created for nfs/azurefiles/gluster file server."
-            }
-        },
         "fileServerDiskCount": {
             "defaultValue": 4,
             "minValue": 2,
@@ -978,7 +967,7 @@
                         "value": "[parameters('fileServerDiskSize')]"
                     },
                     "dataDiskStorageType": {
-                        "value": "[parameters('fileServerDiskStorageType')]"
+                        "value": "[parameters('storageAccountType')]"
                     },
                     "resourcesUniqueString": {
                         "value": "[variables('resourceprefix')]"
@@ -1351,7 +1340,6 @@
             "extProbeHTTPS": "[concat('lb-probe-https-',variables('resourceprefix'))]",
             "fileServerDiskCount": "[parameters('fileServerDiskCount')]",
             "fileServerDiskSize": "[parameters('fileServerDiskSize')]",
-            "fileServerDiskStorageType": "[parameters('fileServerDiskStorageType')]",
             "OSDiskSizeInGB": "[parameters('OSDiskSizeInGB')]",
             "fileServerType": "[parameters('fileServerType')]",
             "fileServerVmCount": 2,
