@@ -57,7 +57,7 @@
                 "type": "[parameters('lampCommon').dbServerType]",
                 "fqdn": "[parameters('dbFQDN')]",
                 "adminLogin": "[parameters('lampCommon').dbLogin]",
-                "adminLoginAzure": "[concat(parameters('lampCommon').dbLogin, '@', parameters('lampCommon').dbServerType, '-', parameters('lampCommon').resourcesPrefix)]",
+                "adminLoginAzure": "[concat(parameters('lampCommon').dbLogin, '@', parameters('lampCommon').serverName)]",
                 "adminPassword": "[parameters('lampCommon').dbLoginPassword]",
                 "mssqlDbServiceObjectiveName": "[parameters('lampCommon').mssqlDbServiceObjectiveName]",
                 "mssqlDbEdition": "[parameters('lampCommon').mssqlDbEdition]",
