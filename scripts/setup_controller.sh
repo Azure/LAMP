@@ -288,7 +288,7 @@ EOF
         linking_data_location $dnsSite
         # Creates a wp-config file for WordPress
         #create_wpconfig $dbIP $applicationDbName $dbadminloginazure $dbadminpass $dnsSite
-        create_wpconfig $dbIP $applicationDbName $dbadminlogin $dbadminpass $dnsSite
+        create_wpconfig $dbIP $applicationDbName $dbadminlogin $dbadminpass $dnsSite  $wpHome
         # Installs WP-CLI tool
         install_wp_cli
         # Install WordPress by using wp-cli commands
