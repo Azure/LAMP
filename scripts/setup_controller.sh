@@ -62,6 +62,7 @@ set -ex
     echo $sshUsername       >>/tmp/vars.txt
     echo $storageAccountType >>/tmp/vars.txt
     echo $fileServerDiskSize >>/tmp/vars.txt
+    echo $frontDoorFQDN >> /tmp/vars.txt
 
     check_fileServerType_param $fileServerType
 
@@ -273,6 +274,9 @@ EOF
         local wpPath=/azlamp/html/$dnsSite
         local wpDbUserId=admin
         local wpDbUserPass=$wpDbUserPass
+        local frontDoorFQDN=$frontDoorFQDN
+        local httpProtocol="http://"
+        local wpHome="$httpProtocol$frontDoorFQDN"
 
         # Creates a Database for CMS application
         create_database $dbIP $dbadminloginazure $dbadminpass $applicationDbName $wpDbUserId $wpDbUserPass
@@ -281,7 +285,7 @@ EOF
         # Links the data content folder to shared folder.. /azlamp/data
         linking_data_location $dnsSite
         # Creates a wp-config file for WordPress
-        create_wpconfig $dbIP $applicationDbName $dbadminloginazure $dbadminpass $dnsSite
+        create_wpconfig $dbIP $applicationDbName $dbadminloginazure $dbadminpass $dnsSite $wpHome
         # Installs WP-CLI tool
         install_wp_cli
         # Install WordPress by using wp-cli commands
