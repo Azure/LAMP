@@ -279,13 +279,16 @@ EOF
         local wpHome="$httpProtocol$frontDoorFQDN"
 
         # Creates a Database for CMS application
-        create_database $dbIP $dbadminloginazure $dbadminpass $applicationDbName $wpDbUserId $wpDbUserPass
+        #create_database $dbIP $dbadminloginazure $dbadminpass $applicationDbName $wpDbUserId $wpDbUserPass
+        # One off create for flexible server which doesn't use dbuser@host for connection, just uses dbuser instead 
+        create_database $dbIP $dbadminlogin $dbadminpass $applicationDbName $wpDbUserId $wpDbUserPass 
         # Download the WordPress application compressed file
         download_wordpress $dnsSite $wpVersion
         # Links the data content folder to shared folder.. /azlamp/data
         linking_data_location $dnsSite
         # Creates a wp-config file for WordPress
-        create_wpconfig $dbIP $applicationDbName $dbadminloginazure $dbadminpass $dnsSite $wpHome
+        #create_wpconfig $dbIP $applicationDbName $dbadminloginazure $dbadminpass $dnsSite
+        create_wpconfig $dbIP $applicationDbName $dbadminlogin $dbadminpass $dnsSite
         # Installs WP-CLI tool
         install_wp_cli
         # Install WordPress by using wp-cli commands

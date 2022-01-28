@@ -631,6 +631,13 @@
             "metadata": {
                 "description": "Azure Location for all resources."
             }
+        },
+         "publicNetworkAccess": {
+            "type": "string",
+            "metadata": {
+                "description": "Value should be either Enabled or Disabled"
+            },
+            "defaultValue": "Enabled"
         }
     },
     "resources": [
@@ -798,7 +805,7 @@
         },
         {
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-10-01",
+            "apiVersion": "2019-08-01",
             "dependsOn": [
                 "Microsoft.Resources/deployments/networkTemplate"
             ],
@@ -823,7 +830,7 @@
                     }
                 },
                 "templateLink": {
-                    "uri": "[concat(variables('lampCommon').baseTemplateUrl, 'db-', parameters('dbServerType'), '.json', parameters('_artifactsLocationSasToken'))]"
+                    "uri": "[concat(variables('lampCommon').baseTemplateUrl, 'db-', parameters('dbServerType'), '-flex', '.json', parameters('_artifactsLocationSasToken'))]"
                 }
             }
         },
@@ -980,7 +987,7 @@
                         "value": "[variables('lampCommon')]"
                     },
                     "dbFQDN": {
-                        "value": "[reference('dbTemplate').outputs.dbFQDN.value]"
+                        "value":  "[concat(variables('lampCommon').serverName, variables('lampCommon').flexDbDomainName)]"
                     },
                     "storageAccountKey": {
                         "value": "[reference('storageAccountTemplate').outputs.storageAccountKey.value]"
@@ -1077,7 +1084,7 @@
         },
         "databaseDNS": {
             "type": "string",
-            "value": "[reference('dbTemplate').outputs.dbFQDN.value]"
+            "value":  "[concat(variables('lampCommon').serverName, variables('lampCommon').flexDbDomainName)]"
         },
         "databaseAdminUsername": {
             "type": "string",
@@ -1166,6 +1173,7 @@
             "fileServerType": "[parameters('fileServerType')]",
             "fileServerVmCount": 2,
             "fileServerVmSku": "[parameters('fileServerVmSku')]",
+            "flexDbDomainName": ".mysql.database.azure.com",
             "frontDoorFQDN": "[format('{0}.azurefd.net', concat('myLampFrontDoor', variables('resourceprefix')))]",
             "gatewayName": "[concat('vnet-gateway-',variables('resourceprefix'))]",
             "gatewayPublicIPName": "[concat('vnet-gw-ip-',variables('resourceprefix'))]",
@@ -1194,7 +1202,7 @@
             "myLampFrontDoor": "[concat('myLampFrontDoor', variables('resourceprefix'))]",
             "mysqlPgresHASwitch": "[parameters('mysqlPgresHASwitch')]",
             "mysqlPgresSkuHwFamily": "[parameters('mysqlPgresSkuHwFamily')]",
-            "mysqlPgresSkuName": "[if(not(empty(parameters('mysqlPgresSkuName'))), parameters('mysqlPgresSkuName'), concat(if(equals(parameters('mysqlPgresSkuTier'),'Basic'),'B', if(equals(parameters('mysqlPgresSkuTier'),'GeneralPurpose'),'GP', 'MO')), '_', parameters('mysqlPgresSkuHwFamily'), '_', string(parameters('mysqlPgresVcores'))))]",
+            "mysqlPgresSkuName": "[concat(if(equals(parameters('mysqlPgresSkuTier'),'Burstable'),'B', if(equals(parameters('mysqlPgresSkuTier'),'GeneralPurpose'),'GP', 'MO')), '_', parameters('mysqlPgresSkuHwFamily'), '_', string(parameters('mysqlPgresVcores')))]",
             "mysqlPgresSkuTier": "[parameters('mysqlPgresSkuTier')]",
             "mysqlPgresType": "[parameters('mysqlPgresType')]",
             "mysqlPgresStgSizeGB": "[parameters('mysqlPgresStgSizeGB')]",
@@ -1231,6 +1239,7 @@
             "subnetAppGw": "[concat('appgw-subnet-',variables('resourceprefix'))]",
             "subnetAppGwPrefix": "[concat(variables('octets')[0], '.', variables('octets')[1], '.', string(add(int(variables('octets')[2]),6)))]",
             "subnetAppGwRange": "[concat(variables('octets')[0], '.', variables('octets')[1], '.', string(add(int(variables('octets')[2]),6)), '.0/24')]",
+            "publicNetworkAccess": "Enabled",
             "subnetGateway": "GatewaySubnet",
             "subnetGatewayPrefix": "[concat(variables('octets')[0], '.', variables('octets')[1], '.', string(add(int(variables('octets')[2]),4)))]",
             "subnetGatewayRange": "[concat(variables('octets')[0], '.', variables('octets')[1], '.', string(add(int(variables('octets')[2]),4)), '.0/24')]",
