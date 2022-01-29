@@ -92,7 +92,7 @@
         },
         "azureFrontDoorSkuName": {
             "type": "string",
-            "defaultValue": "",
+            "defaultValue": "Premium_AzureFrontDoor",
             "allowedValues": [
                 "Standard_AzureFrontDoor",
                 "Premium_AzureFrontDoor"
