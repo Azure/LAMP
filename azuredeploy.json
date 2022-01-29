@@ -2,9 +2,9 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "TypeOfTemplate":{
-            "defaultValue":"LAMP ARM TEMPLATE",
-            "type":"string"
+        "TypeOfTemplate": {
+            "defaultValue": "LAMP ARM TEMPLATE",
+            "type": "string"
         },
         "_artifactsLocation": {
             "type": "string",
@@ -175,12 +175,12 @@
         },
         "UbuntuVersion": {
             "defaultValue": "18.04-LTS",
-            "allowedValues":[
+            "allowedValues": [
                 "16.04-LTS",
                 "18.04-LTS"
             ],
             "type": "string",
-            "metadata":{
+            "metadata": {
                 "description": "Select Ubuntu version. By default it will take 16.04-LTS"
             }
         },
@@ -632,7 +632,7 @@
                 "description": "Azure Location for all resources."
             }
         },
-         "publicNetworkAccess": {
+        "publicNetworkAccess": {
             "type": "string",
             "metadata": {
                 "description": "Value should be either Enabled or Disabled"
@@ -663,112 +663,109 @@
             "name": "[concat('myLampFrontDoor', variables('resourceprefix'))]",
             "location": "global",
             "properties": {
-              "routingRules": [  
-                {
-                  "name": "route-to-pubIP", 
-                  "properties": {
-                    "frontendEndpoints": [
-                      {
-                        "id": "[resourceId('Microsoft.Network/frontDoors/frontendEndpoints', variables('lampCommon').myLampFrontDoor, 'frontendEndpoint1')]"
-                      }
-                    ],
-                    "acceptedProtocols": [
-                      "Https"
-                    ],
-                    "patternsToMatch": [
-                      "/*"
-                    ],
-                    "routeConfiguration": {
-                      "@odata.type": "#Microsoft.Azure.FrontDoor.Models.FrontdoorForwardingConfiguration",
-                      "forwardingProtocol": "HttpOnly",
-                      "backendPool": {
-                        "id": "[resourceId('Microsoft.Network/frontDoors/backendPools', variables('lampCommon').myLampFrontDoor, 'backendPool1')]"
-                      }
+                "routingRules": [
+                    {
+                        "name": "route-to-pubIP",
+                        "properties": {
+                            "frontendEndpoints": [
+                                {
+                                    "id": "[resourceId('Microsoft.Network/frontDoors/frontendEndpoints', variables('lampCommon').myLampFrontDoor, 'frontendEndpoint1')]"
+                                }
+                            ],
+                            "acceptedProtocols": [
+                                "Https"
+                            ],
+                            "patternsToMatch": [
+                                "/*"
+                            ],
+                            "routeConfiguration": {
+                                "@odata.type": "#Microsoft.Azure.FrontDoor.Models.FrontdoorForwardingConfiguration",
+                                "forwardingProtocol": "HttpOnly",
+                                "backendPool": {
+                                    "id": "[resourceId('Microsoft.Network/frontDoors/backendPools', variables('lampCommon').myLampFrontDoor, 'backendPool1')]"
+                                }
+                            },
+                            "enabledState": "Enabled"
+                        }
                     },
-                    "enabledState": "Enabled"
-                  }
-                },
+                    {
+                        "name": "HTTP-to-HTTPS-redirect",
+                        "properties": {
+                            "frontendEndpoints": [
+                                {
+                                    "id": "[resourceId('Microsoft.Network/frontDoors/frontendEndpoints', variables('lampCommon').myLampFrontDoor, 'frontendEndpoint1')]"
+                                }
+                            ],
+                            "acceptedProtocols": [
+                                "Http"
+                            ],
+                            "patternsToMatch": [
+                                "/*"
+                            ],
+                            "routeConfiguration": {
+                                "@odata.type": "#Microsoft.Azure.FrontDoor.Models.FrontdoorRedirectConfiguration",
+                                "redirectProtocol": "HttpsOnly",
+                                "redirectType": "Found"
 
-
-                 {
-                  "name": "HTTP-to-HTTPS-redirect", 
-                  "properties": {
-                    "frontendEndpoints": [
-                      {
-                        "id": "[resourceId('Microsoft.Network/frontDoors/frontendEndpoints', variables('lampCommon').myLampFrontDoor, 'frontendEndpoint1')]"
-                      }
-                    ],
-                    "acceptedProtocols": [
-                      "Http"
-                    ],
-                    "patternsToMatch": [
-                      "/*"
-                    ],
-                    "routeConfiguration": {
-                      "@odata.type": "#Microsoft.Azure.FrontDoor.Models.FrontdoorRedirectConfiguration",
-                      "redirectProtocol": "HttpsOnly",
-                      "redirectType": "Found"
-
-                    },
-                    "enabledState": "Enabled"
-                  }
-                }
-
-              ],
-              "healthProbeSettings": [
-                {
-                  "name": "healthProbeSettings1",
-                  "properties": {
-                    "path": "/",
-                    "protocol": "Http",
-                    "healthProbeMethod": "HEAD",
-                    "intervalInSeconds": 75
-                  }
-                }
-              ],
-              "loadBalancingSettings": [
-                {
-                  "name": "loadBalancingSettings1",
-                  "properties": {
-                    "sampleSize": 4,
-                    "successfulSamplesRequired": 2
-                  }
-                }
-              ],
-              "backendPools": [
-                {
-                  "name": "backendPool1",
-                  "properties": {
-                    "backends": [
-                      {
-                        "address": "[reference('networkTemplate').outputs.lbPubIp.value]",
-                        "backendHostHeader": "[reference('networkTemplate').outputs.lbPubIp.value]",
-                        "httpPort": 80,
-                        "httpsPort": 443,
-                        "weight": 50,
-                        "priority": 1,
-                        "enabledState": "Enabled"
-                      }
-                    ],
-                    "loadBalancingSettings": {
-                      "id": "[resourceId('Microsoft.Network/frontDoors/loadBalancingSettings', variables('lampCommon').myLampFrontDoor, 'loadBalancingSettings1')]"
-                    },
-                    "healthProbeSettings": {
-                      "id": "[resourceId('Microsoft.Network/frontDoors/healthProbeSettings', variables('lampCommon').myLampFrontDoor, 'healthProbeSettings1')]"
+                            },
+                            "enabledState": "Enabled"
+                        }
                     }
-                  }
-                }
-              ],
-              "frontendEndpoints": [
-                {
-                  "name": "frontendEndpoint1",
-                  "properties": {
-                    "hostName": "[concat(variables('lampCommon').myLampFrontDoor, '.azurefd.net')]",
-                    "sessionAffinityEnabledState": "Disabled"
-                  }
-                }
-              ],
-              "enabledState": "Enabled"
+                ],
+                "healthProbeSettings": [
+                    {
+                        "name": "healthProbeSettings1",
+                        "properties": {
+                            "path": "/",
+                            "protocol": "Http",
+                            "healthProbeMethod": "HEAD",
+                            "intervalInSeconds": 75
+                        }
+                    }
+                ],
+                "loadBalancingSettings": [
+                    {
+                        "name": "loadBalancingSettings1",
+                        "properties": {
+                            "sampleSize": 4,
+                            "successfulSamplesRequired": 2
+                        }
+                    }
+                ],
+                "backendPools": [
+                    {
+                        "name": "backendPool1",
+                        "properties": {
+                            "backends": [
+                                {
+                                    "address": "[reference('networkTemplate').outputs.lbPubIp.value]",
+                                    "backendHostHeader": "[reference('networkTemplate').outputs.lbPubIp.value]",
+                                    "httpPort": 80,
+                                    "httpsPort": 443,
+                                    "weight": 50,
+                                    "priority": 1,
+                                    "enabledState": "Enabled"
+                                }
+                            ],
+                            "loadBalancingSettings": {
+                                "id": "[resourceId('Microsoft.Network/frontDoors/loadBalancingSettings', variables('lampCommon').myLampFrontDoor, 'loadBalancingSettings1')]"
+                            },
+                            "healthProbeSettings": {
+                                "id": "[resourceId('Microsoft.Network/frontDoors/healthProbeSettings', variables('lampCommon').myLampFrontDoor, 'healthProbeSettings1')]"
+                            }
+                        }
+                    }
+                ],
+                "frontendEndpoints": [
+                    {
+                        "name": "frontendEndpoint1",
+                        "properties": {
+                            "hostName": "[concat(variables('lampCommon').myLampFrontDoor, '.azurefd.net')]",
+                            "sessionAffinityEnabledState": "Disabled"
+                        }
+                    }
+                ],
+                "enabledState": "Enabled"
             }
         },
         {
@@ -987,7 +984,7 @@
                         "value": "[variables('lampCommon')]"
                     },
                     "dbFQDN": {
-                        "value":  "[concat(variables('lampCommon').serverName, variables('lampCommon').flexDbDomainName)]"
+                        "value": "[concat(variables('lampCommon').serverName, variables('lampCommon').flexDbDomainName)]"
                     },
                     "storageAccountKey": {
                         "value": "[reference('storageAccountTemplate').outputs.storageAccountKey.value]"
@@ -1084,7 +1081,7 @@
         },
         "databaseDNS": {
             "type": "string",
-            "value":  "[concat(variables('lampCommon').serverName, variables('lampCommon').flexDbDomainName)]"
+            "value": "[concat(variables('lampCommon').serverName, variables('lampCommon').flexDbDomainName)]"
         },
         "databaseAdminUsername": {
             "type": "string",
