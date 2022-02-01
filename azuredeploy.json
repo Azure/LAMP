@@ -2,9 +2,9 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "TypeOfTemplate":{
-            "defaultValue":"LAMP ARM TEMPLATE",
-            "type":"string"
+        "TypeOfTemplate": {
+            "defaultValue": "LAMP ARM TEMPLATE",
+            "type": "string"
         },
         "_artifactsLocation": {
             "type": "string",
@@ -175,12 +175,12 @@
         },
         "UbuntuVersion": {
             "defaultValue": "18.04-LTS",
-            "allowedValues":[
+            "allowedValues": [
                 "16.04-LTS",
                 "18.04-LTS"
             ],
             "type": "string",
-            "metadata":{
+            "metadata": {
                 "description": "Select Ubuntu version. By default it will take 16.04-LTS"
             }
         },
@@ -616,9 +616,10 @@
             "allowedValues": [
                 "5.4.1",
                 "5.4.2",
-                "5.4"
+                "5.4",
+                "5.8.3"
             ],
-            "defaultValue": "5.4.2",
+            "defaultValue": "5.8.3",
             "metadata": {
                 "description": "Select the CMS wordpress application version to be installed."
             },
@@ -630,6 +631,13 @@
             "metadata": {
                 "description": "Azure Location for all resources."
             }
+        },
+        "publicNetworkAccess": {
+            "type": "string",
+            "metadata": {
+                "description": "Value should be either Enabled or Disabled"
+            },
+            "defaultValue": "Enabled"
         }
     },
     "resources": [
@@ -644,6 +652,120 @@
                     "contentVersion": "1.0.0.0",
                     "resources": []
                 }
+            }
+        },
+        {
+            "type": "Microsoft.Network/frontDoors",
+            "apiVersion": "2020-07-01",
+            "dependsOn": [
+                "Microsoft.Resources/deployments/networkTemplate"
+            ],
+            "name": "[concat('myLampFrontDoor', variables('resourceprefix'))]",
+            "location": "global",
+            "properties": {
+                "routingRules": [
+                    {
+                        "name": "route-to-pubIP",
+                        "properties": {
+                            "frontendEndpoints": [
+                                {
+                                    "id": "[resourceId('Microsoft.Network/frontDoors/frontendEndpoints', variables('lampCommon').myLampFrontDoor, 'frontendEndpoint1')]"
+                                }
+                            ],
+                            "acceptedProtocols": [
+                                "Https"
+                            ],
+                            "patternsToMatch": [
+                                "/*"
+                            ],
+                            "routeConfiguration": {
+                                "@odata.type": "#Microsoft.Azure.FrontDoor.Models.FrontdoorForwardingConfiguration",
+                                "forwardingProtocol": "HttpOnly",
+                                "backendPool": {
+                                    "id": "[resourceId('Microsoft.Network/frontDoors/backendPools', variables('lampCommon').myLampFrontDoor, 'backendPool1')]"
+                                }
+                            },
+                            "enabledState": "Enabled"
+                        }
+                    },
+                    {
+                        "name": "HTTP-to-HTTPS-redirect",
+                        "properties": {
+                            "frontendEndpoints": [
+                                {
+                                    "id": "[resourceId('Microsoft.Network/frontDoors/frontendEndpoints', variables('lampCommon').myLampFrontDoor, 'frontendEndpoint1')]"
+                                }
+                            ],
+                            "acceptedProtocols": [
+                                "Http"
+                            ],
+                            "patternsToMatch": [
+                                "/*"
+                            ],
+                            "routeConfiguration": {
+                                "@odata.type": "#Microsoft.Azure.FrontDoor.Models.FrontdoorRedirectConfiguration",
+                                "redirectProtocol": "HttpsOnly",
+                                "redirectType": "Found"
+
+                            },
+                            "enabledState": "Enabled"
+                        }
+                    }
+                ],
+                "healthProbeSettings": [
+                    {
+                        "name": "healthProbeSettings1",
+                        "properties": {
+                            "path": "/",
+                            "protocol": "Http",
+                            "healthProbeMethod": "HEAD",
+                            "intervalInSeconds": 75
+                        }
+                    }
+                ],
+                "loadBalancingSettings": [
+                    {
+                        "name": "loadBalancingSettings1",
+                        "properties": {
+                            "sampleSize": 4,
+                            "successfulSamplesRequired": 2
+                        }
+                    }
+                ],
+                "backendPools": [
+                    {
+                        "name": "backendPool1",
+                        "properties": {
+                            "backends": [
+                                {
+                                    "address": "[reference('networkTemplate').outputs.lbPubIp.value]",
+                                    "backendHostHeader": "[reference('networkTemplate').outputs.lbPubIp.value]",
+                                    "httpPort": 80,
+                                    "httpsPort": 443,
+                                    "weight": 50,
+                                    "priority": 1,
+                                    "enabledState": "Enabled"
+                                }
+                            ],
+                            "loadBalancingSettings": {
+                                "id": "[resourceId('Microsoft.Network/frontDoors/loadBalancingSettings', variables('lampCommon').myLampFrontDoor, 'loadBalancingSettings1')]"
+                            },
+                            "healthProbeSettings": {
+                                "id": "[resourceId('Microsoft.Network/frontDoors/healthProbeSettings', variables('lampCommon').myLampFrontDoor, 'healthProbeSettings1')]"
+                            }
+                        }
+                    }
+                ],
+                "frontendEndpoints": [
+                    {
+                        "name": "frontendEndpoint1",
+                        "properties": {
+                            "hostName": "[concat(variables('lampCommon').myLampFrontDoor, '.azurefd.net')]",
+                            "sessionAffinityEnabledState": "Disabled"
+                        }
+                    }
+                ],
+                "enabledState": "Enabled"
             }
         },
         {
@@ -680,7 +802,7 @@
         },
         {
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-10-01",
+            "apiVersion": "2019-08-01",
             "dependsOn": [
                 "Microsoft.Resources/deployments/networkTemplate"
             ],
@@ -705,7 +827,7 @@
                     }
                 },
                 "templateLink": {
-                    "uri": "[concat(variables('lampCommon').baseTemplateUrl, 'db-', parameters('dbServerType'), '.json', parameters('_artifactsLocationSasToken'))]"
+                    "uri": "[concat(variables('lampCommon').baseTemplateUrl, 'db-', parameters('dbServerType'), '-flex', '.json', parameters('_artifactsLocationSasToken'))]"
                 }
             }
         },
@@ -862,7 +984,7 @@
                         "value": "[variables('lampCommon')]"
                     },
                     "dbFQDN": {
-                        "value": "[reference('dbTemplate').outputs.dbFQDN.value]"
+                        "value": "[concat(variables('lampCommon').serverName, variables('lampCommon').flexDbDomainName)]"
                     },
                     "storageAccountKey": {
                         "value": "[reference('storageAccountTemplate').outputs.storageAccountKey.value]"
@@ -949,13 +1071,17 @@
             "type": "string",
             "value": "[variables('lampCommon').siteURL]"
         },
+        "frontDoorFQDN": {
+            "type": "string",
+            "value": "[variables('lampCommon').frontDoorFQDN]"
+        },
         "controllerInstanceIP": {
             "type": "string",
             "value": "[reference('controllerTemplate').outputs.controllerIP.value]"
         },
         "databaseDNS": {
             "type": "string",
-            "value": "[reference('dbTemplate').outputs.dbFQDN.value]"
+            "value": "[concat(variables('lampCommon').serverName, variables('lampCommon').flexDbDomainName)]"
         },
         "databaseAdminUsername": {
             "type": "string",
@@ -1044,6 +1170,8 @@
             "fileServerType": "[parameters('fileServerType')]",
             "fileServerVmCount": 2,
             "fileServerVmSku": "[parameters('fileServerVmSku')]",
+            "flexDbDomainName": ".mysql.database.azure.com",
+            "frontDoorFQDN": "[format('{0}.azurefd.net', concat('myLampFrontDoor', variables('resourceprefix')))]",
             "gatewayName": "[concat('vnet-gateway-',variables('resourceprefix'))]",
             "gatewayPublicIPName": "[concat('vnet-gw-ip-',variables('resourceprefix'))]",
             "gatewayType": "[parameters('gatewayType')]",
@@ -1068,9 +1196,10 @@
             "mssqlDbSize": "[parameters('mssqlDbSize')]",
             "mssqlDbEdition": "[parameters('mssqlDbEdition')]",
             "mssqlVersion": "[parameters('mssqlVersion')]",
+            "myLampFrontDoor": "[concat('myLampFrontDoor', variables('resourceprefix'))]",
             "mysqlPgresHASwitch": "[parameters('mysqlPgresHASwitch')]",
             "mysqlPgresSkuHwFamily": "[parameters('mysqlPgresSkuHwFamily')]",
-            "mysqlPgresSkuName": "[if(not(empty(parameters('mysqlPgresSkuName'))), parameters('mysqlPgresSkuName'), concat(if(equals(parameters('mysqlPgresSkuTier'),'Basic'),'B', if(equals(parameters('mysqlPgresSkuTier'),'GeneralPurpose'),'GP', 'MO')), '_', parameters('mysqlPgresSkuHwFamily'), '_', string(parameters('mysqlPgresVcores'))))]",
+            "mysqlPgresSkuName": "[concat(if(equals(parameters('mysqlPgresSkuTier'),'Burstable'),'B', if(equals(parameters('mysqlPgresSkuTier'),'GeneralPurpose'),'GP', 'MO')), '_', parameters('mysqlPgresSkuHwFamily'), '_', string(parameters('mysqlPgresVcores')))]",
             "mysqlPgresSkuTier": "[parameters('mysqlPgresSkuTier')]",
             "mysqlPgresType": "[parameters('mysqlPgresType')]",
             "mysqlPgresStgSizeGB": "[parameters('mysqlPgresStgSizeGB')]",
@@ -1107,6 +1236,7 @@
             "subnetAppGw": "[concat('appgw-subnet-',variables('resourceprefix'))]",
             "subnetAppGwPrefix": "[concat(variables('octets')[0], '.', variables('octets')[1], '.', string(add(int(variables('octets')[2]),6)))]",
             "subnetAppGwRange": "[concat(variables('octets')[0], '.', variables('octets')[1], '.', string(add(int(variables('octets')[2]),6)), '.0/24')]",
+            "publicNetworkAccess": "Enabled",
             "subnetGateway": "GatewaySubnet",
             "subnetGatewayPrefix": "[concat(variables('octets')[0], '.', variables('octets')[1], '.', string(add(int(variables('octets')[2]),4)))]",
             "subnetGatewayRange": "[concat(variables('octets')[0], '.', variables('octets')[1], '.', string(add(int(variables('octets')[2]),4)), '.0/24')]",
@@ -1131,7 +1261,11 @@
             "webServerSetupScriptFilename": "setup_webserver.sh",
             "wpAdminPass": "[concat(toUpper('xl'), substring(uniqueString(resourceGroup().id, deployment().name), 6, 7),',1*8')]",
             "wpDbUserPass": "[concat('9#36^', substring(uniqueString(resourceGroup().id, deployment().name), 5, 8), toUpper('ercq'))]",
-            "wpVersion": "[parameters('wordpressVersion')]"
+            "wpVersion": "[parameters('wordpressVersion')]",
+            "profileName": "MyFrontDoor",
+            "originGroupName": "MyOriginGroup",
+            "originName": "MyOrigin",
+            "routeName": "MyRoute"
         },
         "certUrlArray": [
             {
