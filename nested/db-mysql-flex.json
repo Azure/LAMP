@@ -44,7 +44,6 @@
             "defaultValue": {},
             "type": "Object"
         },
-
         "serverParameters": {
             "type": "Object",
             "defaultValue": {
@@ -80,8 +79,7 @@
                 "publicNetworkAccess": "[parameters('lampCommon').publicNetworkAccess]",
                 // "Network": "[if(empty(parameters('vnetData').Network), json('null'), parameters('vnetData').Network)]",
                 "Storage": {
-                    //"StorageSizeGB": "[mul(parameters('lampCommon').mysqlPgresStgSizeGB, 1024)]"
-                    "storageSizeGB": "1024"
+                    "storageSizeGB": "[parameters('lampCommon').mysqlPgresStgSizeGB]"
                     // "Iops": "[parameters('storageIops')]",
                     // "Autogrow": "[parameters('storageAutogrow')]"
                 },
@@ -99,9 +97,8 @@
                 // }
             },
             "sku": {
-                //"name": "[parameters('lampCommon').mysqlPgresSkuName]",
-                "name": "Standard_D4ds_v4",
-                "tier": "GeneralPurpose"
+                "name": "[parameters('lampCommon').mysqlPgresComputeSize]",
+                "tier": "[parameters('lampCommon').mysqlPgresSkuTier]"
                 //"capacity": "2"
             },
             "resources": [
