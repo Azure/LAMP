@@ -24,6 +24,7 @@ function get_setup_params_from_configs_json
     export glusterNode=$(echo $json | jq -r .fileServerProfile.glusterVmName)
     export glusterVolume=$(echo $json | jq -r .fileServerProfile.glusterVolName)
     export siteFQDN=$(echo $json | jq -r .siteProfile.siteURL)
+    export frontDoorFQDN=$(echo $json | jq -r .siteProfile.frontDoorFQDN)
     export httpsTermination=$(echo $json | jq -r .siteProfile.httpsTermination)
     export dbIP=$(echo $json | jq -r .dbServerProfile.fqdn)
     export adminpass=$(echo $json | jq -r .lampProfile.adminPassword)
@@ -102,6 +103,7 @@ function create_wpconfig {
     local dbadminloginazure=$3
     local dbadminpass=$4
     local siteFQDN=$5
+    local wpHome=$6
 
     cat <<EOF >/azlamp/html/$siteFQDN/wp-config.php
   <?php
@@ -116,6 +118,8 @@ function create_wpconfig {
   *
   */
   // ** Azure Database for MySQL server settings - You can get the following details from Azure Portal** //
+  define( 'WP_HOME', '$wpHome' );
+  define('WP_SITEURL', '$wpHome' );
   /** Database name for WordPress */
   define('DB_NAME', '$applicationDbName');
   /** username for MySQL database */
@@ -141,6 +145,12 @@ function create_wpconfig {
   define('SECURE_AUTH_SALT', '9zIjp#dKMLLi{&Ag[Ig0Q]oP[[jN qNz<_Z= Gx#Ig/mi>k-J(oE6Prr&L[zR5Vp');
   define('LOGGED_IN_SALT',   '+(B*,@@5eH<?Mq7t-04>b>F%~C!6,+g?vf:w8N(Ne+nwA85N^U54#LHhssf1=>ap');
   define('NONCE_SALT',       'drEw_Z[MD z7Jv,t;WuR8&Q #z? D0c8RR!v*~mkSW1-PlXa9Bl>5&b|=Xe{z9a^');
+  
+  if (strpos(\$_SERVER['HTTP_X_FORWARDED_PROTO'], 'https') !== false)
+        \$_SERVER['HTTPS']='on';
+  else
+        \$_SERVER['HTTPS']='off';
+  
   /**
   * WordPress Database Table prefix.
   *
