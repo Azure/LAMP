@@ -254,6 +254,13 @@
             },
             "type": "string"
         },
+        "mysqlPgresComputeSize": {
+            "type": "string",
+            "defaultValue": "Standard_D4ds_v4",
+            "metadata": {
+                "description": "Compute size to be used for flexible MySQL/Postgress server."
+            }
+        },
         "mysqlVersion": {
             "allowedValues": [
                 "5.6",
@@ -1159,6 +1166,7 @@
             "mssqlDbEdition": "[parameters('mssqlDbEdition')]",
             "mssqlVersion": "[parameters('mssqlVersion')]",
             "myLampFrontDoor": "[concat('myLampFrontDoor', variables('resourceprefix'))]",
+            "mysqlPgresComputeSize": "[parameters('mysqlPgresComputeSize')]",
             "mysqlPgresHASwitch": "[parameters('mysqlPgresHASwitch')]",
             "mysqlPgresSkuHwFamily": "[parameters('mysqlPgresSkuHwFamily')]",
             "mysqlPgresSkuName": "[concat(if(equals(parameters('mysqlPgresSkuTier'),'Burstable'),'B', if(equals(parameters('mysqlPgresSkuTier'),'GeneralPurpose'),'GP', 'MO')), '_', parameters('mysqlPgresSkuHwFamily'), '_', string(parameters('mysqlPgresVcores')))]",
