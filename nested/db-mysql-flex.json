@@ -84,7 +84,7 @@
                 // "Autogrow": "[parameters('storageAutogrow')]"
               },
                 "Backup": {
-                    "backupRetentionDays": "[parameters('lampCommon').mysqlPgressBackupRetentionDays]",
+                    "backupRetentionDays": "[parameters('lampCommon').mysqlPgresBackupRetentionDays]",
                     "geoRedundantBackup": "Enabled"
                 } //,
                 //"availabilityZone": "[parameters('availabilityZone')]",

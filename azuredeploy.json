@@ -219,7 +219,7 @@
             },
             "type": "int"
         },
-        "mysqlPgressBackupRetentionDays": {
+        "mysqlPgresBackupRetentionDays": {
             "defaultValue": 7,
             "metadata":{
                 "description": "Backup retention days for the server."
@@ -1526,7 +1526,7 @@
             "mssqlDbEdition": "[parameters('mssqlDbEdition')]",
             "mssqlVersion": "[parameters('mssqlVersion')]",
             "myLampFrontDoor": "[concat('myLampFrontDoor', variables('resourceprefix'))]",
-            "mysqlPgressBackupRetentionDays": "[parameters('mysqlPgressBackupRetentionDays')]",
+            "mysqlPgresBackupRetentionDays": "[parameters('mysqlPgresBackupRetentionDays')]",
             "mysqlPgresComputeSize": "[parameters('mysqlPgresComputeSize')]",
             "mysqlPgresHASwitch": "[parameters('mysqlPgresHASwitch')]",
             "mysqlPgresSkuHwFamily": "[parameters('mysqlPgresSkuHwFamily')]",
