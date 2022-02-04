@@ -1225,14 +1225,6 @@
         }
     ],
     "outputs": {
-        "siteURL": {
-            "type": "string",
-            "value": "[variables('lampCommon').siteURL]"
-        },
-        "frontDoorFQDN": {
-            "type": "string",
-            "value": "[variables('lampCommon').frontDoorFQDN]"
-        },
         "controllerInstanceIP": {
             "type": "string",
             "value": "[reference('controllerTemplate').outputs.controllerIP.value]"
@@ -1292,6 +1284,7 @@
                 "fileServerType": "[variables('lampCommon').fileServerType]",
                 "fileServerVmCount": "[variables('lampCommon').fileServerVmCount]",
                 "fileServerVmSku": "[variables('lampCommon').fileServerVmSku]",
+                "frontDoorFQDN": "[variables('lampCommon').frontDoorFQDN]",
                 "gatewayName": "[variables('lampCommon').gatewayName]",
                 "gatewayPublicIPName": "[variables('lampCommon').gatewayPublicIPName]",
                 "gatewayType": "[variables('lampCommon').gatewayType]",
