@@ -686,7 +686,7 @@
         },
         "dbLoginPassword": {
             "type": "securestring",
-            "defaultValue": "",
+            "defaultValue": "[newGuid()]",
             "metadata": {
                 "description": "Password for DB Server."
             }
