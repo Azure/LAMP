@@ -237,8 +237,6 @@
         },
         "mysqlPgresStorageIops": {
             "defaultValue": 20000,
-            "minValue": 640,
-            "maxValue": 20000,
             "metadata": {
                 "description": "MySql/Postgresql storage IOPS."
             },
