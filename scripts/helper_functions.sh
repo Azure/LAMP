@@ -6,7 +6,7 @@
 function wait_for_apt_lock
 {
     while sudo fuser /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock /var/lib/apt/lists/lock /var/cache/apt/archives/lock /var/lib/apt/daily_lock >/dev/null 2>&1; do 
-        echo 'Waiting for release of dpkg/apt locks';
+        echo "`date`: waiting for release of dpkg/apt locks" >> /tmp/frontend-lock.log
         sleep 10;
     done;
 }
