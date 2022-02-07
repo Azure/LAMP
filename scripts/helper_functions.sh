@@ -2,6 +2,15 @@
 
 # Common functions definitions
 
+# waits for apt locks to be released
+function wait_for_apt_lock
+{
+    while sudo fuser /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock /var/lib/apt/lists/lock /var/cache/apt/archives/lock /var/lib/apt/daily_lock >/dev/null 2>&1; do 
+        echo "`date`: waiting for release of dpkg/apt locks" >> /tmp/frontend-lock.log
+        sleep 10;
+    done;
+}
+
 function get_setup_params_from_configs_json
 {
     local configs_json_path=${1}    # E.g., /var/lib/cloud/instance/lamp_on_azure_configs.json
@@ -259,7 +268,9 @@ function install_php_mssql_driver
     # Download and build php/mssql driver
     /usr/bin/curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
     /usr/bin/curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list > /etc/apt/sources.list.d/mssql-release.list
+    wait_for_apt_lock
     sudo apt-get update
+    wait_for_apt_lock
     sudo ACCEPT_EULA=Y apt-get install msodbcsql mssql-tools unixodbc-dev -y
     echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bash_profile
     echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
@@ -387,6 +398,7 @@ function create_raid0_ubuntu {
     if [ $_RET -eq 1 ];
     then 
         echo "installing mdadm"
+        wait_for_apt_lock
         sudo apt-get -y -q install mdadm
     fi
     echo "Creating raid0"
@@ -494,6 +506,7 @@ function configure_nfs_client_and_mount0 {
     local NFS_HOST_EXPORT_PATH=${1}   # E.g., controller-vm-ab12cd:/azlamp or 172.16.3.100:/drbd/data
     local MOUNTPOINT=${2}             # E.g., /azlamp
 
+    wait_for_apt_lock
     apt install -y nfs-common
     mkdir -p ${MOUNTPOINT}
 
