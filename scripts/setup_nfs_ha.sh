@@ -20,7 +20,9 @@ MY_IP=$(hostname -i)
 
 function setup_required_packages
 {
+    wait_for_apt_lock
     apt update
+    wait_for_apt_lock
     apt -y install build-essential autoconf flex nfs-kernel-server corosync pacemaker resource-agents
 
     # Shouldn't let systemd start nfs-kernel-server (Pacemaker should do that)
