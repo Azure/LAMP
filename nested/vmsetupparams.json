@@ -39,6 +39,7 @@
         "vmSetupParamsObj": {
             "siteProfile": {
                 "siteURL": "[parameters('lampCommon').siteURL]",
+                "frontDoorFQDN": "[parameters('lampCommon').frontDoorFQDN]",
                 "httpsTermination": "[parameters('lampCommon').httpsTermination]",
                 "thumbprintSslCert": "[parameters('lampCommon').thumbprintSslCert]",
                 "thumbprintCaCert": "[parameters('lampCommon').thumbprintCaCert]"
