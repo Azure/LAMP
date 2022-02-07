@@ -4,6 +4,9 @@
 # It will update groups_var/all file in playbook with the user inputs dynamically
 # It will execute ansible playbook for installing WordPress in host VM (controller VM)
 
+# import helper functions
+. ./helper_functions.sh
+
 log_path=/home/${3}/var.txt
 home_path=/home/${3}
 vars_path=/home/${3}/wordpress/group_vars/all
@@ -12,8 +15,11 @@ wp_admin_password=$(</dev/urandom tr -dc _A-Z-a-z-0-9 | head -c8)
 wp_db_user_pass=$(</dev/urandom tr -dc _A-Z-a-z-0-9 | head -c8)
 
 install_ansible() {
+  wait_for_apt_lock
   sudo apt-add-repository ppa:ansible/ansible -y
+  wait_for_apt_lock
   sudo apt-get update
+  wait_for_apt_lock
   sudo apt-get install ansible -y
 }
 configure_ansible() {
@@ -24,7 +30,9 @@ configure_ansible() {
   sudo chmod 755 /etc/ansible/hosts
 }
 install_svn() {
+  wait_for_apt_lock
   sudo apt-get update -y
+  wait_for_apt_lock
   sudo apt-get install -y subversion
 }
 wordpress_install() {

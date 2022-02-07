@@ -34,9 +34,14 @@ RAIDPARTITION="/dev/md1p1"
 # An set of disks to ignore from partitioning and formatting
 BLACKLIST="/dev/sda|/dev/sdb"
 
+#import helper functions
+. ./helper_functions.sh
+
 # make sure the system does automatic update
 # TODO: ENSURE THIS IS CONFIGURED CORRECTLY
+wait_for_apt_lock
 apt-get -y update
+wait_for_apt_lock
 apt-get -y install unattended-upgrades
 
 {
@@ -75,6 +80,7 @@ apt-get -y install unattended-upgrades
             if [ $_RET -eq 1 ];
             then 
                 echo "installing mdadm"
+                wait_for_apt_lock
                 apt-get -y -q install mdadm
             fi
             echo "Creating raid0"
@@ -188,12 +194,16 @@ apt-get -y install unattended-upgrades
             if [ ! -e /etc/apt/sources.list.d/gluster* ];
             then
                 echo "adding gluster ppa"
+                wait_for_apt_lock
                 apt-get  -y install python-software-properties
+                wait_for_apt_lock
                 apt-add-repository -y ppa:gluster/glusterfs-3.10
+                wait_for_apt_lock
                 apt-get -y update
             fi
             
             echo "installing gluster"
+            wait_for_apt_lock
             apt-get -y install glusterfs-server
             
             return

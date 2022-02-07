@@ -67,13 +67,17 @@ set -ex
     check_fileServerType_param $fileServerType
 
     #Updating php sources
+    wait_for_apt_lock
     sudo add-apt-repository ppa:ondrej/php -y
+    wait_for_apt_lock
     sudo apt-get update
 
     # make sure system does automatic updates and fail2ban
     export DEBIAN_FRONTEND=noninteractive
+    wait_for_apt_lock
     apt-get -y update
     # TODO: ENSURE THIS IS CONFIGURED CORRECTLY
+    wait_for_apt_lock
     apt-get -y install unattended-upgrades fail2ban
 
     config_fail2ban
@@ -83,6 +87,7 @@ set -ex
 
     if [ $fileServerType = "gluster" ]; then
         # configure gluster repository & install gluster client
+        wait_for_apt_lock
         add-apt-repository ppa:gluster/glusterfs-3.10 -y                 >> /tmp/apt1.log
     elif [ $fileServerType = "nfs" ]; then
         # configure NFS server and export
@@ -90,32 +95,44 @@ set -ex
         configure_nfs_server_and_export /azlamp
     fi
 
+    wait_for_apt_lock
     apt-get -y update                                                   >> /tmp/apt2.log
+    wait_for_apt_lock
     apt-get -y --force-yes install rsyslog git                          >> /tmp/apt3.log
 
     if [ $fileServerType = "gluster" ]; then
+        wait_for_apt_lock
         apt-get -y --force-yes install glusterfs-client                 >> /tmp/apt3.log
     elif [ "$fileServerType" = "azurefiles" ]; then
         # install azure cli & setup container
         AZ_REPO=$(lsb_release -cs)
         echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" |  tee /etc/apt/sources.list.d/azure-cli.list
         curl -L https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add - >> /tmp/apt3.log
+        wait_for_apt_lock
         sudo apt-get -y install apt-transport-https >> /tmp/apt3.log
+        wait_for_apt_lock
         sudo apt-get -y update > /dev/null
+        wait_for_apt_lock
         sudo apt-get -y install azure-cli >> /tmp/apt3.log
+        wait_for_apt_lock
         apt-get -y --force-yes install cifs-utils >> /tmp/apt3.log
     fi
 
     if [ $dbServerType = "mysql" ]; then
+        wait_for_apt_lock
         apt-get -y --force-yes install mysql-client >> /tmp/apt3.log
     elif [ "$dbServerType" = "postgres" ]; then
         #apt-get -y --force-yes install postgresql-client >> /tmp/apt3.log
         # Get a new version of Postgres to match Azure version (default Xenial postgresql-client version--previous line--is 9.5)
         # Note that this was done after create_db, but before pg_dump cron job setup (no idea why). If this change
         # causes any pgres install issue, consider reverting this ordering change...
+        wait_for_apt_lock
         add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main"
+        wait_for_apt_lock
         wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+        wait_for_apt_lock
         apt-get update
+        wait_for_apt_lock
         apt-get install -y postgresql-client-9.6
     fi
 

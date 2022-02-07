@@ -9,10 +9,14 @@ wooco_version=${3}
 wooco_dir_name=downloads.wordpress.org
 wooco_plugin_path=plugin/woocommerce
 
+#import helper functions
+. ./helper_functions.sh
+
 downloadwoocommerce(){
   wget -p ${wooco_URL} ${wooco_path}/
 }
 extractfile(){
+  wait_for_apt_lock
   sudo apt install unzip
   sudo unzip ${wooco_path}/${wooco_dir_name}/${wooco_plugin_path}.${wooco_version}.zip
   sudo cp -rf ${wooco_path}/woocommerce ${web_root}/wordpress/wp-content/plugins/
