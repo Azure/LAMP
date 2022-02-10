@@ -1520,6 +1520,7 @@
             "mysqlPgresBackupRetentionDays": "[parameters('mysqlPgresBackupRetentionDays')]",
             "mysqlPgresComputeSize": "[parameters('mysqlPgresComputeSize')]",
             "mysqlPgresHASwitch": "[parameters('mysqlPgresHASwitch')]",
+            "mysqlPgresHighAvailabilityMode": "[if(parameters('mysqlPgresHASwitch'), 'ZoneRedundant', 'Disabled')]",
             "mysqlPgresSkuHwFamily": "[parameters('mysqlPgresSkuHwFamily')]",
             "mysqlPgresSkuName": "[concat(if(equals(parameters('mysqlPgresSkuTier'),'Burstable'),'B', if(equals(parameters('mysqlPgresSkuTier'),'GeneralPurpose'),'GP', 'MO')), '_', parameters('mysqlPgresSkuHwFamily'), '_', string(parameters('mysqlPgresVcores')))]",
             "mysqlPgresSkuTier": "[parameters('mysqlPgresSkuTier')]",
