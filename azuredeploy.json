@@ -1307,6 +1307,7 @@
                 "mssqlDbSize": "[variables('lampCommon').mssqlDbSize]",
                 "mssqlDbEdition": "[variables('lampCommon').mssqlDbEdition]",
                 "mssqlVersion": "[variables('lampCommon').mssqlVersion]",
+                "mysqlPgresHASwitch": "[variables('lampCommon').mysqlPgresHASwitch]",
                 "mysqlPgresSkuHwFamily": "[variables('lampCommon').mysqlPgresSkuHwFamily]",
                 "mysqlPgresSkuName": "[variables('lampCommon').mysqlPgresSkuName]",
                 "mysqlPgresSkuTier": "[variables('lampCommon').mysqlPgresSkuTier]",
