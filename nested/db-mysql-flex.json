@@ -86,12 +86,12 @@
                 "Backup": {
                     "backupRetentionDays": "[parameters('lampCommon').mysqlPgresBackupRetentionDays]",
                     "geoRedundantBackup": "Enabled"
-                } //,
+                },
                 //"availabilityZone": "[parameters('availabilityZone')]",
-                //"highAvailability": {
-                //     "mode": "[parameters('haEnabled')]",
+                "highAvailability": {
+                    "mode": "[parameters('lampCommon').mysqlPgresHighAvailabilityMode]"
                 //     "standbyAvailabilityZone": "[parameters('standbyAvailabilityZone')]"
-                // },
+                }
                 // "dataencryption": {
                 //     "infrastructureEncryption": "[parameters('infrastructureEncryption')]"
                 // }
