@@ -107,6 +107,7 @@ set -ex
         # install azure cli & setup container
         AZ_REPO=$(lsb_release -cs)
         echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" |  tee /etc/apt/sources.list.d/azure-cli.list
+        wait_for_apt_lock
         curl -L https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add - >> /tmp/apt3.log
         wait_for_apt_lock
         sudo apt-get -y install apt-transport-https >> /tmp/apt3.log
@@ -152,27 +153,37 @@ set -ex
     
     # install pre-requisites
     # apt-get install -y --fix-missing python-software-properties unzip
+    wait_for_apt_lock
     sudo add-apt-repository ppa:ubuntu-toolchain-r/ppa
+    wait_for_apt_lock
     sudo apt-get -y update > /dev/null 2>&1
-     sudo apt-get -y install software-properties-common
+    wait_for_apt_lock
+    sudo apt-get -y install software-properties-common
+    wait_for_apt_lock
     sudo apt-get -y install unzip
 
 
     # install the entire stack
     # passing php versions $phpVersion
+    wait_for_apt_lock
     apt-get -y --force-yes install nginx php$phpVersion-fpm php$phpVersion php$phpVersion-cli php$phpVersion-curl php$phpVersion-zip >> /tmp/apt5.log
 
     # LAMP requirements
+    wait_for_apt_lock
     apt-get -y update > /dev/null
     # passing php versions $phpVersion
+    wait_for_apt_lock
     apt-get install -y --force-yes php$phpVersion-common php$phpVersion-soap php$phpVersion-json php$phpVersion-redis php$phpVersion-bcmath php$phpVersion-gd php$phpVersion-xmlrpc php$phpVersion-intl php$phpVersion-xml php$phpVersion-bz2 php-pear php$phpVersion-mbstring php$phpVersion-dev mcrypt >> /tmp/apt6.log
     PhpVer=$(get_php_version)
     if [ $dbServerType = "mysql" ]; then
+        wait_for_apt_lock
         apt-get install -y --force-yes php$phpVersion-mysql
     elif [ $dbServerType = "mssql" ]; then
+        wait_for_apt_lock
         apt-get install -y libapache2-mod-php$phpVersion  # Need this because install_php_mssql_driver tries to update apache2-mod-php settings always (which will fail without this)
         install_php_mssql_driver
     else
+        wait_for_apt_lock
         apt-get install -y --force-yes php$phpVersion-pgsql
     fi
 
