@@ -293,7 +293,7 @@ EOF
         install_wp_cli
         # Install WordPress by using wp-cli commands
         install_wordpress $dnsSite $wpTitle $wpAdminUser $wpAdminPassword $wpAdminEmail $wpPath
-        # Install WooCommerce plug-in
+        # Install W3 Total Cache plug-in
         install_plugins $wpPath
         # Generates the openSSL certificates
         generate_sslcerts $dnsSite
