@@ -490,6 +490,7 @@ function configure_nfs_server_and_export {
     local MOUNTPOINT=${1}     # E.g., /azlamp
 
     echo "Installing nfs server..."
+    wait_for_apt_lock
     apt install -y nfs-kernel-server
 
     echo "Exporting ${MOUNTPOINT}..."
