@@ -213,8 +213,8 @@ function install_wordpress {
 
 function install_plugins {
     local path=$1
-    wp plugin install woocommerce --path=$path --allow-root
-    wp plugin activate woocommerce --path=$path --allow-root
+    wp plugin install w3-total-cache --path=$path --allow-root
+    wp plugin activate w3-total-cache --path=$path --allow-root
     wp plugin activate akismet --path=$path --allow-root
     chown -R www-data:www-data $path
 }
@@ -490,6 +490,7 @@ function configure_nfs_server_and_export {
     local MOUNTPOINT=${1}     # E.g., /azlamp
 
     echo "Installing nfs server..."
+    wait_for_apt_lock
     apt install -y nfs-kernel-server
 
     echo "Exporting ${MOUNTPOINT}..."
