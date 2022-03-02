@@ -35,6 +35,7 @@
       <ul>
         <li><a href="#wordpress-endpoint">WordPress end-point and other essentials</a></li>
         <li><a href="#wordpress-creds">WordPress admin credentials</a></li>
+        <li><a href="#custom-domain">Configuring a custom domain</a></li>
       </ul>
     </li>
     <li><a href="#open-issues">Open Issues</a></li>
@@ -145,7 +146,7 @@ You should be now able to access your WordPress portal with the obtained credent
 
 ### <a name="custom-domain"></a>Configuring a custom domain
 
-You'll need to locate your deployment from the list of your current deployments and navigate to the underlying Azure infrastructure resource group from the "Essentials" area.
+If you have a custom domain parked at a domain registrar, these steps will guide you configure your custom domain to point to your WordPress deployment. Please note we do not yet support the ability to register custom domains. You'll need to locate your deployment from the list of your current deployments and navigate to the underlying Azure infrastructure resource group from the "Essentials" area.
 
 ![Azure Infrastructure resource group](images/azure_infra_rg.png)
 
