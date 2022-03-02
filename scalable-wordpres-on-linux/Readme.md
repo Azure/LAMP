@@ -105,9 +105,9 @@ Once you're  on the deployment screen, you should be able to kick off a deployme
 
 2. From the same location that you've used to kickoff a WordPress deployment, you will be able to locate the list of past deployments, if any exist. Clicking on any of these deployments will result in a deployment specific view that among other things, displays the following key information:
 
-a. Domain name / application end-point
-b. Deployment status
-c. The infrastructure resource group containing underlying Azure resources
+- Domain name / application end-point
+- Deployment status
+- The infrastructure resource group containing underlying Azure resources
 
   ![Deployment summary / essentials](images/essentials_manage.png)
 
