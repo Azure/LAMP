@@ -70,7 +70,7 @@ This is a new capability from Azure simplifying the deployment of scalable WordP
 <!-- GETTING STARTED -->
 ## <a name="getting-started"></a>Getting Started
 
-The first thing you'll need to do is to request your Azure subscription <a href="https://aka.ms/SWPPreview">be allowed</a> to access this capability. If your Azure subscription has already been approved to access this functionality, there's one more step you need to complete before being able to kick off deployments.
+The first thing you'll need to do is to request your Azure subscription <a href="https://aka.ms/SWPPreview">be allowed</a> to access this capability. If your Azure subscription has already been approved to access this functionality, there's one more step you need to complete (inside the Azure Portal) before being able to kick off deployments.
 
 ### <a name="registration"></a>Registering the Resource Provider
 
