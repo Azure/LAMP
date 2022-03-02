@@ -56,10 +56,10 @@ This is a new capability from Azure simplifying the deployment of scalable WordP
 
 | Deployment Size | Description |
 | --- | --- |
-| Small  | This deployment aims at a modest sized deployment that'll give faster deployment time (less than 15 minutes). This is best for dev/test scenarios that don't have high scale requirements. The web node is a 2 core, 4GiB RAM VM with MySQL running on a Burstable SKU with 1 core and 64 GB storage.
+| Small  | This option gives you a modest sized but faster deployment (less than 15 minutes). This is best for dev/test scenarios that don't have high scale requirements. The web node is a 2 core, 4GiB RAM VM with MySQL running on a Burstable SKU with 1 core and 64 GB storage.
 | Medium | This is best for applications that experience steady traffic. The web node is a 4 core, 8GiB RAM VM with MySQL running on a General Purpose SKU with 2 cores and 256 GB storage.
-|Large | This is best for applications that benefit from increased performance through caching. The web node is a 16 core, 32GiB RAM VM with MySQL running on a General Purpose SKU with 16 cores and 512 GB storage with a Premium P1 Azure Cache for Redis instance.
-| Extra Large | This is best for applications that may experience unpredictable growth. The web node is a 16 core, 32GiB RAM VM with MySQL running on a General Purpose SKU with 32 cores and 1024 GB storage with a Premium P1 Azure Cache for Redis instance.
+|Large | This option is best for applications that benefit from increased performance. The web node is a 16 core, 32GiB RAM VM with MySQL running on a General Purpose SKU with 16 cores and 512 GB storage.
+| Extra Large | This is best for applications that may experience unpredictable growth. The web node is a 16 core, 32GiB RAM VM with MySQL running on a General Purpose SKU with 32 cores and 1024 GB storage.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -77,7 +77,7 @@ You'll need to locate the subscription inside Azure that you've been allow liste
 
 ![Resource providers location](images/Sub_Properties_Azure_RP.png)
 
-Clicking on the "Resource providers" entry will take you to a list of resources where you'll need to filter on "Microsoft.Workloads" in the search bar. Once you narrow down, you should see an entry for "Microsoft.Workloads" whose status will read as "NotRegistered". With this entry selected, click on "Register" above the search to register this specific resource provider. 
+Clicking on the "Resource providers" entry will take you to a list of resources where you'll need to filter on "Microsoft.Workloads" in the search bar. Once you narrow this list down, you should see an entry for "Microsoft.Workloads" whose status will read as "NotRegistered". With this entry selected, click on "Register" above the search to register this specific resource provider. 
 
 ![Registering Workloads RP](images/registeringRP.png)
 
@@ -89,7 +89,7 @@ Once this step is complete, you're ready to head over to <a href="https://aka.ms
 
 ### <a name="deployment"></a>Deployment
 
-Once on the deployment screen, you should be able to kick off a deployment by selecting a "Deployment size" with most of the other fields having been auto-populated. Selecting a deployment size results in Azure infrastructure defaults being assigned based on the selected size. You're free to edit both the pre-populated fields on the Basics screen as well as head over to the "Advanced" tab to optionally tweak infrastructure options.
+Once you're  on the deployment screen, you should be able to kick off a deployment by selecting a "Deployment size" with most of the other fields having been auto-populated. Selecting a deployment size results in Azure infrastructure defaults being assigned based on the selected size. You're free to edit both the pre-populated fields on the Basics screen as well as head over to the "Advanced" tab to optionally tweak infrastructure options.
 
 ![Basic screen for deployment](images/basics_wp.png)
 
@@ -100,7 +100,7 @@ The deployment takes anywhere between ~15mins (Small) and an hour (Extra large) 
 
 ### <a name="wordpress-endpoint"></a>Accessing the WordPress application end-point
 
-From the same location that you've used to kickoff a WordPress deployment, you will be able to locate the list of current deployments. Clicking on any of these deployments will result in a deployment specific view that among other things, displays the following key information:
+From the same location that you've used to kickoff a WordPress deployment, you will be able to locate the list of past deployments, if any exist. Clicking on any of these deployments will result in a deployment specific view that among other things, displays the following key information:
 
 1. Domain name / application end-point
 2. Deployment status
@@ -110,20 +110,20 @@ From the same location that you've used to kickoff a WordPress deployment, you w
 
 ### <a name="wordpress-creds"></a>Getting WordPress admin credentials
 
-The default administrator username for your WordPress deployment is "admin". There are a few steps to locate the password
+The default administrator username for your WordPress deployment is "admin". As of today, there are a few extra steps to locate the administrator password.
 You'll need to locate your WordPress deployment and locate the Overview->Essentials section for said deployment. Once you do that, you'll need to click on your Infrastructure resource group to access your underlying Azure infrastructure:
 
 ![Infrastructure resource group](images/essentials_infra.png)
 
-Once you click into the Infrastructure group, you will see a list of underlying Azure resources that power your deployment. You'll need to locate an Azure resource with the name "controller-vm". This virtual machine is a jumpbox instance that you can use to locate your WordPress admin credentials. In addition, this virtual machine provides administrative options to manage your WordPress deployment from the command-line (in addition to using the WordPress admin interface from the browser).
+Once you click into the Azure Infrastructure group, you will see a list of underlying Azure resources that power your deployment. You'll need to locate an Azure resource with the name "controller-vm". This virtual machine is a jumpbox instance that you can use to locate your WordPress admin credentials. In addition, this virtual machine provides administrative options to manage your WordPress deployment from the command-line (in addition to using the WordPress admin interface from your web browser).
 
 ![Controller VM instance](images/locate_controller_vm.png)
 
-Click on the controller-vm instance to get to the essentials section for the controller-vm instancec. Here's where you'll locate the public IPv4 address that you'll use to SSH into the controller-vm:
+Click on the controller-vm instance to get to the essentials section for the controller-vm instance. Here's where you'll locate the public IPv4 address that you'll use to SSH into the controller-vm:
   
 ![Controller VM instance](images/controller_vm_ipv4.png)
   
-Once you have the IPv4 address handy, [locate an SSH client and your local SSH private keys](https://docs.microsoft.com/en-us/azure/virtual-machines/ssh-keys-portal#connect-to-the-vm) to securely login to the controller virtual machine. The default username for these deployments is "azureadmin" unless you've customized it to some other value at deployment time. With this information, you can now remotely connect to the controller virtual machine:
+Once you have the IPv4 address handy, [locate an SSH client and your local SSH private keys](https://docs.microsoft.com/en-us/azure/virtual-machines/ssh-keys-portal#connect-to-the-vm) to securely login to the controller virtual machine. The default username for these deployments is "azureuser" unless you've customized it to some other value at deployment time. With this information, you can now remotely connect to the controller virtual machine:
 
 ```
 ssh -i <path to the .pem file if applicable> azureadmin@vmcontroller-publicIP 
@@ -181,13 +181,13 @@ At this point, you'll need to click "Save" on the upper top left banner and wait
 
 ## <a name="open-issues"></a>Open Issues
 ### Deployment Failures
-1. You may see a rare deployment failure with an error "Internal Server Error" around the deployment of a MySQL database. This is being tracked internally and a fix is on the way. The recommendation is to try kicking off your deployment again.
+1. You may see a rare deployment failure with an error that reads "Internal Server Error" around the deployment of a MySQL database. This is being tracked internally and a fix is on the way. The recommendation is to try kicking off your deployment again.
 
 2. You may also see another deployment failure again with the MySQL Database provisioning. This is an artifact of an extremely rare but possible timing condition and a patch for this issue is in testing and expected to go live on around 14th of March 2022. The recommendation is to try kicking off another deployment.
 
 ### Infrastructure capabilities
-1. Azure Cache for Redis was removed as a caching option given the work needed to polish the integration with a WordPress plugin for enabling Redis as a cache. This is expected shortly after the private preview go live.
-2. Azure Monitoring for deployed infrastructure isn't available out of the box and needs to be manually configured by customers post-deployment. We're working on simplifying and coming up with a out-of-the-box solution in this area.
+1. Azure Cache for Redis was removed as a caching option as some more work is needed for seamless integration with popular WordPress plugins and having this functionality working out of the box. This functionality is expected shortly after the private preview go live.
+2. Azure Monitoring for deployed infrastructure isn't available out of the box and needs to be manually configured by customers post-deployment. We're working on simplifying and coming up with a out-of-the-box solution for monitoring your WordPress deployments.
 
 ### Fit and finish
 1. A partial or failed deployment will show up in the list of your WordPress deployments and you will have to click into the deployment to confirm deployment status for each deployment.
@@ -213,10 +213,13 @@ At this point, you'll need to click "Save" on the upper top left banner and wait
 **A:** Depending on customer feedback, we'll be able to expand this capability to other PHP applications such as Moodle, Drupal or Magento or even non PHP Linux applications, moving forward.
 
 
-**Q: Are Windows applications supported??**
+**Q: Are Windows applications supported?**
 
 **A:** At this point, we're targeting simplification of scalable Linux applications and have no plans for any Windows applications.
 
+**Q: How do I completely delete my WordPress deployment?**
+
+**A:** You should be able to select a deployment from the list of your WordPress deployments and select the delete option to completely remove your WordPress deployment.
 
 <!-- ROADMAP -->
 ## <a name="roadmap"></a>Roadmap
