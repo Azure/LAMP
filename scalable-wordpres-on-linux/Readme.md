@@ -84,7 +84,7 @@ The first thing you'll need to do is to request your Azure subscription <a href=
 
 This should take a few minutes to complete.
 
-    ![Registering Workloads RP](images/RP_Registered.png)
+  ![Registering Workloads RP](images/RP_Registered.png)
 
 3. Once this step is complete, you're ready to head over to <a href="https://aka.ms/wordpress-on-linux">deploy your scalable WordPress application</a> or look at your current deployments if you've deployed WordPress successfully at least once. On the same screen, you can also search for WordPress in the search bar to get the deployment capability as a search result.
 
@@ -94,7 +94,7 @@ This should take a few minutes to complete.
 
 Once you're  on the deployment screen, you should be able to kick off a deployment by selecting a "Deployment size" with most of the other fields having been auto-populated. Selecting a deployment size results in Azure infrastructure defaults being assigned based on the selected size. You're free to edit both the pre-populated fields on the Basics screen as well as head over to the "Advanced" tab to optionally tweak infrastructure options.
 
-    ![Basic screen for deployment](images/basics_wp.png)
+  ![Basic screen for deployment](images/basics_wp.png)
 
 
 ## <a name="post-deployment"></a>Post-Deployment
@@ -109,7 +109,7 @@ a. Domain name / application end-point
 b. Deployment status
 c. The infrastructure resource group containing underlying Azure resources
 
-    ![Deployment summary / essentials](images/essentials_manage.png)
+  ![Deployment summary / essentials](images/essentials_manage.png)
 
 ### <a name="wordpress-creds"></a>Getting WordPress admin credentials
 
@@ -138,7 +138,7 @@ cat /tmp/vars.txt | grep -A1 'WordPress' | tail -1
 ```
 
 The string that you see on your command line output is your WordPress administrator password.
-    ![Controller VM instance](images/wpadmin_password.png)
+     ![Controller VM instance](images/wpadmin_password.png)
 
 You should be now able to access your WordPress portal with the obtained credentials. 
 
