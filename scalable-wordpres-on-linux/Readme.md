@@ -171,9 +171,9 @@ You should be now able to access your WordPress portal with the obtained credent
 7. Once this step is done, what's left is to enable each of the two routing rules for the newly added custom domain. 
 
 #### HTTPS to HTTP Redirect:
-    ![HTTPS Redirect Routing Rule](images/FrontDoor_customDomainRoutingRuleHTTPSRedirect.png)
+   ![HTTPS Redirect Routing Rule](images/FrontDoor_customDomainRoutingRuleHTTPSRedirect.png)
 #### Route to Load Balancer:
-    ![HTTPS Redirect Routing Rule](images/FrontDoor_customDomainRoutingRuleRouteToLB.png)
+   ![HTTPS Redirect Routing Rule](images/FrontDoor_customDomainRoutingRuleRouteToLB.png)
 
 8. At this point, you'll need to click "Save" on the upper top left banner and wait for DNS changes to propagate. This could take any where between 5 and 15 minutes. 
 
@@ -240,7 +240,5 @@ You should be now able to access your WordPress portal with the obtained credent
 
 Umakanth Puppala - umpu@microsoft.com
 Venu Sivanadam - veshivan@microsoft.com
-
-Project Link: [https://github.com/github_username/repo_name](https://github.com/github_username/repo_name)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
