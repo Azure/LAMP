@@ -74,11 +74,11 @@ The first thing you'll need to do is to request your Azure subscription <a href=
 
 ### <a name="registration"></a>Registering the Resource Provider
 
-You'll need to locate the subscription inside Azure that you've been allow listed for and access the Subscription page for that particular subscription. Once you're on that page, locate the "Resource providers" on the lower left pane.
+1. You'll need to locate the subscription inside Azure that you've been allow listed for and access the Subscription page for that particular subscription. Once you're on that page, locate the "Resource providers" on the lower left pane.
 
 ![Resource providers location](images/Sub_Properties_Azure_RP.png)
 
-Clicking on the "Resource providers" entry will take you to a list of resources where you'll need to filter on "Microsoft.Workloads" in the search bar. Once you narrow this list down, you should see an entry for "Microsoft.Workloads" whose status will read as "NotRegistered". With this entry selected, click on "Register" above the search to register this specific resource provider. 
+2. Clicking on the "Resource providers" entry will take you to a list of resources where you'll need to filter on "Microsoft.Workloads" in the search bar. Once you narrow this list down, you should see an entry for "Microsoft.Workloads" whose status will read as "NotRegistered". With this entry selected, click on "Register" above the search to register this specific resource provider. 
 
 ![Registering Workloads RP](images/registeringRP.png)
 
@@ -86,24 +86,24 @@ This should take a few minutes to complete.
 
 ![Registering Workloads RP](images/RP_Registered.png)
 
-Once this step is complete, you're ready to head over to <a href="https://aka.ms/wordpress-on-linux">deploy your scalable WordPress application</a> or look at your current deployments if you've deployed WordPress successfully at least once. On the same screen, you can also search for WordPress in the search bar to get the deployment capability as a search result.
+3. Once this step is complete, you're ready to head over to <a href="https://aka.ms/wordpress-on-linux">deploy your scalable WordPress application</a> or look at your current deployments if you've deployed WordPress successfully at least once. On the same screen, you can also search for WordPress in the search bar to get the deployment capability as a search result.
 
 ![Deployment create screen](images/wordpress_search.png)
 
 ### <a name="deployment"></a>Deployment
 
-Once you're  on the deployment screen, you should be able to kick off a deployment by selecting a "Deployment size" with most of the other fields having been auto-populated. Selecting a deployment size results in Azure infrastructure defaults being assigned based on the selected size. You're free to edit both the pre-populated fields on the Basics screen as well as head over to the "Advanced" tab to optionally tweak infrastructure options.
+1. Once you're  on the deployment screen, you should be able to kick off a deployment by selecting a "Deployment size" with most of the other fields having been auto-populated. Selecting a deployment size results in Azure infrastructure defaults being assigned based on the selected size. You're free to edit both the pre-populated fields on the Basics screen as well as head over to the "Advanced" tab to optionally tweak infrastructure options.
 
 ![Basic screen for deployment](images/basics_wp.png)
 
 
 ## <a name="post-deployment"></a>Post-Deployment
 
-The deployment takes anywhere between ~25mins (Small) and an hour (Extra large) depending on the size of deployment chosen. Please note that these deployment times are mentioned as a guideline for the default Azure infrastructure options for each of the deployment sizes. In addition, once you kick off a deployment, you can walk away and let the deployment complete. 
+2. The deployment takes anywhere between ~25mins (Small) and an hour (Extra large) depending on the size of deployment chosen. Please note that these deployment times are mentioned as a guideline for the default Azure infrastructure options for each of the deployment sizes. In addition, once you kick off a deployment, you can walk away and let the deployment complete. 
 
 ### <a name="wordpress-endpoint"></a>Accessing the WordPress application end-point
 
-From the same location that you've used to kickoff a WordPress deployment, you will be able to locate the list of past deployments, if any exist. Clicking on any of these deployments will result in a deployment specific view that among other things, displays the following key information:
+3. From the same location that you've used to kickoff a WordPress deployment, you will be able to locate the list of past deployments, if any exist. Clicking on any of these deployments will result in a deployment specific view that among other things, displays the following key information:
 
 1. Domain name / application end-point
 2. Deployment status
@@ -113,26 +113,25 @@ From the same location that you've used to kickoff a WordPress deployment, you w
 
 ### <a name="wordpress-creds"></a>Getting WordPress admin credentials
 
-The default administrator username for your WordPress deployment is "admin". As of today, there are a few extra steps to locate the administrator password.
-You'll need to locate your WordPress deployment and locate the Overview->Essentials section for said deployment. Once you do that, you'll need to click on your Infrastructure resource group to access your underlying Azure infrastructure:
+1. The default administrator username for your WordPress deployment is "admin". As of today, there are a few extra steps to locate the administrator password. You'll need to locate your WordPress deployment and locate the Overview->Essentials section for said deployment. Once you do that, you'll need to click on your Infrastructure resource group to access your underlying Azure infrastructure:
 
 ![Infrastructure resource group](images/essentials_infra.png)
 
-Once you click into the Azure Infrastructure group, you will see a list of underlying Azure resources that power your deployment. You'll need to locate an Azure resource with the name "controller-vm". This virtual machine is a jumpbox instance that you can use to locate your WordPress admin credentials. In addition, this virtual machine provides administrative options to manage your WordPress deployment from the command-line (in addition to using the WordPress admin interface from your web browser).
+2. Once you click into the Azure Infrastructure group, you will see a list of underlying Azure resources that power your deployment. You'll need to locate an Azure resource with the name "controller-vm". This virtual machine is a jumpbox instance that you can use to locate your WordPress admin credentials. In addition, this virtual machine provides administrative options to manage your WordPress deployment from the command-line (in addition to using the WordPress admin interface from your web browser).
 
 ![Controller VM instance](images/locate_controller_vm.png)
 
-Click on the controller-vm instance to get to the essentials section for the controller-vm instance. Here's where you'll locate the public IPv4 address that you'll use to SSH into the controller-vm:
+3. Click on the controller-vm instance to get to the essentials section for the controller-vm instance. Here's where you'll locate the public IPv4 address that you'll use to SSH into the controller-vm:
   
 ![Controller VM instance](images/controller_vm_ipv4.png)
   
-Once you have the IPv4 address handy, [locate an SSH client and your local SSH private keys](https://docs.microsoft.com/en-us/azure/virtual-machines/ssh-keys-portal#connect-to-the-vm) to securely login to the controller virtual machine. The default username for these deployments is "azureuser" unless you've customized it to some other value at deployment time. With this information, you can now remotely connect to the controller virtual machine:
+4. Once you have the IPv4 address handy, [locate an SSH client and your local SSH private keys](https://docs.microsoft.com/en-us/azure/virtual-machines/ssh-keys-portal#connect-to-the-vm) to securely login to the controller virtual machine. The default username for these deployments is "azureuser" unless you've customized it to some other value at deployment time. With this information, you can now remotely connect to the controller virtual machine:
 
 ```
 ssh -i <path to the .pem file if applicable> azureuser@vmcontroller-publicIP 
 ```
 
-Once you're logged into the controller virtual machine, you can surface the randomly generated WordPress admin password:
+5. Once you're logged into the controller virtual machine, you can surface the randomly generated WordPress admin password:
 
 ```   
 cat /tmp/vars.txt | grep -A1 'WordPress' | tail -1
@@ -146,37 +145,37 @@ You should be now able to access your WordPress portal with the obtained credent
 
 ### <a name="custom-domain"></a>Configuring a custom domain
 
-If you have a custom domain parked at a domain registrar, these steps will guide you configure your custom domain to point to your WordPress deployment. Please note we do not yet support the ability to register custom domains. You'll need to locate your deployment from the list of your current deployments and navigate to the underlying Azure infrastructure resource group from the "Essentials" area.
+1. If you have a custom domain parked at a domain registrar, these steps will guide you configure your custom domain to point to your WordPress deployment. Please note we do not yet support the ability to register custom domains. You'll need to locate your deployment from the list of your current deployments and navigate to the underlying Azure infrastructure resource group from the "Essentials" area.
 
 ![Azure Infrastructure resource group](images/azure_infra_rg.png)
 
-Within this Azure infrastructure resource group is an Azure FrontDoor resource that you'll need to locate to begin the process of adding your custom domain name to your deployment:
+2. Within this Azure infrastructure resource group is an Azure FrontDoor resource that you'll need to locate to begin the process of adding your custom domain name to your deployment:
 
 ![FrontDoor infrastructure listing](images/azure_front_door_infra.png)
 
-Once you've located the Overview section, click on the "Front Door designer" option under Settings to bring up the "Frontends/domains". Click on the banner as seen below to bring up the custom domain addition panel.
+3. Once you've located the Overview section, click on the "Front Door designer" option under Settings to bring up the "Frontends/domains". Click on the banner as seen below to bring up the custom domain addition panel.
 ![FrontDoor Designer](images/FrontDoor_Domains.png)
 
-Please note that Azure Front Door does not support addition of root domains unless you're using Azure DNS. What this means is the custom domain that you're about to configure will need "www" in the domain URL. Attempting to add a custom domain will have the interface prompting you to configure your CNAME record for your custom domain
+4. Please note that Azure Front Door does not support addition of root domains unless you're using Azure DNS. What this means is the custom domain that you're about to configure will need "www" in the domain URL. Attempting to add a custom domain will have the interface prompting you to configure your CNAME record for your custom domain
 
 ![FrontDoor Custom Domain](images/FrontDoor_customDomain.png)
 
-For the next step, you'll have to leave Azure and configure your custom domain by editing the CNAME entry for your custom domain. 
+5. For the next step, you'll have to leave Azure and configure your custom domain by editing the CNAME entry for your custom domain. 
 
 ![FrontDoor Custom Domain](images/FrontDoor_domainregistrarCNAME.png)
 
-At this point, you'll need to return to the Front Door designer inside Azure and attempt to add the custom domain again:
+6. At this point, you'll need to return to the Front Door designer inside Azure and attempt to add the custom domain again:
 
 ![FrontDoor Custom domain added](images/FrontDoor_customDomainAdded.png)
 
-Once this step is done, what's left is to enable each of the two routing rules for the newly added custom domain. 
+7. Once this step is done, what's left is to enable each of the two routing rules for the newly added custom domain. 
 
 #### HTTPS to HTTP Redirect:
 ![HTTPS Redirect Routing Rule](images/FrontDoor_customDomainRoutingRuleHTTPSRedirect.png)
 #### Route to Load Balancer:
 ![HTTPS Redirect Routing Rule](images/FrontDoor_customDomainRoutingRuleRouteToLB.png)
 
-At this point, you'll need to click "Save" on the upper top left banner and wait for DNS changes to propagate. This could take any where between 5 and 15 minutes. 
+8. At this point, you'll need to click "Save" on the upper top left banner and wait for DNS changes to propagate. This could take any where between 5 and 15 minutes. 
 
 ![Custom Domain configured](images/customDomainFinal.png)
 
