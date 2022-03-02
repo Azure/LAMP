@@ -82,9 +82,9 @@ The first thing you'll need to do is to request your Azure subscription <a href=
 
     ![Registering Workloads RP](images/registeringRP.png)
 
-This should take a few minutes to complete.
+   This should take a few minutes to complete.
 
-  ![Registering Workloads RP](images/RP_Registered.png)
+    ![Registering Workloads RP](images/RP_Registered.png)
 
 3. Once this step is complete, you're ready to head over to <a href="https://aka.ms/wordpress-on-linux">deploy your scalable WordPress application</a> or look at your current deployments if you've deployed WordPress successfully at least once. On the same screen, you can also search for WordPress in the search bar to get the deployment capability as a search result.
 
@@ -99,15 +99,15 @@ Once you're  on the deployment screen, you should be able to kick off a deployme
 
 ## <a name="post-deployment"></a>Post-Deployment
 
-1. The deployment takes anywhere between ~25mins (Small) and an hour (Extra large) depending on the size of deployment chosen. Please note that these deployment times are mentioned as a guideline for the default Azure infrastructure options for each of the deployment sizes. In addition, once you kick off a deployment, you can walk away and let the deployment complete. 
+The deployment takes anywhere between ~25mins (Small) and an hour (Extra large) depending on the size of deployment chosen. Please note that these deployment times are mentioned as a guideline for the default Azure infrastructure options for each of the deployment sizes. In addition, once you kick off a deployment, you can walk away and let the deployment complete. 
 
 ### <a name="wordpress-endpoint"></a>Accessing the WordPress application end-point
 
-2. From the same location that you've used to kickoff a WordPress deployment, you will be able to locate the list of past deployments, if any exist. Clicking on any of these deployments will result in a deployment specific view that among other things, displays the following key information:
+From the same location that you've used to kickoff a WordPress deployment, you will be able to locate the list of past deployments, if any exist. Clicking on any of these deployments will result in a deployment specific view that among other things, displays the following key information:
 
-- Domain name / application end-point
-- Deployment status
-- The infrastructure resource group containing underlying Azure resources
+ - Domain name / application end-point
+ - Deployment status
+ - The infrastructure resource group containing underlying Azure resources
 
   ![Deployment summary / essentials](images/essentials_manage.png)
 
@@ -127,20 +127,20 @@ Once you're  on the deployment screen, you should be able to kick off a deployme
   
 4. Once you have the IPv4 address handy, [locate an SSH client and your local SSH private keys](https://docs.microsoft.com/en-us/azure/virtual-machines/ssh-keys-portal#connect-to-the-vm) to securely login to the controller virtual machine. The default username for these deployments is "azureuser" unless you've customized it to some other value at deployment time. With this information, you can now remotely connect to the controller virtual machine:
 
-```
-ssh -i <path to the .pem file if applicable> azureuser@vmcontroller-publicIP 
-```
+  ```
+  ssh -i <path to the .pem file if applicable> azureuser@vmcontroller-publicIP 
+  ```
 
 5. Once you're logged into the controller virtual machine, you can surface the randomly generated WordPress admin password:
 
-```   
-cat /tmp/vars.txt | grep -A1 'WordPress' | tail -1
-```
+  ```   
+  cat /tmp/vars.txt | grep -A1 'WordPress' | tail -1
+  ```
 
-The string that you see on your command line output is your WordPress administrator password.
-     ![Controller VM instance](images/wpadmin_password.png)
+  The string that you see on your command line output is your WordPress administrator password.
+      ![Controller VM instance](images/wpadmin_password.png)
 
-You should be now able to access your WordPress portal with the obtained credentials. 
+  You should be now able to access your WordPress portal with the obtained credentials. 
 
 
 ### <a name="custom-domain"></a>Configuring a custom domain
@@ -170,10 +170,10 @@ You should be now able to access your WordPress portal with the obtained credent
 
 7. Once this step is done, what's left is to enable each of the two routing rules for the newly added custom domain. 
 
-#### HTTPS to HTTP Redirect:
-   ![HTTPS Redirect Routing Rule](images/FrontDoor_customDomainRoutingRuleHTTPSRedirect.png)
-#### Route to Load Balancer:
-   ![HTTPS Redirect Routing Rule](images/FrontDoor_customDomainRoutingRuleRouteToLB.png)
+  #### HTTPS to HTTP Redirect:
+     ![HTTPS Redirect Routing Rule](images/FrontDoor_customDomainRoutingRuleHTTPSRedirect.png)
+  #### Route to Load Balancer:
+     ![HTTPS Redirect Routing Rule](images/FrontDoor_customDomainRoutingRuleRouteToLB.png)
 
 8. At this point, you'll need to click "Save" on the upper top left banner and wait for DNS changes to propagate. This could take any where between 5 and 15 minutes. 
 
