@@ -170,13 +170,13 @@ From the same location that you've used to kickoff a WordPress deployment, you w
 
 7. Once this step is done, what's left is to enable each of the two routing rules for the newly added custom domain. 
 
-  *HTTPS to HTTP Redirect:*
+   *HTTPS to HTTP Redirect:*
     
-   ![HTTPS Redirect Routing Rule](images/FrontDoor_customDomainRoutingRuleHTTPSRedirect.png)
+    ![HTTPS Redirect Routing Rule](images/FrontDoor_customDomainRoutingRuleHTTPSRedirect.png)
    
-  *Route to Load Balancer:*
+   *Route to Load Balancer:*
    
-   ![HTTPS Redirect Routing Rule](images/FrontDoor_customDomainRoutingRuleRouteToLB.png)
+    ![HTTPS Redirect Routing Rule](images/FrontDoor_customDomainRoutingRuleRouteToLB.png)
 
 8. At this point, you'll need to click "Save" on the upper top left banner and wait for DNS changes to propagate. This could take any where between 5 and 15 minutes. 
 
