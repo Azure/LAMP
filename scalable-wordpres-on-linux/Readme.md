@@ -15,8 +15,7 @@
 
 
 <!-- TABLE OF CONTENTS -->
-<details>
-  <summary>Table of Contents</summary>
+<summary>Table of Contents</summary>
   <ol>
     <li>
       <a href="#about-the-project">About Scalable WordPress on Azure</a>
@@ -43,10 +42,7 @@
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contact">Contact</a></li>
   </ol>
-</details>
-
-
-
+  
 <!-- ABOUT THE PROJECT -->
 ## <a name="about-the-project"></a>About Scalable WordPress on Azure
 
@@ -127,17 +123,17 @@ From the same location that you've used to kickoff a WordPress deployment, you w
   
 4. Once you have the IPv4 address handy, [locate an SSH client and your local SSH private keys](https://docs.microsoft.com/en-us/azure/virtual-machines/ssh-keys-portal#connect-to-the-vm) to securely login to the controller virtual machine. The default username for these deployments is "azureuser" unless you've customized it to some other value at deployment time. With this information, you can now remotely connect to the controller virtual machine:
 
-  ```
-  ssh -i <path to the .pem file if applicable> azureuser@vmcontroller-publicIP 
-  ```
+    ```
+    ssh -i <path to the .pem file if applicable> azureuser@vmcontroller-publicIP 
+    ```
 
 5. Once you're logged into the controller virtual machine, you can surface the randomly generated WordPress admin password:
 
-  ```   
-  cat /tmp/vars.txt | grep -A1 'WordPress' | tail -1
-  ```
+    ```   
+    cat /tmp/vars.txt | grep -A1 'WordPress' | tail -1
+    ```
 
-  The string that you see on your command line output is your WordPress administrator password.
+   The string that you see on your command line output is your WordPress administrator password.
       ![Controller VM instance](images/wpadmin_password.png)
 
   You should be now able to access your WordPress portal with the obtained credentials. 
