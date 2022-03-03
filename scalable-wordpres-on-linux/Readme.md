@@ -86,9 +86,15 @@ The first thing you'll need to do is to request your Azure subscription <a href=
 
     ![Registering Workloads RP](images/RP_Registered.png)
 
+<<<<<<< HEAD
 3. Once this step is complete, you're ready to head over to <a href="https://aka.ms/wordpress-on-linux">deploy your scalable WordPress application</a> or look at your current deployments if you've deployed WordPress successfully at least once. On the same screen, you can also search for WordPress in the search bar to get the deployment capability as a search result.
 
     ![Deployment create screen](images/wordpress_search.png)
+=======
+Once this step is complete, you're ready to head over to <a href="https://aka.ms/wordpress-on-linux">deploy your scalable WordPress application</a> or look at your current deployments if you've deployed WordPress successfully at least once. On the same screen, you can also search for WordPress in the search bar to get the deployment capability as a search result.
+
+![Deployment create screen](images/wordpress_search.png)
+>>>>>>> Azure/WaaSDevelop
 
 ### <a name="deployment"></a>Deployment
 
@@ -127,9 +133,15 @@ From the same location that you've used to kickoff a WordPress deployment, you w
   
 4. Once you have the IPv4 address handy, [locate an SSH client and your local SSH private keys](https://docs.microsoft.com/en-us/azure/virtual-machines/ssh-keys-portal#connect-to-the-vm) to securely login to the controller virtual machine. The default username for these deployments is "azureuser" unless you've customized it to some other value at deployment time. With this information, you can now remotely connect to the controller virtual machine:
 
+<<<<<<< HEAD
   ```
   ssh -i <path to the .pem file if applicable> azureuser@vmcontroller-publicIP 
   ```
+=======
+```
+ssh -i <path to the .pem file if applicable> azureuser@vmcontroller-publicIP 
+```
+>>>>>>> Azure/WaaSDevelop
 
 5. Once you're logged into the controller virtual machine, you can surface the randomly generated WordPress admin password:
 
@@ -244,4 +256,9 @@ From the same location that you've used to kickoff a WordPress deployment, you w
 Umakanth Puppala - umpu@microsoft.com
 Venu Sivanadam - veshivan@microsoft.com
 
+<<<<<<< HEAD
+=======
+Project Link: [https://github.com/github_username/repo_name](https://github.com/github_username/repo_name)
+
+>>>>>>> Azure/WaaSDevelop
 <p align="right">(<a href="#top">back to top</a>)</p>
