@@ -188,6 +188,8 @@ From the same location that you've used to kickoff a WordPress deployment, you w
 
 3. You may see a partial deployment where WordPress doesn't get deployed and you'll end up seeing an Nginx page. The issue here is with automation around apt-key usage and gpg. We're working on making this part more robust. For now, the workaround will be to delete your partial deployment and start over.
 
+4. You may experience a hung deployment where instead of the deployment completing in a reasonable and expected duration (30-60mins on an average), your deployment will remain in an "Accepted" state for several hours. This is the result of a rare but possible race condition with the backend. If your deployment is in progress for more than two hours, please delete your deployment and kick off another deployment. While this is still a rare scenario, we're working on currently patching the issue.
+
 ### Infrastructure capabilities
 1. Azure Cache for Redis was removed as a caching option as some more work is needed for seamless integration with popular WordPress plugins and having this functionality working out of the box. This functionality is expected shortly after the private preview go live.
 2. Azure Monitoring for deployed infrastructure isn't available out of the box and needs to be manually configured by customers post-deployment. We're working on simplifying and coming up with a out-of-the-box solution for monitoring your WordPress deployments.
