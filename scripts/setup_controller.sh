@@ -106,9 +106,8 @@ set -ex
     elif [ "$fileServerType" = "azurefiles" ]; then
         # install azure cli & setup container
         AZ_REPO=$(lsb_release -cs)
-        echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" |  tee /etc/apt/sources.list.d/azure-cli.list
-        wait_for_apt_lock
-        curl -L https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add - >> /tmp/apt3.log
+        wget -O - https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /usr/share/keyrings/microsoft-archive-keyring.gpg
+        echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft-archive-keyring.gpg] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" |  tee /etc/apt/sources.list.d/azure-cli.list
         wait_for_apt_lock
         sudo apt-get -y install apt-transport-https >> /tmp/apt3.log
         wait_for_apt_lock
