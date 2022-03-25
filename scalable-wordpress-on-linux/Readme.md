@@ -82,21 +82,7 @@ The first thing you'll need to do is to request your Azure subscription <a href=
 
     ![Registering Workloads RP](images/RP_Registered.png)
 
-3. You'll need to repeat the above process for each of the below Azure resource providers. Most, if not all of the below resources providers should be enabled for your subscription. However, this step will serve as a quick check nonetheless:
-
-   a. Microsoft.DBforMySQL
-      ![Check for MySQL RP](images/MySQLRP_Registered.png)
-
-   b. Microsoft.Storage
-      ![Check for MySQL RP](images/StorageRP_Registered.png)
-
-   c. Microsoft.Compute
-      ![Check for MySQL RP](images/ComputeRP_Registered.png)
-      
-   d. Microsoft.Network
-      ![Check for MySQL RP](images/NetworkRP_Registered.png)
-
-4. You're now ready to head over to <a href="https://aka.ms/wordpress-on-linux">deploy your scalable WordPress application</a> or look at your current deployments if you've deployed WordPress successfully at least once. On the same screen, you can also search for WordPress in the search bar to get the deployment capability as a search result.
+3. You're now ready to head over to <a href="https://aka.ms/wordpress-on-linux">deploy your scalable WordPress application</a> or look at your current deployments if you've deployed WordPress successfully at least once. On the same screen, you can also search for WordPress in the search bar to get the deployment capability as a search result.
 
     ![Deployment create screen](images/wordpress_search.png)
 
