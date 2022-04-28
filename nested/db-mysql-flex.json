@@ -105,14 +105,11 @@
                 {
                     "type": "Microsoft.DBforMySQL/flexibleServers/configurations",
                     "apiVersion": "2021-05-01",
-                    //"name": "[concat(parameters('lampCommon').serverName, '/', parameters('lampCommon').serverParameters.parameters[0].name)]",
-                    "name": "[concat(parameters('lampCommon').serverName, '/', parameters('serverParameters').parameters[0].name)]",
+                    "name": "[variables('flexConfigName')]",
                     "dependsOn": [
                         "[concat('Microsoft.DBforMySQL/flexibleServers/', parameters('lampCommon').serverName)]"
                     ],
                     "properties": {
-                        //   "value": "[parameters('lampCommon').serverParameters.parameters[0].value]",
-                        //   "source": "[parameters('lampCommon').serverParameters.parameters[0].source]"
                         "value": "[parameters('serverParameters').parameters[0].value]",
                         "source": "[parameters('serverParameters').parameters[0].source]"
                     }
@@ -121,10 +118,11 @@
                 {
                     "apiVersion": "2021-05-01",
                     "dependsOn": [
-                        "[concat('Microsoft.DBforMySQL/flexibleServers/', parameters('lampCommon').serverName)]"
+                        "[concat('Microsoft.DBforMySQL/flexibleServers/', parameters('lampCommon').serverName)]",
+                        "[concat('Microsoft.DBforMySQL/flexibleServers/configurations/', variables('flexConfigName'))]"
                     ],
                     "location": "[parameters('lampCommon').location]",
-                    "name": "mysql-firewall-allow-lb",
+                    "name": "[variables('firewallResourceNames').allowLoadBalancer]",
                     "properties": {
                         "startIpAddress": "[parameters('lbPubIp')]",
                         "endIpAddress": "[parameters('lbPubIp')]"
@@ -134,10 +132,11 @@
                 {
                     "apiVersion": "2021-05-01",
                     "dependsOn": [
-                        "[concat('Microsoft.DBforMySQL/flexibleServers/', parameters('lampCommon').serverName)]"
+                        "[concat('Microsoft.DBforMySQL/flexibleServers/', parameters('lampCommon').serverName)]",
+                        "[concat('Microsoft.DBforMySQL/flexibleServers/firewallRules/', variables('firewallResourceNames').allowLoadBalancer)]"
                     ],
                     "location": "[parameters('lampCommon').location]",
-                    "name": "mysql-firewall-allow-lb-out001",
+                    "name": "[variables('firewallResourceNames').allowLoadBalancerOut001]",
                     "properties": {
                         "startIpAddress": "[parameters('lbOut001PubIp')]",
                         "endIpAddress": "[parameters('lbOut001PubIp')]"
@@ -147,10 +146,11 @@
                 {
                     "apiVersion": "2021-05-01",
                     "dependsOn": [
-                        "[concat('Microsoft.DBforMySQL/flexibleServers/', parameters('lampCommon').serverName)]"
+                        "[concat('Microsoft.DBforMySQL/flexibleServers/', parameters('lampCommon').serverName)]",
+                        "[concat('Microsoft.DBforMySQL/flexibleServers/firewallRules/', variables('firewallResourceNames').allowLoadBalancerOut001)]"
                     ],
                     "location": "[parameters('lampCommon').location]",
-                    "name": "mysql-firewall-allow-lb-out002",
+                    "name": "[variables('firewallResourceNames').allowLoadBalancerOut002]",
                     "properties": {
                         "startIpAddress": "[parameters('lbOut002PubIp')]",
                         "endIpAddress": "[parameters('lbOut002PubIp')]"
@@ -160,10 +160,11 @@
                 {
                     "apiVersion": "2021-05-01",
                     "dependsOn": [
-                        "[concat('Microsoft.DBforMySQL/flexibleServers/', parameters('lampCommon').serverName)]"
+                        "[concat('Microsoft.DBforMySQL/flexibleServers/', parameters('lampCommon').serverName)]",
+                        "[concat('Microsoft.DBforMySQL/flexibleServers/firewallRules/', variables('firewallResourceNames').allowLoadBalancerOut002)]"
                     ],
                     "location": "[parameters('lampCommon').location]",
-                    "name": "mysql-firewall-allow-ctlr",
+                    "name": "[variables('firewallResourceNames').allowControllerVM]",
                     "properties": {
                         "startIpAddress": "[parameters('ctlrPubIp')]",
                         "endIpAddress": "[parameters('ctlrPubIp')]"
@@ -180,6 +181,14 @@
         }
     },
     "variables": {
+        "flexConfigName": "[concat(parameters('lampCommon').serverName, '/', parameters('serverParameters').parameters[0].name)]",
+        "firewallResourceNames": {
+            "allowControllerVM": "mysql-firewall-allow-ctlr",
+            "allowLoadBalancer": "mysql-firewall-allow-lb",
+            "allowLoadBalancerOut001": "mysql-firewall-allow-lb-out001",
+            "allowLoadBalancerOut002": "mysql-firewall-allow-lb-out002",
+
+        },
         "documentation1": "This sub-template creates a mysql server.  It expects certain values in the 'common' datastructure.",
         "documentation10": " serverName                 - Mysql server name",
         "documentation11": " mysqlVersion               - Mysql version",
