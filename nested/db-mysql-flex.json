@@ -133,7 +133,7 @@
                     "apiVersion": "2021-05-01",
                     "dependsOn": [
                         "[concat('Microsoft.DBforMySQL/flexibleServers/', parameters('lampCommon').serverName)]",
-                        "[concat('Microsoft.DBforMySQL/flexibleServers/firewallRules/', variables('firewallResourceNames').allowLoadBalancer)]"
+                        "[concat('firewallRules/', variables('firewallResourceNames').allowLoadBalancer)]"
                     ],
                     "location": "[parameters('lampCommon').location]",
                     "name": "[variables('firewallResourceNames').allowLoadBalancerOut001]",
@@ -147,7 +147,7 @@
                     "apiVersion": "2021-05-01",
                     "dependsOn": [
                         "[concat('Microsoft.DBforMySQL/flexibleServers/', parameters('lampCommon').serverName)]",
-                        "[concat('Microsoft.DBforMySQL/flexibleServers/firewallRules/', variables('firewallResourceNames').allowLoadBalancerOut001)]"
+                        "[concat('firewallRules/', variables('firewallResourceNames').allowLoadBalancerOut001)]"
                     ],
                     "location": "[parameters('lampCommon').location]",
                     "name": "[variables('firewallResourceNames').allowLoadBalancerOut002]",
@@ -161,7 +161,7 @@
                     "apiVersion": "2021-05-01",
                     "dependsOn": [
                         "[concat('Microsoft.DBforMySQL/flexibleServers/', parameters('lampCommon').serverName)]",
-                        "[concat('Microsoft.DBforMySQL/flexibleServers/firewallRules/', variables('firewallResourceNames').allowLoadBalancerOut002)]"
+                        "[concat('firewallRules/', variables('firewallResourceNames').allowLoadBalancerOut002)]"
                     ],
                     "location": "[parameters('lampCommon').location]",
                     "name": "[variables('firewallResourceNames').allowControllerVM]",
