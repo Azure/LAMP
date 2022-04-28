@@ -114,12 +114,10 @@
                         "source": "[parameters('serverParameters').parameters[0].source]"
                     }
                 },
-
                 {
                     "apiVersion": "2021-05-01",
                     "dependsOn": [
-                        "[concat('Microsoft.DBforMySQL/flexibleServers/', parameters('lampCommon').serverName)]",
-                        "[variables('flexConfigName')]"
+                        "[concat('Microsoft.DBforMySQL/flexibleServers/', parameters('lampCommon').serverName)]"
                     ],
                     "location": "[parameters('lampCommon').location]",
                     "name": "[variables('firewallResourceNames').allowLoadBalancer]",
