@@ -184,8 +184,7 @@
             "allowControllerVM": "mysql-firewall-allow-ctlr",
             "allowLoadBalancer": "mysql-firewall-allow-lb",
             "allowLoadBalancerOut001": "mysql-firewall-allow-lb-out001",
-            "allowLoadBalancerOut002": "mysql-firewall-allow-lb-out002",
-
+            "allowLoadBalancerOut002": "mysql-firewall-allow-lb-out002"
         },
         "documentation1": "This sub-template creates a mysql server.  It expects certain values in the 'common' datastructure.",
         "documentation10": " serverName                 - Mysql server name",
