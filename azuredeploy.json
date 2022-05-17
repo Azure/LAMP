@@ -1396,7 +1396,7 @@
             "value": {
                 "dbServerType": "[variables('lampCommon').dbServerType]",
                 "msSqlServerResourceId": "[resourceId('Microsoft.Sql/servers', variables('lampCommon').serverName)]",
-                "mySqlServerResourceId": "[resourceId('Microsoft.DBforMySQL/servers', variables('lampCommon').serverName)]",
+                "mySqlServerResourceId": "[resourceId('Microsoft.DBforMySQL/flexibleServers', variables('lampCommon').serverName)]",
                 "postgressServerResourceId": "[resourceId('Microsoft.Storage/storageAccounts', variables('lampCommon').serverName)]"
             }
         },
