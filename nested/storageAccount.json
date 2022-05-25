@@ -15,7 +15,7 @@
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-06-01",
             "location": "[parameters('lampCommon').location]",
-            "name": "[variables('storageName')]",
+            "name": "[concat(parameters('lampCommon').storageAccountName, 'naf')]",
             "kind": "Storage",
             "sku": {
                 "name": "[parameters('lampCommon').storageAccountType]"
@@ -46,7 +46,7 @@
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-06-01",
             "location": "[parameters('lampCommon').location]",
-            "name": "[variables('storageName')]",
+            "name": "[concat(parameters('lampCommon').storageAccountName,'af')]",
             "kind": "Storage",
             "sku": {
                 "name": "[parameters('lampCommon').storageAccountType]"
