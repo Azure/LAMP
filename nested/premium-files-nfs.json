@@ -1,0 +1,103 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "lampCommon": {
+            "metadata": {
+                "description": "Common LAMP values"
+            },
+            "type": "object"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-06-01",
+            "location": "[parameters('lampCommon').location]",
+            "name": "[variables('storageName')]",
+            "kind": "FileStorage",
+            "sku": {
+                "name": "[parameters('lampCommon').storageAccountType]",
+                "tier": "Premium"
+            },
+            "properties": {
+                "publicNetworkAccess": "Enabled",
+                "largeFileSharesState": "Enabled",
+                "minimumTlsVersion": "TLS1_2",
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [
+                        {
+                            "id": "[variables('subnetId')]",
+                            "action": "Allow"
+                        }
+                    ],
+                    "ipRules": [],
+                    "defaultAction": "Deny"
+                },
+                "supportsHttpsTrafficOnly": false,
+                "encryption": {
+                    "services": {
+                        "file": {
+                            "keyType": "Account",
+                            "enabled": true
+                        },
+                        "blob": {
+                            "keyType": "Account",
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/fileServices",
+            "apiVersion": "2021-09-01",
+            "name": "[concat(variables('storageName'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageName'))]"
+            ],
+            "sku": {
+                "name": "[parameters('lampCommon').storageAccountType]",
+                "tier": "Premium"
+            },
+            "properties": {
+                "protocolSettings": {
+                    "smb": {
+                        "multichannel": {
+                            "enabled": false
+                        }
+                    }
+                },
+                "cors": {
+                    "corsRules": []
+                },
+                "shareDeleteRetentionPolicy": {
+                    "enabled": true,
+                    "days": 7
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+            "apiVersion": "2021-09-01",
+            "name": "[concat(variables('storageName'), '/default/azlamp')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/fileServices', variables('storageName'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageName'))]"
+            ],
+            "properties": {
+                "accessTier": "Premium",
+                "shareQuota": "[parameters('lampCommon').fileServerDiskSize]",
+                "enabledProtocols": "NFS",
+                "rootSquash": "NoRootSquash"
+            }
+        }
+    ],
+    "variables": {
+        "storageName": "[concat(parameters('lampCommon').storageAccountName, 'af')]",
+        "subnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('lampCommon').vnetName, parameters('lampCommon').subnetWeb)]"
+    },
+    "outputs": { }
+}

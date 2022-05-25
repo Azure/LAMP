@@ -70,7 +70,7 @@ set -ex
     wait_for_apt_lock
     sudo add-apt-repository ppa:ondrej/php -y
     wait_for_apt_lock
-    sudo apt-get update
+    sudo apt-get update -y
 
     # make sure system does automatic updates and fail2ban
     export DEBIAN_FRONTEND=noninteractive
@@ -104,18 +104,24 @@ set -ex
         wait_for_apt_lock
         apt-get -y --force-yes install glusterfs-client                 >> /tmp/apt3.log
     elif [ "$fileServerType" = "azurefiles" ]; then
-        # install azure cli & setup container
-        AZ_REPO=$(lsb_release -cs)
-        wget -O - https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /usr/share/keyrings/microsoft-archive-keyring.gpg
-        echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft-archive-keyring.gpg] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" |  tee /etc/apt/sources.list.d/azure-cli.list
-        wait_for_apt_lock
-        sudo apt-get -y install apt-transport-https >> /tmp/apt3.log
-        wait_for_apt_lock
-        sudo apt-get -y update > /dev/null
-        wait_for_apt_lock
-        sudo apt-get -y install azure-cli >> /tmp/apt3.log
-        wait_for_apt_lock
-        apt-get -y --force-yes install cifs-utils >> /tmp/apt3.log
+        if [ "$storageAccountType" = "Premium_LRS" ]; then
+            # install NFS client packages.
+            wait_for_apt_lock
+            sudo apt-get install -y --force-yes nfs-common >> /tmp/apt3.log
+        else
+            # install azure cli & setup container
+            AZ_REPO=$(lsb_release -cs)
+            wget -O - https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /usr/share/keyrings/microsoft-archive-keyring.gpg
+            echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft-archive-keyring.gpg] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" |  tee /etc/apt/sources.list.d/azure-cli.list
+            wait_for_apt_lock
+            sudo apt-get -y install apt-transport-https >> /tmp/apt3.log
+            wait_for_apt_lock
+            sudo apt-get -y update > /dev/null
+            wait_for_apt_lock
+            sudo apt-get -y install azure-cli >> /tmp/apt3.log
+            wait_for_apt_lock
+            apt-get -y --force-yes install cifs-utils >> /tmp/apt3.log
+        fi
     fi
 
     if [ $dbServerType = "mysql" ]; then
@@ -153,7 +159,7 @@ set -ex
     # install pre-requisites
     # apt-get install -y --fix-missing python-software-properties unzip
     wait_for_apt_lock
-    sudo add-apt-repository ppa:ubuntu-toolchain-r/ppa
+    sudo add-apt-repository -y ppa:ubuntu-toolchain-r/ppa
     wait_for_apt_lock
     sudo apt-get -y update > /dev/null 2>&1
     wait_for_apt_lock
@@ -211,40 +217,44 @@ set -ex
     systemctl stop php${PhpVer}-fpm
 
     if [ $fileServerType = "azurefiles" ]; then
-        # Delayed copy of azlamp installation to the Azure Files share
+        if [ "$storageAccountType" = "Premium_LRS" ]; then
+            setup_and_mount_azlamp_nfs_files_share $storageAccountName
+        else
+            # Delayed copy of azlamp installation to the Standard Azure Files share
 
-        # First rename azlamp directory to something else
-        mv /azlamp /azlamp_old_delete_me
-        # Then create the azlamp share
-        echo -e '\n\rCreating an Azure Files share for azlamp'
-        create_azure_files_share azlamp $storageAccountName $storageAccountKey /tmp/wabs.log $fileServerDiskSize
-        # Set up and mount Azure Files share. Must be done after nginx is installed because of www-data user/group
-        echo -e '\n\rSetting up and mounting Azure Files share on //'$storageAccountName'.file.core.windows.net/azlamp on /azlamp\n\r'
-        setup_and_mount_azure_files_share azlamp $storageAccountName $storageAccountKey
-        # Move the local installation over to the Azure Files
-        echo -e '\n\rMoving locally installed azlamp over to Azure Files'
-        #cp -a /azlamp_old_delete_me/* /azlamp || true # Ignore case sensitive directory copy failure
-        # install azcopy
-      wget -q -O azcopy_v10.tar.gz https://aka.ms/downloadazcopy-v10-linux && tar -xf azcopy_v10.tar.gz --strip-components=1 && mv ./azcopy /usr/bin/
+            # First rename azlamp directory to something else
+            mv /azlamp /azlamp_old_delete_me
+            # Then create the azlamp share
+            echo -e '\n\rCreating an Azure Files share for azlamp'
+            create_azure_files_share azlamp $storageAccountName $storageAccountKey /tmp/wabs.log $fileServerDiskSize
+            # Set up and mount Azure Files share. Must be done after nginx is installed because of www-data user/group
+            echo -e '\n\rSetting up and mounting Azure Files share on //'$storageAccountName'.file.core.windows.net/azlamp on /azlamp\n\r'
+            setup_and_mount_azure_files_share azlamp $storageAccountName $storageAccountKey
+            # Move the local installation over to the Azure Files
+            echo -e '\n\rMoving locally installed azlamp over to Azure Files'
+            #cp -a /azlamp_old_delete_me/* /azlamp || true # Ignore case sensitive directory copy failure
+            # install azcopy
+            wget -q -O azcopy_v10.tar.gz https://aka.ms/downloadazcopy-v10-linux && tar -xf azcopy_v10.tar.gz --strip-components=1 && mv ./azcopy /usr/bin/
 
-      ACCOUNT_KEY="$storageAccountKey"
-      NAME="$storageAccountName"
-      END=`date -u -d "60 minutes" '+%Y-%m-%dT%H:%M:00Z'`
+            ACCOUNT_KEY="$storageAccountKey"
+            NAME="$storageAccountName"
+            END=`date -u -d "60 minutes" '+%Y-%m-%dT%H:%M:00Z'`
 
-      sas=$(az storage share generate-sas \
-        -n azlamp \
-        --account-key $ACCOUNT_KEY \
-        --account-name $NAME \
-        --https-only \
-        --permissions lrw \
-        --expiry $END -o tsv)
+            sas=$(az storage share generate-sas \
+                -n azlamp \
+                --account-key $ACCOUNT_KEY \
+                --account-name $NAME \
+                --https-only \
+                --permissions lrw \
+                --expiry $END -o tsv)
 
-      export AZCOPY_CONCURRENCY_VALUE='48'
-      export AZCOPY_BUFFER_GB='4'
+            export AZCOPY_CONCURRENCY_VALUE='48'
+            export AZCOPY_BUFFER_GB='4'
 
-      # cp -a /azlamp_old_delete_me/* /azlamp || true # Ignore case sensitive directory copy failure
-      azcopy --log-level ERROR copy "/azlamp_old_delete_me/*" "https://$NAME.file.core.windows.net/azlamp?$sas" --recursive || true # Ignore case sensitive directory copy failure
-      rm -rf /azlamp_old_delete_me || true # Keep the files just in case
+            # cp -a /azlamp_old_delete_me/* /azlamp || true # Ignore case sensitive directory copy failure
+            azcopy --log-level ERROR copy "/azlamp_old_delete_me/*" "https://$NAME.file.core.windows.net/azlamp?$sas" --recursive || true # Ignore case sensitive directory copy failure
+            rm -rf /azlamp_old_delete_me || true # Keep the files just in case
+        fi
     fi
 
     # chmod /azlamp for Azure NetApp Files (its default is 770!)

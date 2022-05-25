@@ -345,6 +345,18 @@ EOF
     mount /azlamp
 }
 
+function setup_and_mount_azlamp_nfs_files_share
+{
+    local storageAccountName=$1
+
+    grep -q -s "^$storageAccountName.file.core.windows.net:/$storageAccountName/azlamp\s\s*/azlamp\s\s*nfs" /etc/fstab && _RET=$? || _RET=$?
+    if [ $_RET != "0" ]; then
+        echo -e "$storageAccountName.file.core.windows.net:/$storageAccountName/azlamp    /azlamp    nfs    vers=4,minorversion=1,sec=sys    0    0" >> /etc/fstab
+    fi
+
+    mount /azlamp
+}
+
 function setup_azlamp_mount_dependency_for_systemd_service
 {
   local serviceName=$1 # E.g., nginx

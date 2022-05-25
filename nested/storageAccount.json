@@ -11,11 +11,11 @@
     },
     "resources": [
         {
-            "condition": "[not(equals(parameters('lampCommon').fileServerType, 'azurefiles'))]",
+            "condition": "[not(variables('isAzureFiles'))]",
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-06-01",
             "location": "[parameters('lampCommon').location]",
-            "name": "[concat(parameters('lampCommon').storageAccountName,'naf')]",
+            "name": "[variables('storageName')]",
             "kind": "Storage",
             "sku": {
                 "name": "[parameters('lampCommon').storageAccountType]"
@@ -42,12 +42,12 @@
             }
         },
         {
-            "condition": "[equals(parameters('lampCommon').fileServerType, 'azurefiles')]",
+            "condition": "[and(variables('isAzureFiles'), not(variables('isPremiumAzureFiles')))]",
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-06-01",
             "location": "[parameters('lampCommon').location]",
-            "name": "[concat(parameters('lampCommon').storageAccountName,'af')]",
-            "kind": "[if(equals(parameters('lampCommon').storageAccountType, 'Premium_LRS'), 'FileStorage', 'Storage')]",
+            "name": "[variables('storageName')]",
+            "kind": "Storage",
             "sku": {
                 "name": "[parameters('lampCommon').storageAccountType]"
             },
@@ -74,18 +74,37 @@
                     "keySource": "Microsoft.Storage"
                 }
             }
-        }    
+        },
+        {
+            "condition": "[variables('isPremiumAzureFiles')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "name": "PremiumStorageWithNfsFileshare",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "lampCommon": {
+                        "value": "[parameters('lampCommon')]"
+                    }
+                },
+                "templateLink": {
+                    "uri": "[concat(parameters('lampCommon').baseTemplateUrl,'premium-files-nfs.json',parameters('lampCommon').artifactsSasToken)]"
+                }
+            }
+        }
     ],
     "variables": {
         "documentation1": "This sub-template creates a storage account.  It expects certain values in the 'common' datastructure.",
         "documentation2": " storageAccountName - name of storage account",
         "documentation3": " storageAccountType - type of storage account",
-        "storageName": "[concat(parameters('lampCommon').storageAccountName,if(equals(parameters('lampCommon').fileServerType, 'azurefiles'), 'af', 'naf'))]",
+        "isAzureFiles": "[equals(parameters('lampCommon').fileServerType, 'azurefiles')]",
+        "isPremiumAzureFiles": "[and(variables('isAzureFiles'), equals(parameters('lampCommon').storageAccountType, 'Premium_LRS'))]",
+        "storageName": "[concat(parameters('lampCommon').storageAccountName,if(variables('isAzureFiles'), 'af', 'naf'))]",
         "storageAccountId": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageName'))]"
     },
     "outputs": {
         "storageAccountKey": {
-            "value": "[listKeys(variables('storageAccountId'), '2019-06-01').keys[0].value]",
+            "value": "[if(variables('isPremiumAzureFiles'), '',listKeys(variables('storageAccountId'), '2019-06-01').keys[0].value)]",
             "type": "string"
         },
         "storageAccountName": {

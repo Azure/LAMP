@@ -166,9 +166,14 @@ EOF
     wait_for_apt_lock
     apt-get -y -qq -o=Dpkg::Use-Pty=0 install glusterfs-client
   elif [ "$fileServerType" = "azurefiles" ]; then
-    #apt-get -y install cifs-utils
-    wait_for_apt_lock
-    apt-get -y -qq -o=Dpkg::Use-Pty=0 install cifs-utils
+    if [ "$storageAccountType" = "Premium_LRS" ]; then
+      wait_for_apt_lock
+      apt-get install -y --force-yes nfs-common
+    else
+      #apt-get -y install cifs-utils
+      wait_for_apt_lock
+      apt-get -y -qq -o=Dpkg::Use-Pty=0 install cifs-utils
+    fi
   fi
 
   # install the base stack
@@ -205,7 +210,16 @@ EOF
     echo -e '\n\rMounting NFS export from '$nfsByoIpExportPath' on /azlamp and adding it to /etc/fstab\n\r'
     configure_nfs_client_and_mount0 $nfsByoIpExportPath /azlamp
   else # "azurefiles"
-    setup_and_mount_azure_files_share azlamp $storageAccountName $storageAccountKey
+    if [ "$storageAccountType" = "Premium_LRS" ]; then
+      # mount Azure files NFS share
+      mkdir -p /azlamp
+      echo -e '\n\rMounting NFS export from '$storageAccountName'.file.core.windows.net:/'$storageAccountName'/azlamp on /azlamp and adding it to /etc/fstab\n\r'
+      setup_and_mount_azlamp_nfs_files_share $storageAccountName
+    else
+      # mount Azure files SMB share
+      echo -e '\n\rMounting SMB export from '$storageAccountName'.file.core.windows.net:/azlamp on /azlamp and adding it to /etc/fstab\n\r'
+      setup_and_mount_azure_files_share azlamp $storageAccountName $storageAccountKey
+    fi
   fi
 
   # Configure syslog to forward
