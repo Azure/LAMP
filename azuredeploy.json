@@ -1494,6 +1494,7 @@
             "fileServerType": "[parameters('fileServerType')]",
             "fileServerVmCount": 2,
             "fileServerVmSku": "[parameters('fileServerVmSku')]",
+            "azureFileShareType": "[if(equals(parameters('fileServerType'),'azurefiles'), if(equals(parameters('storageAccountType'),'Premium_LRS'),'nfs','smb'), '')]",
             "flexDbDomainName": ".mysql.database.azure.com",
             "frontDoorFQDN": "[format('{0}.azurefd.net', concat('myLampFrontDoor', variables('resourceprefix')))]",
             "gatewayName": "[concat('vnet-gateway-',variables('resourceprefix'))]",

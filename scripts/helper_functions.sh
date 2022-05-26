@@ -69,6 +69,7 @@ function get_setup_params_from_configs_json
     export sshUsername=$(echo $json | jq -r .applicationProfile.sshUsername)
     export storageAccountType=$(echo $json | jq -r .lampProfile.storageAccountType)
     export fileServerDiskSize=$(echo $json | jq -r .fileServerProfile.fileServerDiskSize)
+    export azureFileShareType=$(echo $json | jq -r .fileServerProfile.azureFileShareType)
 }
 
 function get_php_version {

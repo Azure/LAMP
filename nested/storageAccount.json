@@ -42,7 +42,7 @@
             }
         },
         {
-            "condition": "[and(variables('isAzureFiles'), not(variables('isPremiumAzureFiles')))]",
+            "condition": "[and(variables('isAzureFiles'), not(variables('isAzureFilesNFS')))]",
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-06-01",
             "location": "[parameters('lampCommon').location]",
@@ -76,7 +76,7 @@
             }
         },
         {
-            "condition": "[variables('isPremiumAzureFiles')]",
+            "condition": "[and(variables('isAzureFiles'), variables('isAzureFilesNFS'))]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "name": "PremiumStorageWithNfsFileshare",
@@ -98,13 +98,13 @@
         "documentation2": " storageAccountName - name of storage account",
         "documentation3": " storageAccountType - type of storage account",
         "isAzureFiles": "[equals(parameters('lampCommon').fileServerType, 'azurefiles')]",
-        "isPremiumAzureFiles": "[and(variables('isAzureFiles'), equals(parameters('lampCommon').storageAccountType, 'Premium_LRS'))]",
+        "isAzureFilesNFS": "[equals(parameters('lampCommon').azureFileShareType, 'nfs')]",
         "storageName": "[concat(parameters('lampCommon').storageAccountName,if(variables('isAzureFiles'), 'af', 'naf'))]",
         "storageAccountId": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageName'))]"
     },
     "outputs": {
         "storageAccountKey": {
-            "value": "[if(variables('isPremiumAzureFiles'), '',listKeys(variables('storageAccountId'), '2019-06-01').keys[0].value)]",
+            "value": "[if(variables('isAzureFilesNFS'), '',listKeys(variables('storageAccountId'), '2019-06-01').keys[0].value)]",
             "type": "string"
         },
         "storageAccountName": {

@@ -72,8 +72,8 @@
                 "nfsByoIpExportPath": "[parameters('lampCommon').nfsByoIpExportPath]",
                 "nfsHaLbIP": "[parameters('lampCommon').nfsHaLbIP]",
                 "nfsHaExportPath": "[parameters('lampCommon').nfsHaExportPath]",
-                "fileServerDiskSize": "[parameters('lampCommon').fileServerDiskSize]"
-
+                "fileServerDiskSize": "[parameters('lampCommon').fileServerDiskSize]",
+                "azureFileShareType": "[parameters('lampCommon').azureFileShareType]"
             },
             "phpProfile": {
                 "phpVersion": "[parameters('lampCommon').phpVersion]"

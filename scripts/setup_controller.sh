@@ -63,6 +63,7 @@ set -ex
     echo $storageAccountType >>/tmp/vars.txt
     echo $fileServerDiskSize >>/tmp/vars.txt
     echo $frontDoorFQDN >> /tmp/vars.txt
+    echo $azureFileShareType >>/tmp/vars.txt
 
     check_fileServerType_param $fileServerType
 
@@ -104,7 +105,7 @@ set -ex
         wait_for_apt_lock
         apt-get -y --force-yes install glusterfs-client                 >> /tmp/apt3.log
     elif [ "$fileServerType" = "azurefiles" ]; then
-        if [ "$storageAccountType" = "Premium_LRS" ]; then
+        if [ "$azureFileShareType" = "nfs" ]; then
             # install NFS client packages.
             wait_for_apt_lock
             sudo apt-get install -y --force-yes nfs-common >> /tmp/apt3.log
@@ -217,7 +218,7 @@ set -ex
     systemctl stop php${PhpVer}-fpm
 
     if [ $fileServerType = "azurefiles" ]; then
-        if [ "$storageAccountType" = "Premium_LRS" ]; then
+        if [ "$azureFileShareType" = "nfs" ]; then
             setup_and_mount_azlamp_nfs_files_share $storageAccountName
         else
             # Delayed copy of azlamp installation to the Standard Azure Files share
@@ -262,8 +263,10 @@ set -ex
         chmod +rx /azlamp
     fi
 
-    create_last_modified_time_update_script
-    run_once_last_modified_time_update_script
+    if [ "$htmlLocalCopySwitch" = "true" ]; then
+        create_last_modified_time_update_script
+        run_once_last_modified_time_update_script
+    fi
 
     # Install scripts for LAMP
     mkdir -p /azlamp/bin
