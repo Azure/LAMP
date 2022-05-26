@@ -169,7 +169,7 @@ EOF
   elif [ "$fileServerType" = "azurefiles" ]; then
     if [ "$azureFileShareType" = "nfs" ]; then
       wait_for_apt_lock
-      apt-get install -y --force-yes nfs-common
+      apt-get install -y nfs-common
     else
       #apt-get -y install cifs-utils
       wait_for_apt_lock

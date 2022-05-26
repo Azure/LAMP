@@ -108,7 +108,7 @@ set -ex
         if [ "$azureFileShareType" = "nfs" ]; then
             # install NFS client packages.
             wait_for_apt_lock
-            sudo apt-get install -y --force-yes nfs-common >> /tmp/apt3.log
+            sudo apt-get install -y nfs-common >> /tmp/apt3.log
         else
             # install azure cli & setup container
             AZ_REPO=$(lsb_release -cs)
