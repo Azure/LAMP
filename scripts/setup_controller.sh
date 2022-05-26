@@ -155,7 +155,7 @@ set -ex
         # mount NFS-BYO export
         echo -e '\n\rMounting NFS export from '$nfsByoIpExportPath' on /azlamp\n\r'
         configure_nfs_client_and_mount0 $nfsByoIpExportPath /azlamp
-    elif [ $fileServerType = "azurefiles" -a $azureFileShareType = "nfs"]; then
+    elif [ $fileServerType = "azurefiles" -a $azureFileShareType = "nfs" ]; then
         # mount NFS Azure fileshare
         echo -e '\n\rMounting NFS export from '$storageAccountName'.file.core.windows.net:/azlamp on /azlamp\n\r'
         setup_and_mount_azlamp_nfs_files_share $storageAccountName
