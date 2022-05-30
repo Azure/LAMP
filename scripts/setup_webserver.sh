@@ -36,6 +36,7 @@ echo $httpsTermination    >> /tmp/vars.txt
 echo $syslogServer        >> /tmp/vars.txt
 echo $dbServerType        >> /tmp/vars.txt
 echo $fileServerType      >> /tmp/vars.txt
+echo $azureFileShareType  >> /tmp/vars.txt
 echo $storageAccountName  >> /tmp/vars.txt
 echo $storageAccountKey   >> /tmp/vars.txt
 echo $nfsVmName           >> /tmp/vars.txt
@@ -166,9 +167,14 @@ EOF
     wait_for_apt_lock
     apt-get -y -qq -o=Dpkg::Use-Pty=0 install glusterfs-client
   elif [ "$fileServerType" = "azurefiles" ]; then
-    #apt-get -y install cifs-utils
-    wait_for_apt_lock
-    apt-get -y -qq -o=Dpkg::Use-Pty=0 install cifs-utils
+    if [ "$azureFileShareType" = "nfs" ]; then
+      wait_for_apt_lock
+      apt-get install -y nfs-common
+    else
+      #apt-get -y install cifs-utils
+      wait_for_apt_lock
+      apt-get -y -qq -o=Dpkg::Use-Pty=0 install cifs-utils
+    fi
   fi
 
   # install the base stack
@@ -205,7 +211,16 @@ EOF
     echo -e '\n\rMounting NFS export from '$nfsByoIpExportPath' on /azlamp and adding it to /etc/fstab\n\r'
     configure_nfs_client_and_mount0 $nfsByoIpExportPath /azlamp
   else # "azurefiles"
-    setup_and_mount_azure_files_share azlamp $storageAccountName $storageAccountKey
+    if [ "$azureFileShareType" = "nfs" ]; then
+      # mount Azure files NFS share
+      mkdir -p /azlamp
+      echo -e '\n\rMounting NFS export from '$storageAccountName'.file.core.windows.net:/'$storageAccountName'/azlamp on /azlamp and adding it to /etc/fstab\n\r'
+      setup_and_mount_azlamp_nfs_files_share $storageAccountName
+    else
+      # mount Azure files SMB share
+      echo -e '\n\rMounting SMB export from '$storageAccountName'.file.core.windows.net:/azlamp on /azlamp and adding it to /etc/fstab\n\r'
+      setup_and_mount_azure_files_share azlamp $storageAccountName $storageAccountKey
+    fi
   fi
 
   # Configure syslog to forward
@@ -285,25 +300,29 @@ EOF
   if [ "$htmlLocalCopySwitch" = "true" ]; then
     if [ "$fileServerType" = "azurefiles" ]; then
         mkdir -p /var/www/html
-        # rsync -av --delete /azlamp/html/. /var/www/html
-        ACCOUNT_KEY="$storageAccountKey"
-        NAME="$storageAccountName"
-        END=`date -u -d "60 minutes" '+%Y-%m-%dT%H:%M:00Z'`
-        
 
-        sas=$(az storage share generate-sas \
-          -n azlamp \
-          --account-key $ACCOUNT_KEY \
-          --account-name $NAME \
-          --https-only \
-          --permissions lr \
-          --expiry $END -o tsv)
+        if [ "$azureFileShareType" = "nfs" ]; then
+          rsync -av --delete /azlamp/html/. $htmlRootDir
+        else
+          ACCOUNT_KEY="$storageAccountKey"
+          NAME="$storageAccountName"
+          END=`date -u -d "60 minutes" '+%Y-%m-%dT%H:%M:00Z'`
 
-        export AZCOPY_CONCURRENCY_VALUE='48'
-        export AZCOPY_BUFFER_GB='4'
+          sas=$(az storage share generate-sas \
+            -n azlamp \
+            --account-key $ACCOUNT_KEY \
+            --account-name $NAME \
+            --https-only \
+            --permissions lr \
+            --expiry $END -o tsv)
 
-        echo "azcopy --log-level ERROR copy https://$NAME.file.core.windows.net/azlamp/html/$siteFQDN/*?$sas $htmlRootDir --recursive"
-        azcopy --log-level ERROR copy "https://$NAME.file.core.windows.net/azlamp/html/$siteFQDN/*?$sas" $htmlRootDir --recursive
+          export AZCOPY_CONCURRENCY_VALUE='48'
+          export AZCOPY_BUFFER_GB='4'
+
+          echo "azcopy --log-level ERROR copy https://$NAME.file.core.windows.net/azlamp/html/$siteFQDN/*?$sas $htmlRootDir --recursive"
+          azcopy --log-level ERROR copy "https://$NAME.file.core.windows.net/azlamp/html/$siteFQDN/*?$sas" $htmlRootDir --recursive
+        fi
+
         chown www-data:www-data -R $htmlRootDir && sync
         setup_html_local_copy_cron_job
     fi
