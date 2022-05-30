@@ -22,7 +22,12 @@
             "name": "[concat(parameters('vnetName'), '/', parameters('lampCommon').subnetWeb)]",
             "location": "[parameters('lampCommon').location]",
             "properties": {
-                "addressPrefix": "[parameters('lampCommon').subnetWebRange]"
+                "addressPrefix": "[parameters('lampCommon').subnetWebRange]",
+                "serviceEndpoints": [
+                    {
+                        "service": "Microsoft.Storage"
+                    }
+                ]
             }
         },
         {
