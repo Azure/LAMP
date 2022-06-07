@@ -44,7 +44,8 @@ function get_setup_params_from_configs_json
     export storageAccountKey=$(echo $json | jq -r .lampProfile.storageAccountKey)
     export redisDeploySwitch=$(echo $json | jq -r .lampProfile.redisDeploySwitch)
     export redisDns=$(echo $json | jq -r .lampProfile.redisDns)
-    export redisAuth=$(echo $json | jq -r .lampProfile.redisKey)
+    export redisDnsPort=$(echo $json | jq -r .lampProfile.redisDnsPort)
+    export redisPassword=$(echo $json | jq -r .lampProfile.redisKey)
     export dbServerType=$(echo $json | jq -r .dbServerProfile.type)
     export fileServerType=$(echo $json | jq -r .fileServerProfile.type)
     export mssqlDbServiceObjectiveName=$(echo $json | jq -r .dbServerProfile.mssqlDbServiceObjectiveName)
@@ -216,10 +217,18 @@ function install_plugins {
     local path=$1
     # Commenting the plugin install as Azure Cache for Redis is not currently being deployed
     # Uncomment or replace with appropriate plugin when Redis Cache infrastructure is deployed again
-    # wp plugin install w3-total-cache --path=$path --allow-root
-    # wp plugin activate w3-total-cache --path=$path --allow-root
     wp plugin activate akismet --path=$path --allow-root
     chown -R www-data:www-data $path
+}
+
+function install_plugin_w3_total_cache {
+  local wpPath="$1"
+  local w3tcConfigPath="$wpPath/wp-content/w3tc-config/master.php"
+  wp plugin install w3-total-cache --path=$path --allow-root
+  wp plugin activate w3-total-cache --path=$path --allow-root
+
+  # execute (not import) w3tc setup script
+  ./plugin_setup/wordpress/setup_w3tc.sh $redisDns $redisDnsPort $redisPassword $w3tcConfigPath
 }
 
 function linking_data_location {

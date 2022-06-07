@@ -29,23 +29,24 @@ lamp_on_azure_configs_json_path=${1}
 
 get_setup_params_from_configs_json $lamp_on_azure_configs_json_path || exit 99
 
-echo $glusterNode         >> /tmp/vars.txt
-echo $glusterVolume       >> /tmp/vars.txt
-echo $siteFQDN            >> /tmp/vars.txt
-echo $httpsTermination    >> /tmp/vars.txt
-echo $syslogServer        >> /tmp/vars.txt
-echo $dbServerType        >> /tmp/vars.txt
-echo $fileServerType      >> /tmp/vars.txt
-echo $azureFileShareType  >> /tmp/vars.txt
-echo $storageAccountName  >> /tmp/vars.txt
-echo $storageAccountKey   >> /tmp/vars.txt
-echo $nfsVmName           >> /tmp/vars.txt
-echo $nfsByoIpExportPath  >> /tmp/vars.txt
-echo $htmlLocalCopySwitch >> /tmp/vars.txt
-echo $redisDeploySwitch   >> /tmp/vars.txt
-echo $redisDns            >> /tmp/vars.txt
-echo $redisAuth           >> /tmp/vars.txt
-echo $phpVersion          >> /tmp/vars.txt
+echo "glusterNode        = $glusterNode"            >> /tmp/vars.txt
+echo "glusterVolume      = $glusterVolume"          >> /tmp/vars.txt
+echo "siteFQDN           = $siteFQDN"               >> /tmp/vars.txt
+echo "httpsTermination   = $httpsTermination"       >> /tmp/vars.txt
+echo "syslogServer       = $syslogServer"           >> /tmp/vars.txt
+echo "dbServerType       = $dbServerType"           >> /tmp/vars.txt
+echo "fileServerType     = $fileServerType"         >> /tmp/vars.txt
+echo "azureFileShareType = $azureFileShareType"     >> /tmp/vars.txt
+echo "storageAccountName = $storageAccountName"     >> /tmp/vars.txt
+echo "storageAccountKey  = $storageAccountKey"      >> /tmp/vars.txt
+echo "nfsVmName          = $nfsVmName"              >> /tmp/vars.txt
+echo "nfsByoIpExportPath = $nfsByoIpExportPath"     >> /tmp/vars.txt
+echo "htmlLocalCopySwitch= $htmlLocalCopySwitch"    >> /tmp/vars.txt
+echo "redisDeploySwitch  = $redisDeploySwitch"      >> /tmp/vars.txt
+echo "redisDns           = $redisDns"               >> /tmp/vars.txt
+echo "redisDnsPort       = $redisDnsPort"           >> /tmp/vars.txt
+echo "redisPassword      = $redisPassword"          >> /tmp/vars.txt
+echo "phpVersion         = $phpVersion"             >> /tmp/vars.txt
 
   # downloading and updating php packages from the repository 
   # sudo add-apt-repository ppa:ondrej/php -y
@@ -354,7 +355,7 @@ EOF
   # Redis for sessions
   if [ "$redisDeploySwitch" = "true" ]; then
     sed -i "s/session.save_handler.*/session.save_handler = redis/" $PhpIni
-    sed -i "s/;session.save_path.*/session.save_path = \"tcp:\/\/$redisDns:6379?auth=$redisAuth\"/" $PhpIni
+    sed -i "s/;session.save_path.*/session.save_path = \"tcp:\/\/$redisDns:$redisDnsPort?auth=$redisPassword\"/" $PhpIni
   fi
     
   # Remove the default nginx site

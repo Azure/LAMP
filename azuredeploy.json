@@ -1551,7 +1551,8 @@
             "postgresVersion": "[parameters('postgresVersion')]",
             "redisCacheName": "[if(not(empty(parameters('redisCacheName'))),parameters('redisCacheName'),variables('defaults').redisCacheName)]",
             "redisDeploySwitch": "[parameters('redisDeploySwitch')]",
-            "redisDns": "[concat('redis-',variables('resourceprefix'),'.redis.cache.windows.net')]",
+            "redisDns": "[concat(variables('lampCommon').redisCacheName, '.redis.cache.windows.net')]",
+            "redisDnsPort": 6379,
             "redisSku": {
                 "capacity": "[parameters('redisSkuCapcity')]",
                 "family": "[parameters('redisSkuFamily')]",
