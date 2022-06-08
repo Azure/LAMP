@@ -1,10 +1,10 @@
 #!/bin/bash
 
-$scriptName = $0
-$redis_host = $1
-$redis_port = $2
-$redis_password = $3
-$wp_content_path = $4
+$scriptName="$0"
+$redis_host="$1"
+$redis_port="$2"
+$redis_password="$3"
+$wp_content_path="$4"
 
 # function to print usage of this script to out
 function usage {
@@ -24,35 +24,37 @@ elif [ -z "$redis_host" || -z "$redis_password" || -z "$redis_port" || -z "$wp_c
     usage
 fi
 
-$redis_endpoint = "$redis_host:$redis_port"
-$w3tc_config_path = "$wp_content_path/w3tc-config/master.php"
-
+$redis_endpoint="$redis_host:$redis_port"
+$w3tc_config_path="$wp_content_path/w3tc-config/master.php"
 
 # parse config file as json by replacing prefix in file contents temporarily
-$config_json = sed '1 s/\<\?php exit\; \?\>//' "$w3tc_config_path"
+$config_json=sed '1 s/\<\?php exit\; \?\>//' "$w3tc_config_path"
+mv "$w3tc_config_path" "$w3tc_config_path.bak"
 
 # set redis servers for all
-$config_json = $(echo $config_json | jq ".dbcache\.redis\.servers=[\"$redis_endpoint\"]")
-$config_json = $(echo $config_json | jq ".dbcache\.redis\.password=[\"$redis_password\"]")
-$config_json = $(echo $config_json | jq ".objectcache\.redis\.servers=[\"$redis_endpoint\"]")
-$config_json = $(echo $config_json | jq ".objectcache\.redis\.password=[\"$redis_password\"]")
-$config_json = $(echo $config_json | jq ".minify\.redis\.servers=[\"$redis_endpoint\"]")
-$config_json = $(echo $config_json | jq ".minify\.redis\.password=[\"$redis_password\"]")
-$config_json = $(echo $config_json | jq ".pgcache\.redis\.servers=[\"$redis_endpoint\"]")
-$config_json = $(echo $config_json | jq ".pgcache\.redis\.password=[\"$redis_password\"]")
+$config_json=$(echo $config_json | jq ".dbcache\.redis\.servers=[\"$redis_endpoint\"]")
+$config_json=$(echo $config_json | jq ".dbcache\.redis\.password=[\"$redis_password\"]")
+$config_json=$(echo $config_json | jq ".objectcache\.redis\.servers=[\"$redis_endpoint\"]")
+$config_json=$(echo $config_json | jq ".objectcache\.redis\.password=[\"$redis_password\"]")
+$config_json=$(echo $config_json | jq ".minify\.redis\.servers=[\"$redis_endpoint\"]")
+$config_json=$(echo $config_json | jq ".minify\.redis\.password=[\"$redis_password\"]")
+$config_json=$(echo $config_json | jq ".pgcache\.redis\.servers=[\"$redis_endpoint\"]")
+$config_json=$(echo $config_json | jq ".pgcache\.redis\.password=[\"$redis_password\"]")
 
 # db cache config (disable but still keep it configured)
-$config_json = $(echo $config_json | jq ".dbcache\.enabled=false")
-$config_json = $(echo $config_json | jq ".dbcache\.engine=redis")
+$config_json=$(echo $config_json | jq ".dbcache\.enabled=false")
+$config_json=$(echo $config_json | jq ".dbcache\.engine=redis")
 
 # object cache config (enabled)
-$config_json = $(echo $config_json | jq ".objectcache\.enabled=true")
-$config_json = $(echo $config_json | jq ".objectcache\.engine=redis")
+$config_json=$(echo $config_json | jq ".objectcache\.enabled=true")
+$config_json=$(echo $config_json | jq ".objectcache\.engine=redis")
 
 # minify cache config (disable but still keep it configured)
-$config_json = $(echo $config_json | jq ".minify\.enabled=false")
-$config_json = $(echo $config_json | jq ".minify\.engine=redis")
+$config_json=$(echo $config_json | jq ".minify\.enabled=false")
+$config_json=$(echo $config_json | jq ".minify\.engine=redis")
 
 # page cache config (disable but still keep it configured)
-$config_json = $(echo $config_json | jq ".pgcache\.enabled=false")
-$config_json = $(echo $config_json | jq ".pgcache\.engine=redis")
+$config_json=$(echo $config_json | jq ".pgcache\.enabled=false")
+$config_json=$(echo $config_json | jq ".pgcache\.engine=redis")
+
+echo $config_json > "$w3tc_config_path"
