@@ -1455,10 +1455,7 @@
             "autoscaleVmCountMin": "[parameters('autoscaleVmCountMin')]",
             "autoscaleVmSku": "[parameters('autoscaleVmSku')]",
             "azureBackupSwitch": "[parameters('azureBackupSwitch')]",
-            "additionalScriptsUri": "[union(
-                variables('scriptFileUris').commonFunctionsScriptUri,
-                if (variables('lampCommon').redisDeploySwitch, variables('scriptFileUris').wordpressRedisSetupScript, null())
-            )]",            
+            "additionalScriptsUri": "[union(array(variables('scriptFileUris').commonFunctionsScriptUri), if (parameters('redisDeploySwitch'), variables('scriptFileUris').wordpressRedisSetupScript, variables('empty_array')))]",            
             "controllerVmSku": "[parameters('controllerVmSku')]",
             "customVnetId": "[parameters('customVnetId')]",
             "ctlrNicName": "[concat('controller-vm-nic-',variables('resourceprefix'))]",
@@ -1629,6 +1626,7 @@
         "resourceprefix": "[substring(uniqueString(resourceGroup().id, deployment().name), 3, 6)]",
         "subnetSanPrefix": "[concat( variables('octets')[0], '.', variables('octets')[1], '.', string(add(int(variables('octets')[2]),2)))]",
         "subnetWebRange": "[concat( variables('octets')[0], '.', variables('octets')[1], '.', string(add(int(variables('octets')[2]),0)), '.0/24')]",
+        "empty_array": [],
         "defaults": {
             "documentation01": "This variable contains default values computed dynamically for various parameters.",
             "applicationDbName": "[parameters('CMSApplication')]",

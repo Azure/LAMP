@@ -47,7 +47,7 @@
 
         "scriptUri": "[concat(parameters('lampCommon').scriptLocation,parameters('lampCommon').controllerInstallScriptFilename,parameters('lampCommon').artifactsSasToken)]",
         "filesToCopyUris": "[union(
-            variables('scriptUri'),
+            array(variables('scriptUri')),
             parameters('lampCommon').additionalScriptsUri
         )]"
     }

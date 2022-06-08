@@ -260,7 +260,7 @@
         ],
         "appGwBePoolArrayTakeCount": "[if(equals(parameters('lampCommon').httpsTermination, 'AppGw'), 1, 0)]",
         "filesToCopyUris": "[union(
-            variables('scriptUri'),
+            array(variables('scriptUri')),
             parameters('lampCommon').additionalScriptsUri
         )]"
     },
