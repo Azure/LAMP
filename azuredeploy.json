@@ -1257,7 +1257,6 @@
                 "autoscaleVmCountMin": "[variables('lampCommon').autoscaleVmCountMin]",
                 "autoscaleVmSku": "[variables('lampCommon').autoscaleVmSku]",
                 "azureBackupSwitch": "[variables('lampCommon').azureBackupSwitch]",
-                "commonFunctionsScriptUri": "[variables('lampCommon').commonFunctionsScriptUri]",
                 "controllerVmSku": "[variables('lampCommon').controllerVmSku]",
                 "customVnetId": "[variables('lampCommon').customVnetId]",
                 "ctlrNicName": "[variables('lampCommon').ctlrNicName]",
@@ -1456,11 +1455,10 @@
             "autoscaleVmCountMin": "[parameters('autoscaleVmCountMin')]",
             "autoscaleVmSku": "[parameters('autoscaleVmSku')]",
             "azureBackupSwitch": "[parameters('azureBackupSwitch')]",
-            "commonFunctionsScriptUri": "[concat(parameters('_artifactsLocation'),'scripts/helper_functions.sh',parameters('_artifactsLocationSasToken'))]",
             "additionalScriptsUri": "[union(
-                variables('lampCommon').commonFunctionsScriptUri,
+                variables('scriptFileUris').commonFunctionsScriptUri,
                 if (variables('lampCommon').redisDeploySwitch, variables('scriptFileUris').wordpressRedisSetupScript, null())
-            )]",
+            )]",            
             "controllerVmSku": "[parameters('controllerVmSku')]",
             "customVnetId": "[parameters('customVnetId')]",
             "ctlrNicName": "[concat('controller-vm-nic-',variables('resourceprefix'))]",
@@ -1553,9 +1551,9 @@
             "phpVersion": "[parameters('phpVersion')]",
             "policyName": "[concat('policy-',variables('resourceprefix'))]",
             "postgresVersion": "[parameters('postgresVersion')]",
-            "redisCacheName": "[if(not(empty(parameters('redisCacheName'))),parameters('redisCacheName'),variables('defaults').redisCacheName)]",
+            "redisCacheName": "[variables('defaults').redisCacheName]",
             "redisDeploySwitch": "[parameters('redisDeploySwitch')]",
-            "redisDns": "[concat(variables('lampCommon').redisCacheName, '.redis.cache.windows.net')]",
+            "redisDns": "[concat(variables('defaults').redisCacheName, '.redis.cache.windows.net')]",
             "redisDnsPort": 6379,
             "redisSku": {
                 "capacity": "[parameters('redisSkuCapcity')]",
@@ -1637,14 +1635,15 @@
             "ctlrVmName": "[concat('controller-vm-',variables('resourceprefix'))]",
             "dbLoginPassword": "[concat(substring(uniqueString(resourceGroup().id, deployment().name), 2, 11), '*7', toUpper('pfiwb'))]",
             "dbUsername": "[concat(parameters('dbLogin'), '@', parameters('dbServerType'), '-', variables('resourceprefix'))]",
-            "redisCacheName": "[concat('redis-',variables('resourceprefix'))]",
+            "redisCacheName": "[if(not(empty(parameters('redisCacheName'))),parameters('redisCacheName'), concat('redis-',variables('resourceprefix')))]",
             "serverName": "[concat(parameters('dbServerType'), '-',variables('resourceprefix'))]",
             "vmssName": "[concat('vmss-', variables('resourceprefix'))]"
         },
         "scriptFileUris": {
             "wordpressRedisSetupScript": [
                 "[concat(parameters('_artifactsLocation'),'scripts/plugin_setup/wordpress/setup_w3tc.sh',parameters('_artifactsLocationSasToken'))]"
-            ]
+            ],
+            "commonFunctionsScriptUri": "[concat(parameters('_artifactsLocation'),'scripts/helper_functions.sh',parameters('_artifactsLocationSasToken'))]"
         }
     }
 }
