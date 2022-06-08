@@ -33,14 +33,14 @@ config_json=$(cat "$w3tc_config_path" | sed 's/<?php exit; ?>//' )
 mv "$w3tc_config_path" "$w3tc_config_path.bak"
 
 # set redis servers for all
-config_json=$(echo $config_json | jq '."dbcache.redis.servers"=["$redis_endpoint"]')
-config_json=$(echo $config_json | jq '."dbcache.redis.password"="$redis_password"')
-config_json=$(echo $config_json | jq '."objectcache.redis.servers"=["$redis_endpoint"]')
-config_json=$(echo $config_json | jq '."objectcache.redis.password"="$redis_password"')
-config_json=$(echo $config_json | jq '."minify.redis.servers"=["$redis_endpoint"]')
-config_json=$(echo $config_json | jq '."minify.redis.password"="$redis_password"')
-config_json=$(echo $config_json | jq '."pgcache.redis.servers"=["$redis_endpoint"]')
-config_json=$(echo $config_json | jq '."pgcache.redis.password"="$redis_password"')
+config_json=$(echo $config_json | jq '."dbcache.redis.servers"=["'$redis_endpoint'"]')
+config_json=$(echo $config_json | jq '."dbcache.redis.password"="'$redis_password'"')
+config_json=$(echo $config_json | jq '."objectcache.redis.servers"=["'$redis_endpoint'"]')
+config_json=$(echo $config_json | jq '."objectcache.redis.password"="'$redis_password'"')
+config_json=$(echo $config_json | jq '."minify.redis.servers"=["'$redis_endpoint'"]')
+config_json=$(echo $config_json | jq '."minify.redis.password"="'$redis_password'"')
+config_json=$(echo $config_json | jq '."pgcache.redis.servers"=["'$redis_endpoint'"]')
+config_json=$(echo $config_json | jq '."pgcache.redis.password"="'$redis_password'"')
 
 # db cache config (disable but still keep it configured)
 config_json=$(echo $config_json | jq '."dbcache.enabled"=false')
