@@ -94,10 +94,7 @@
                                     "autoUpgradeMinorVersion": true,
                                     "publisher": "Microsoft.Azure.Extensions",
                                     "settings": {
-                                        "fileUris": [
-                                            "[variables('scriptUri')]",
-                                            "[parameters('lampCommon').commonFunctionsScriptUri]"
-                                        ]
+                                        "fileUris": "[variables('filesToCopyUris')]"
                                     },
                                     "protectedSettings":{
                                         "commandToExecute": "[concat('bash ', parameters('lampCommon').webServerSetupScriptFilename, ' ', parameters('lampCommon').lampOnAzureConfigsJsonPath)]"
@@ -261,7 +258,11 @@
                 "id": "[variables('appGwBePoolId')]"
             }
         ],
-        "appGwBePoolArrayTakeCount": "[if(equals(parameters('lampCommon').httpsTermination, 'AppGw'), 1, 0)]"
+        "appGwBePoolArrayTakeCount": "[if(equals(parameters('lampCommon').httpsTermination, 'AppGw'), 1, 0)]",
+        "filesToCopyUris": "[union(
+            variables('scriptUri'),
+            parameters('lampCommon').additionalScriptsUri
+        )]"
     },
     "outputs": {
         "webvm1IP": {

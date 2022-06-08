@@ -1457,6 +1457,10 @@
             "autoscaleVmSku": "[parameters('autoscaleVmSku')]",
             "azureBackupSwitch": "[parameters('azureBackupSwitch')]",
             "commonFunctionsScriptUri": "[concat(parameters('_artifactsLocation'),'scripts/helper_functions.sh',parameters('_artifactsLocationSasToken'))]",
+            "additionalScriptsUri": "[union(
+                variables('lampCommon').commonFunctionsScriptUri,
+                if (variables('lampCommon').redisDeploySwitch, variables('scriptFileUris').wordpressRedisSetupScript, null())
+            )]",
             "controllerVmSku": "[parameters('controllerVmSku')]",
             "customVnetId": "[parameters('customVnetId')]",
             "ctlrNicName": "[concat('controller-vm-nic-',variables('resourceprefix'))]",
@@ -1636,6 +1640,11 @@
             "redisCacheName": "[concat('redis-',variables('resourceprefix'))]",
             "serverName": "[concat(parameters('dbServerType'), '-',variables('resourceprefix'))]",
             "vmssName": "[concat('vmss-', variables('resourceprefix'))]"
+        },
+        "scriptFileUris": {
+            "wordpressRedisSetupScript": [
+                "[concat(parameters('_artifactsLocation'),'scripts/plugin_setup/wordpress/setup_w3tc.sh',parameters('_artifactsLocationSasToken'))]"
+            ]
         }
     }
 }
