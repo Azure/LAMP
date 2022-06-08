@@ -228,7 +228,7 @@ function install_plugin_w3_total_cache {
   wp plugin activate w3-total-cache --path=$wpPath --allow-root
 
   # execute (not import) w3tc setup script
-  ./plugin_setup/wordpress/setup_w3tc.sh $redisDns $redisDnsPort $redisPassword $w3tcConfigPath
+  ./setup_w3tc.sh $redisDns $redisDnsPort $redisPassword $w3tcConfigPath
 }
 
 function linking_data_location {
