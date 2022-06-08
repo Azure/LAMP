@@ -224,8 +224,8 @@ function install_plugins {
 function install_plugin_w3_total_cache {
   local wpPath="$1"
   local w3tcConfigPath="$wpPath/wp-content/w3tc-config/master.php"
-  wp plugin install w3-total-cache --path=$path --allow-root
-  wp plugin activate w3-total-cache --path=$path --allow-root
+  wp plugin install w3-total-cache --path=$wpPath --allow-root
+  wp plugin activate w3-total-cache --path=$wpPath --allow-root
 
   # execute (not import) w3tc setup script
   ./plugin_setup/wordpress/setup_w3tc.sh $redisDns $redisDnsPort $redisPassword $w3tcConfigPath
