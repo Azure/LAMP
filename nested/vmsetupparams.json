@@ -51,6 +51,7 @@
                 "redisDeploySwitch": "[parameters('lampCommon').redisDeploySwitch]",
                 "redisDns": "[parameters('lampCommon').redisDns]",
                 "redisKey": "[parameters('redisKey')]",
+                "redisDnsPort": "[parameters('lampCommon').redisDnsPort]",
                 "syslogServer": "[parameters('lampCommon').ctlrVmName]",
                 "htmlLocalCopySwitch": "[parameters('lampCommon').htmlLocalCopySwitch]"
             },

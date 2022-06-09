@@ -30,6 +30,7 @@ function get_setup_params_from_configs_json
     done
 
     local json=$(cat $configs_json_path)
+    export scriptsDirectory="$(pwd)"
     export glusterNode=$(echo $json | jq -r .fileServerProfile.glusterVmName)
     export glusterVolume=$(echo $json | jq -r .fileServerProfile.glusterVolName)
     export siteFQDN=$(echo $json | jq -r .siteProfile.siteURL)
@@ -44,7 +45,8 @@ function get_setup_params_from_configs_json
     export storageAccountKey=$(echo $json | jq -r .lampProfile.storageAccountKey)
     export redisDeploySwitch=$(echo $json | jq -r .lampProfile.redisDeploySwitch)
     export redisDns=$(echo $json | jq -r .lampProfile.redisDns)
-    export redisAuth=$(echo $json | jq -r .lampProfile.redisKey)
+    export redisDnsPort=$(echo $json | jq -r .lampProfile.redisDnsPort)
+    export redisPassword=$(echo $json | jq -r .lampProfile.redisKey)
     export dbServerType=$(echo $json | jq -r .dbServerProfile.type)
     export fileServerType=$(echo $json | jq -r .fileServerProfile.type)
     export mssqlDbServiceObjectiveName=$(echo $json | jq -r .dbServerProfile.mssqlDbServiceObjectiveName)
@@ -216,10 +218,17 @@ function install_plugins {
     local path=$1
     # Commenting the plugin install as Azure Cache for Redis is not currently being deployed
     # Uncomment or replace with appropriate plugin when Redis Cache infrastructure is deployed again
-    # wp plugin install w3-total-cache --path=$path --allow-root
-    # wp plugin activate w3-total-cache --path=$path --allow-root
     wp plugin activate akismet --path=$path --allow-root
     chown -R www-data:www-data $path
+}
+
+function install_plugin_w3_total_cache {
+  local wpPath="$1"
+  wp plugin install w3-total-cache --path=$wpPath --allow-root
+  wp plugin activate w3-total-cache --path=$wpPath --allow-root
+
+  # execute (not import) w3tc setup script
+  bash "$scriptsDirectory/setup_w3tc.sh" "$redisDns" "$redisDnsPort" "$redisPassword" "$wpPath"
 }
 
 function linking_data_location {

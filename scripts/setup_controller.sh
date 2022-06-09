@@ -30,40 +30,41 @@ set -ex
 
     get_setup_params_from_configs_json $lamp_on_azure_configs_json_path || exit 99
 
-    echo $glusterNode          >> /tmp/vars.txt
-    echo $glusterVolume        >> /tmp/vars.txt
-    echo $siteFQDN             >> /tmp/vars.txt
-    echo $httpsTermination     >> /tmp/vars.txt
-    echo $dbIP                 >> /tmp/vars.txt
-    echo $adminpass            >> /tmp/vars.txt
-    echo $dbadminlogin         >> /tmp/vars.txt
-    echo $dbadminloginazure    >> /tmp/vars.txt
-    echo $dbadminpass          >> /tmp/vars.txt
-    echo $storageAccountName   >> /tmp/vars.txt
-    echo $storageAccountKey    >> /tmp/vars.txt
-    echo $redisDeploySwitch    >> /tmp/vars.txt
-    echo $redisDns             >> /tmp/vars.txt
-    echo $redisAuth            >> /tmp/vars.txt
-    echo $dbServerType                >> /tmp/vars.txt
-    echo $fileServerType              >> /tmp/vars.txt
-    echo $mssqlDbServiceObjectiveName >> /tmp/vars.txt
-    echo $mssqlDbEdition	>> /tmp/vars.txt
-    echo $mssqlDbSize	>> /tmp/vars.txt
-    echo $thumbprintSslCert >> /tmp/vars.txt
-    echo $thumbprintCaCert >> /tmp/vars.txt
-    echo $nfsByoIpExportPath >> /tmp/vars.txt
-    echo $phpVersion >> /tmp/vars.txt
-    echo $cmsApplication    >>/tmp/vars.txt
-    echo $lbDns             >>/tmp/vars.txt
-    echo $applicationDbName >>/tmp/vars.txt
-    echo $wpAdminPass       >>/tmp/vars.txt
-    echo $wpDbUserPass      >>/tmp/vars.txt
-    echo $wpVersion         >>/tmp/vars.txt
-    echo $sshUsername       >>/tmp/vars.txt
-    echo $storageAccountType >>/tmp/vars.txt
-    echo $fileServerDiskSize >>/tmp/vars.txt
-    echo $frontDoorFQDN >> /tmp/vars.txt
-    echo $azureFileShareType >>/tmp/vars.txt
+    echo "glusterNode                   = $glusterNode"                     >> /tmp/vars.txt
+    echo "glusterVolume                 = $glusterVolume"                   >> /tmp/vars.txt
+    echo "siteFQDN                      = $siteFQDN"                        >> /tmp/vars.txt
+    echo "httpsTermination              = $httpsTermination"                >> /tmp/vars.txt
+    echo "dbIP                          = $dbIP"                            >> /tmp/vars.txt
+    echo "adminpass                     = $adminpass"                       >> /tmp/vars.txt
+    echo "dbadminlogin                  = $dbadminlogin"                    >> /tmp/vars.txt
+    echo "dbadminloginazure             = $dbadminloginazure"               >> /tmp/vars.txt
+    echo "dbadminpass                   = $dbadminpass"                     >> /tmp/vars.txt
+    echo "storageAccountName            = $storageAccountName"              >> /tmp/vars.txt
+    echo "storageAccountKey             = $storageAccountKey"               >> /tmp/vars.txt
+    echo "redisDeploySwitch             = $redisDeploySwitch"               >> /tmp/vars.txt
+    echo "redisDns                      = $redisDns"                        >> /tmp/vars.txt
+    echo "redisDnsPort                  = $redisDnsPort"                    >> /tmp/vars.txt
+    echo "redisPassword                 = $redisPassword"                   >> /tmp/vars.txt
+    echo "dbServerType                  = $dbServerType"                    >> /tmp/vars.txt
+    echo "fileServerType                = $fileServerType"                  >> /tmp/vars.txt
+    echo "mssqlDbServiceObjectiveName   = $mssqlDbServiceObjectiveName"     >> /tmp/vars.txt
+    echo "mssqlDbEdition                = $mssqlDbEdition"                  >> /tmp/vars.txt
+    echo "mssqlDbSize	                = $mssqlDbSize"                     >> /tmp/vars.txt
+    echo "thumbprintSslCert             = $thumbprintSslCert"               >> /tmp/vars.txt
+    echo "thumbprintCaCert              = $thumbprintCaCert"                >> /tmp/vars.txt
+    echo "nfsByoIpExportPath            = $nfsByoIpExportPath"              >> /tmp/vars.txt
+    echo "phpVersion                    = $phpVersion"                      >> /tmp/vars.txt
+    echo "cmsApplication                = $cmsApplication"                  >> /tmp/vars.txt
+    echo "lbDns                         = $lbDns"                           >> /tmp/vars.txt
+    echo "applicationDbName             = $applicationDbName"               >> /tmp/vars.txt
+    echo "wpAdminPass                   = $wpAdminPass"                     >> /tmp/vars.txt
+    echo "wpDbUserPass                  = $wpDbUserPass"                    >> /tmp/vars.txt
+    echo "wpVersion                     = $wpVersion"                       >> /tmp/vars.txt
+    echo "sshUsername                   = $sshUsername"                     >> /tmp/vars.txt
+    echo "storageAccountType            = $storageAccountType"              >> /tmp/vars.txt
+    echo "fileServerDiskSize            = $fileServerDiskSize"              >> /tmp/vars.txt
+    echo "frontDoorFQDN                 = $frontDoorFQDN"                   >> /tmp/vars.txt
+    echo "azureFileShareType            = $azureFileShareType"              >> /tmp/vars.txt
 
     check_fileServerType_param $fileServerType
 
@@ -335,8 +336,13 @@ EOF
         install_wp_cli
         # Install WordPress by using wp-cli commands
         install_wordpress $dnsSite $wpTitle $wpAdminUser $wpAdminPassword $wpAdminEmail $wpPath
-        # Install W3 Total Cache plug-in
+        # Install common plug-in
         install_plugins $wpPath
+
+        # Install W3 Total Cache plug-in if applicable
+        if [[ $redisDeploySwitch = "true" ]]; then
+            install_plugin_w3_total_cache $wpPath
+        fi
         # Generates the openSSL certificates
         generate_sslcerts $dnsSite
         # Generate the text file
