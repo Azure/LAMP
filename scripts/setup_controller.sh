@@ -48,7 +48,7 @@ set -ex
     echo "dbServerType                  = $dbServerType"                    >> /tmp/vars.txt
     echo "fileServerType                = $fileServerType"                  >> /tmp/vars.txt
     echo "mssqlDbServiceObjectiveName   = $mssqlDbServiceObjectiveName"     >> /tmp/vars.txt
-    echo "mssqlDbEdition	            = $mssqlDbEdition"                  >> /tmp/vars.txt
+    echo "mssqlDbEdition                = $mssqlDbEdition"                  >> /tmp/vars.txt
     echo "mssqlDbSize	                = $mssqlDbSize"                     >> /tmp/vars.txt
     echo "thumbprintSslCert             = $thumbprintSslCert"               >> /tmp/vars.txt
     echo "thumbprintCaCert              = $thumbprintCaCert"                >> /tmp/vars.txt

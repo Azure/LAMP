@@ -14,6 +14,7 @@ function usage {
     echo "      <redis_port>            : port to connect on with redis"
     echo "      <redis_password>        : password to authenticate to redis"
     echo "      <wp_directory>          : path to wp directory"
+    exit
 }
 
 # check if valid parameters are passed
@@ -27,6 +28,11 @@ fi
 
 redis_endpoint="$redis_host:$redis_port"
 w3tc_config_path="$wp_directory/wp-content/w3tc-config/master.php"
+
+if [ ! -f "$w3tc_config_path" ]; then
+    echo "master.php does not exists at $w3tc_config_path"
+    usage
+fi
 
 # parse config file as json by replacing prefix in file contents temporarily
 config_json=$(cat "$w3tc_config_path" | sed 's/<?php exit; ?>//' )
