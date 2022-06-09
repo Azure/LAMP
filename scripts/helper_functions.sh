@@ -227,12 +227,6 @@ function install_plugin_w3_total_cache {
   wp plugin install w3-total-cache --path=$wpPath --allow-root
   wp plugin activate w3-total-cache --path=$wpPath --allow-root
 
-  # TODO: debug messages for testing. Remove before merging PR.
-  echo "currently in $(pwd)"
-  echo "directory contents: "
-  sudo ls -al
-  echo "directory contents of '/var/lib/waagent/custom-script/download/0'"
-  sudo ls -al "/var/lib/waagent/custom-script/download/0"
   # execute (not import) w3tc setup script
   bash "$scriptsDirectory/setup_w3tc.sh" "$redisDns" "$redisDnsPort" "$redisPassword" "$wpPath"
 }
