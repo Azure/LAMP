@@ -30,6 +30,7 @@ function get_setup_params_from_configs_json
     done
 
     local json=$(cat $configs_json_path)
+    export scriptsDirectory="$(pwd)"
     export glusterNode=$(echo $json | jq -r .fileServerProfile.glusterVmName)
     export glusterVolume=$(echo $json | jq -r .fileServerProfile.glusterVolName)
     export siteFQDN=$(echo $json | jq -r .siteProfile.siteURL)
@@ -233,7 +234,7 @@ function install_plugin_w3_total_cache {
   echo "directory contents of '/var/lib/waagent/custom-script/download/0'"
   sudo ls -al "/var/lib/waagent/custom-script/download/0"
   # execute (not import) w3tc setup script
-  bash ./setup_w3tc.sh "$redisDns" "$redisDnsPort" "$redisPassword" "$wpPath"
+  bash "$scriptsDirectory/setup_w3tc.sh" "$redisDns" "$redisDnsPort" "$redisPassword" "$wpPath"
 }
 
 function linking_data_location {
