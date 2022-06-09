@@ -340,7 +340,7 @@ EOF
         install_plugins $wpPath
 
         # Install W3 Total Cache plug-in if applicable
-        if [ $redisDeploySwitch ]; then
+        if [[ $redisDeploySwitch = "true" ]]; then
             install_plugin_w3_total_cache $wpPath
         fi
         # Generates the openSSL certificates
