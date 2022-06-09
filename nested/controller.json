@@ -148,6 +148,7 @@
                     "dataDisks": "[take(variables('nfsDiskArray'),if(equals(parameters('lampCommon').fileServerType,'nfs'), parameters('lampCommon').fileServerDiskCount, 0))]"
                 }
             },
+            "zones": "[parameters('lampCommon').controllerVmZones]",
             "tags": {
                 "displayName": "Controller Virtual Machine"
             }

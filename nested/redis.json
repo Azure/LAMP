@@ -28,8 +28,14 @@
                     "family": "[parameters('lampCommon').redisSku.family]",
                     "name": "[parameters('lampCommon').redisSku.name]"
                 },
+                "replicasPerMaster": 2,
                 "subnetId": "[parameters('subnetIdRedis')]"
-            }
+            },
+            "zones": [
+                "1",
+                "2",
+                "3"
+            ]
         }
     ],
     "variables": {

@@ -68,7 +68,7 @@
             "name": "[parameters('lampCommon').vmssdStorageAccounttName]",
             "kind": "Storage",
             "sku": {
-                "name": "Standard_LRS"
+                "name": "Standard_ZRS"
             }
         },
         {
@@ -165,6 +165,7 @@
                 "name": "[parameters('lampCommon').autoscaleVmSku]",
                 "tier": "Standard"
             },
+            "zones": ["1","2","3"],
             "tags": {
                 "displayName": "webfarm"
             }
