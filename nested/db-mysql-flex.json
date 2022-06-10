@@ -39,14 +39,14 @@
         {
             "apiVersion": "2020-06-01",
             "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
-            "name": "[variables('virtualNetworkLinksName')]",
+            "name": "[concat(variables('flexDbPrivateDnsZoneName'), '/', variables('virtualNetworkLinksName'))]",
             "location": "global",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/privateDnsZones', variables('flexDbPrivateDnsZoneName'))]"
             ],
             "properties": {
                 "virtualNetwork": {
-                    "id": "[parameters('subnetIdFlexDb')]"
+                    "id": "[variables('vnetId')]"
                 },
                 "registrationEnabled": false
             }
@@ -57,7 +57,7 @@
             "location": "[parameters('lampCommon').location]",
             "name": "[parameters('lampCommon').serverName]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/privateDnsZones/virtualNetworkLinks',variables('virtualNetworkLinksName'))]"
+                "[resourceId('Microsoft.Network/privateDnsZones/virtualNetworkLinks', variables('flexDbPrivateDnsZoneName'), variables('virtualNetworkLinksName'))]"
             ],
             "properties": {
                 "version": "[parameters('lampCommon').mysqlVersion]",
@@ -112,7 +112,8 @@
     "variables": {
         "flexConfigName": "[concat(parameters('lampCommon').serverName, '/', parameters('serverParameters').parameters[0].name)]",
         "flexDbPrivateDnsZoneName": "[concat(parameters('lampCommon').serverName, '.private.mysql.database.azure.com')]",
-        "virtualNetworkLinksName": "[concat(variables('flexDbPrivateDnsZoneName'), '/', uniqueString(parameters('subnetIdFlexDb')))]",
+        "vnetId": "[take(parameters('subnetIdFlexDb'), indexOf(parameters('subnetIdFlexDb'),'/subnets/'))]",
+        "virtualNetworkLinksName": "[uniqueString(variables('vnetId'))]",
         "privateDnsZoneResourceId": "[resourceId('Microsoft.Network/privateDnsZones', variables('flexDbPrivateDnsZoneName'))]",
         "documentation1": "This sub-template creates a mysql server.  It expects certain values in the 'common' datastructure.",
         "documentation10": " serverName                 - Mysql server name",
