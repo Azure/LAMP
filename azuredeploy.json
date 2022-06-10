@@ -1443,7 +1443,6 @@
             "azureBackupSwitch": "[parameters('azureBackupSwitch')]",
             "additionalScriptsUri": "[union(array(variables('scriptFileUris').commonFunctionsScriptUri), if (parameters('redisDeploySwitch'), variables('scriptFileUris').wordpressRedisSetupScript, variables('empty_array')))]",            
             "controllerVmSku": "[parameters('controllerVmSku')]",
-            "controllerVmZones": "[array('1')]",
             "customVnetId": "[parameters('customVnetId')]",
             "ctlrNicName": "[concat('controller-vm-nic-',variables('resourceprefix'))]",
             "ctlrNsgName": "[concat('controller-nsg-',variables('resourceprefix'))]",

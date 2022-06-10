@@ -100,10 +100,35 @@
             }
         },
         {
+            "type": "Microsoft.Compute/disks",
+            "apiVersion": "2021-12-01",
+            "location": "[parameters('lampCommon').location]",
+            "condition": "[equals(parameters('lampCommon').fileServerType,'nfs')]",
+            "name": "[concat(variables('dataDiskNamePrefix'), copyIndex())]"
+,            "sku": {
+                "name": "[parameters('lampCommon').storageAccountType]"
+            },
+            "zones": "[if(endsWith(trim(parameters('lampCommon').storageAccountType), '_ZRS'), json('null'), variables('controllerVmZones'))]",
+            "copy": {
+                "name": "managedDiskResources",
+                "count": "[parameters('lampCommon').fileServerDiskCount]"
+            },
+            "properties": {
+                "diskSizeGB": "[parameters('lampCommon').fileServerDiskSize]",
+                "creationData": {
+                    "createOption": "Empty"
+                }
+            },
+            "tags": {
+                "displayName": "Controller data disk"
+            }
+        },
+        {
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2019-07-01",
             "dependsOn": [
-                "[concat('Microsoft.Network/networkInterfaces/', parameters('lampCommon').ctlrNicName)]"
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('lampCommon').ctlrNicName)]",
+                "managedDiskResources"
             ],
             "location": "[parameters('lampCommon').location]",
             "name": "[parameters('lampCommon').ctlrVmName]",
@@ -148,7 +173,7 @@
                     "dataDisks": "[take(variables('nfsDiskArray'),if(equals(parameters('lampCommon').fileServerType,'nfs'), parameters('lampCommon').fileServerDiskCount, 0))]"
                 }
             },
-            "zones": "[parameters('lampCommon').controllerVmZones]",
+            "zones": "[variables('controllerVmZones')]",
             "tags": {
                 "displayName": "Controller Virtual Machine"
             }
@@ -214,17 +239,18 @@
         "copy": [
             {
                 "name": "nfsDiskArray",
-                "count": 8,
+                "count": "[parameters('lampCommon').fileServerDiskCount]",
                 "input": {
                     "managedDisk": {
-                        "storageAccountType": "[parameters('lampCommon').storageAccountType]"
+                        "id": "[resourceId('Microsoft.Compute/disks', concat(variables('dataDiskNamePrefix'), copyIndex('nfsDiskArray')))]"
                     },
-                    "diskSizeGB": "[parameters('lampCommon').fileServerDiskSize]",
                     "lun": "[copyIndex('nfsDiskArray')]",
-                    "createOption": "Empty"
+                    "createOption": "attach"
                 }
             }
-        ]
+        ],
+        "controllerVmZones": "[array(1)]",
+        "dataDiskNamePrefix": "[concat('controller-vm-', parameters('lampCommon').resourcesPrefix, '-dataDisk-')]"
     },
     "outputs": {
         "controllerIP": {

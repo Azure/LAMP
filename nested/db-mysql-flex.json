@@ -63,7 +63,7 @@
                 "version": "[parameters('lampCommon').mysqlVersion]",
                 "administratorLogin": "[parameters('lampCommon').dbLogin]",
                 "administratorLoginPassword": "[parameters('lampCommon').dbLoginPassword]",
-                "sslEnforcement": "[parameters('lampCommon').sslEnforcement]",                
+                "sslEnforcement": "[parameters('lampCommon').sslEnforcement]",
                 "Network": {
                     "delegatedSubnetResourceId": "[parameters('subnetIdFlexDb')]",
                     "privateDnsZoneResourceId": "[variables('privateDnsZoneResourceId')]"
