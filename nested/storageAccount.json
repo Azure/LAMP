@@ -16,7 +16,7 @@
             "apiVersion": "2019-06-01",
             "location": "[parameters('lampCommon').location]",
             "name": "[concat(parameters('lampCommon').storageAccountName, 'naf')]",
-            "kind": "Storage",
+            "kind": "StorageV2",
             "sku": {
                 "name": "[parameters('lampCommon').storageAccountType]"
             },
@@ -47,7 +47,7 @@
             "apiVersion": "2019-06-01",
             "location": "[parameters('lampCommon').location]",
             "name": "[concat(parameters('lampCommon').storageAccountName,'af')]",
-            "kind": "Storage",
+            "kind": "StorageV2",
             "sku": {
                 "name": "[parameters('lampCommon').storageAccountType]"
             },
