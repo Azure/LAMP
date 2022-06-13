@@ -17,7 +17,7 @@
             "name": "[variables('storageName')]",
             "kind": "FileStorage",
             "sku": {
-                "name": "[parameters('lampCommon').storageAccountType]",
+                "name": "Premium_ZRS",
                 "tier": "Premium"
             },
             "properties": {
@@ -59,7 +59,7 @@
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageName'))]"
             ],
             "sku": {
-                "name": "[parameters('lampCommon').storageAccountType]",
+                "name": "Premium_ZRS",
                 "tier": "Premium"
             },
             "properties": {

@@ -16,7 +16,7 @@
             "apiVersion": "2019-06-01",
             "location": "[parameters('lampCommon').location]",
             "name": "[concat(parameters('lampCommon').storageAccountName, 'naf')]",
-            "kind": "StorageV2",
+            "kind": "[if(equals(parameters('lampCommon').storageAccountType, 'Premium_ZRS'), 'BlockBlobStorage', 'Storage')]",
             "sku": {
                 "name": "[parameters('lampCommon').storageAccountType]"
             },
@@ -47,7 +47,7 @@
             "apiVersion": "2019-06-01",
             "location": "[parameters('lampCommon').location]",
             "name": "[concat(parameters('lampCommon').storageAccountName,'af')]",
-            "kind": "StorageV2",
+            "kind": "Storage",
             "sku": {
                 "name": "[parameters('lampCommon').storageAccountType]"
             },

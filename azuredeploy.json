@@ -1544,7 +1544,7 @@
             "sshUsername": "[parameters('sshUsername')]",
             "sslEnforcement": "[parameters('sslEnforcement')]",
             "storageAccountName": "[tolower(concat('abs',variables('resourceprefix')))]",
-            "storageAccountType": "[if(startsWith(parameters('storageAccountType'),'Premium_'), 'Premium_ZRS', parameters('storageAccountType'))]",
+            "storageAccountType": "[parameters('storageAccountType')]",
             "subnetAppGw": "[concat('appgw-subnet-',variables('resourceprefix'))]",
             "subnetAppGwPrefix": "[concat(variables('octets')[0], '.', variables('octets')[1], '.', string(add(int(variables('octets')[2]),6)))]",
             "subnetAppGwRange": "[concat(variables('octets')[0], '.', variables('octets')[1], '.', string(add(int(variables('octets')[2]),6)), '.0/24')]",
