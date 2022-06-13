@@ -8,41 +8,11 @@
             },
             "type": "object"
         },
-        "lbPubIp": {
+        "subnetIdFlexDb": {
             "metadata": {
-                "description": "Public IP address of the deployed load balancer"
+                "description": "Azure resource ID of the subnet where flex DB for MySQL instance is to be deligated"
             },
             "type": "string"
-        },
-        "lbOut001PubIp": {
-            "metadata": {
-                "description": "Outgoing Public IP address of the deployed load balancer"
-            },
-            "type": "string"
-        },
-        "lbOut002PubIp": {
-            "metadata": {
-                "description": "Outgoing Public IP address of the deployed load balancer"
-            },
-            "type": "string"
-        },
-        "ctlrPubIp": {
-            "metadata": {
-                "description": "Public IP address of the deployed controller VM"
-            },
-            "type": "string"
-        },
-        // "publicNetworkAccess": {
-        //     "type": "string",
-        //     "metadata": {
-        //         "description": "Value should be either Enabled or Disabled"
-        //     },
-        //     "defaultValue": "Enabled"
-
-        // },
-        "vnetData": {
-            "defaultValue": {},
-            "type": "Object"
         },
         "serverParameters": {
             "type": "Object",
@@ -57,49 +27,65 @@
             }
         }
     },
-    // "variables": {
-    // //"api": "2021-05-01",
-    // //"firewallRules": "[parameters('firewallRules').rules]",
-    // //"publicNetworkAccess": "[if(empty(parameters('vnetData')), 'Enabled', 'Disabled')]"
-    // //"vnetDataSet": "[if(empty(parameters('vnetData')), json('{ \"subnetArmResourceId\": \"\" }'), parameters('vnetData'))]",
-    // //"finalVnetData": "[json(concat('{ \"subnetArmResourceId\": \"', variables('vnetDataSet').subnetArmResourceId, '\"}'))]"
-    // },
     "resources": [
+        {
+            "apiVersion": "2018-09-01",
+            "type": "Microsoft.Network/privateDnsZones",
+            "name": "[variables('flexDbPrivateDnsZoneName')]",
+            "location": "global",
+            "tags": {},
+            "properties": {}
+        },
+        {
+            "apiVersion": "2020-06-01",
+            "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+            "name": "[concat(variables('flexDbPrivateDnsZoneName'), '/', variables('virtualNetworkLinksName'))]",
+            "location": "global",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', variables('flexDbPrivateDnsZoneName'))]"
+            ],
+            "properties": {
+                "virtualNetwork": {
+                    "id": "[variables('vnetId')]"
+                },
+                "registrationEnabled": false
+            }
+        },
         {
             "apiVersion": "2021-05-01",
             "type": "Microsoft.DBforMySQL/flexibleServers",
             "location": "[parameters('lampCommon').location]",
             "name": "[parameters('lampCommon').serverName]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones/virtualNetworkLinks', variables('flexDbPrivateDnsZoneName'), variables('virtualNetworkLinksName'))]"
+            ],
             "properties": {
                 "version": "[parameters('lampCommon').mysqlVersion]",
                 "administratorLogin": "[parameters('lampCommon').dbLogin]",
                 "administratorLoginPassword": "[parameters('lampCommon').dbLoginPassword]",
                 "sslEnforcement": "[parameters('lampCommon').sslEnforcement]",
-                // "publicNetworkAccess": "Enabled",
-                "publicNetworkAccess": "[parameters('lampCommon').publicNetworkAccess]",
-                // "Network": "[if(empty(parameters('vnetData').Network), json('null'), parameters('vnetData').Network)]",
-              "Storage": {
-                "storageSizeGB": "[parameters('lampCommon').mysqlPgresStgSizeGB]",
-                "iops": "[parameters('lampCommon').mysqlPgresStorageIops]"
-                // "Autogrow": "[parameters('storageAutogrow')]"
-              },
+                "Network": {
+                    "delegatedSubnetResourceId": "[parameters('subnetIdFlexDb')]",
+                    "privateDnsZoneResourceId": "[variables('privateDnsZoneResourceId')]"
+                },
+                "Storage": {
+                    "storageSizeGB": "[parameters('lampCommon').mysqlPgresStgSizeGB]",
+                    "iops": "[parameters('lampCommon').mysqlPgresStorageIops]"
+                },
                 "Backup": {
                     "backupRetentionDays": "[parameters('lampCommon').mysqlPgresBackupRetentionDays]",
-                    "geoRedundantBackup": "Enabled"
+                    "geoRedundantBackup": "Disabled"
                 },
-                //"availabilityZone": "[parameters('availabilityZone')]",
+                "availabilityZone": "",
                 "highAvailability": {
-                    "mode": "[parameters('lampCommon').mysqlPgresHighAvailabilityMode]"
-                //     "standbyAvailabilityZone": "[parameters('standbyAvailabilityZone')]"
+                    "mode": "[parameters('lampCommon').mysqlPgresHighAvailabilityMode]",
+                    "standbyAvailabilityZone": ""
                 }
-                // "dataencryption": {
-                //     "infrastructureEncryption": "[parameters('infrastructureEncryption')]"
-                // }
             },
             "sku": {
                 "name": "[parameters('lampCommon').mysqlPgresComputeSize]",
-                "tier": "[parameters('lampCommon').mysqlPgresSkuTier]"
-                //"capacity": "2"
+                "tier": "[parameters('lampCommon').mysqlPgresSkuTier]",
+                "capacity": "[parameters('lampCommon').mysqlPgresVcores]"
             },
             "resources": [
                 {
@@ -113,61 +99,6 @@
                         "value": "[parameters('serverParameters').parameters[0].value]",
                         "source": "[parameters('serverParameters').parameters[0].source]"
                     }
-                },
-                {
-                    "apiVersion": "2021-05-01",
-                    "dependsOn": [
-                        "[concat('Microsoft.DBforMySQL/flexibleServers/', parameters('lampCommon').serverName)]"
-                    ],
-                    "location": "[parameters('lampCommon').location]",
-                    "name": "[variables('firewallResourceNames').allowLoadBalancer]",
-                    "properties": {
-                        "startIpAddress": "[parameters('lbPubIp')]",
-                        "endIpAddress": "[parameters('lbPubIp')]"
-                    },
-                    "type": "firewallRules"
-                },
-                {
-                    "apiVersion": "2021-05-01",
-                    "dependsOn": [
-                        "[concat('Microsoft.DBforMySQL/flexibleServers/', parameters('lampCommon').serverName)]",
-                        "[variables('firewallResourceNames').allowLoadBalancer]"
-                    ],
-                    "location": "[parameters('lampCommon').location]",
-                    "name": "[variables('firewallResourceNames').allowLoadBalancerOut001]",
-                    "properties": {
-                        "startIpAddress": "[parameters('lbOut001PubIp')]",
-                        "endIpAddress": "[parameters('lbOut001PubIp')]"
-                    },
-                    "type": "firewallRules"
-                },
-                {
-                    "apiVersion": "2021-05-01",
-                    "dependsOn": [
-                        "[concat('Microsoft.DBforMySQL/flexibleServers/', parameters('lampCommon').serverName)]",
-                        "[variables('firewallResourceNames').allowLoadBalancerOut001]"
-                    ],
-                    "location": "[parameters('lampCommon').location]",
-                    "name": "[variables('firewallResourceNames').allowLoadBalancerOut002]",
-                    "properties": {
-                        "startIpAddress": "[parameters('lbOut002PubIp')]",
-                        "endIpAddress": "[parameters('lbOut002PubIp')]"
-                    },
-                    "type": "firewallRules"
-                },
-                {
-                    "apiVersion": "2021-05-01",
-                    "dependsOn": [
-                        "[concat('Microsoft.DBforMySQL/flexibleServers/', parameters('lampCommon').serverName)]",
-                        "[variables('firewallResourceNames').allowLoadBalancerOut002]"
-                    ],
-                    "location": "[parameters('lampCommon').location]",
-                    "name": "[variables('firewallResourceNames').allowControllerVM]",
-                    "properties": {
-                        "startIpAddress": "[parameters('ctlrPubIp')]",
-                        "endIpAddress": "[parameters('ctlrPubIp')]"
-                    },
-                    "type": "firewallRules"
                 }
             ]
         }
@@ -180,12 +111,10 @@
     },
     "variables": {
         "flexConfigName": "[concat(parameters('lampCommon').serverName, '/', parameters('serverParameters').parameters[0].name)]",
-        "firewallResourceNames": {
-            "allowControllerVM": "mysql-firewall-allow-ctlr",
-            "allowLoadBalancer": "mysql-firewall-allow-lb",
-            "allowLoadBalancerOut001": "mysql-firewall-allow-lb-out001",
-            "allowLoadBalancerOut002": "mysql-firewall-allow-lb-out002"
-        },
+        "flexDbPrivateDnsZoneName": "[concat(parameters('lampCommon').serverName, '.private.mysql.database.azure.com')]",
+        "vnetId": "[take(parameters('subnetIdFlexDb'), indexOf(parameters('subnetIdFlexDb'),'/subnets/'))]",
+        "virtualNetworkLinksName": "[uniqueString(variables('vnetId'))]",
+        "privateDnsZoneResourceId": "[resourceId('Microsoft.Network/privateDnsZones', variables('flexDbPrivateDnsZoneName'))]",
         "documentation1": "This sub-template creates a mysql server.  It expects certain values in the 'common' datastructure.",
         "documentation10": " serverName                 - Mysql server name",
         "documentation11": " mysqlVersion               - Mysql version",

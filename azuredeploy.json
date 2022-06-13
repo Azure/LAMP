@@ -519,7 +519,8 @@
                 "Standard_LRS",
                 "Standard_GRS",
                 "Standard_ZRS",
-                "Premium_LRS"
+                "Premium_LRS",
+                "Premium_ZRS"
             ],
             "metadata": {
                 "description": "Storage Account type. This storage account is only for the (currently disabled) Azure Files file share option"
@@ -972,17 +973,8 @@
                     "lampCommon": {
                         "value": "[variables('lampCommon')]"
                     },
-                    "lbPubIp": {
-                        "value": "[reference('networkTemplate').outputs.lbPubIp.value]"
-                    },
-                    "lbOut001PubIp": {
-                        "value": "[reference('networkTemplate').outputs.lbOut001PubIp.value]"
-                    },
-                    "lbOut002PubIp": {
-                        "value": "[reference('networkTemplate').outputs.lbOut002PubIp.value]"
-                    },
-                    "ctlrPubIp": {
-                        "value": "[reference('networkTemplate').outputs.ctlrPubIp.value]"
+                    "subnetIdFlexDb": {
+                        "value": "[reference('networkTemplate').outputs.subnetIdFlexDb.value]"
                     }
                 },
                 "templateLink": {
@@ -1273,8 +1265,6 @@
                 "enableAccelNwForOtherVmsSwitch": "[variables('lampCommon').enableAccelNwForOtherVmsSwitch]",
                 "extBeName": "[variables('lampCommon').extBeName]",
                 "extFeName": "[variables('lampCommon').extFeName]",
-                "extOutName001": "[variables('lampCommon').extOutName001]",
-                "extOutName002": "[variables('lampCommon').extOutName002]",
                 "extNatPool": "[variables('lampCommon').extNatPool]",
                 "extProbeHTTP": "[variables('lampCommon').extProbeHTTP]",
                 "extProbeHTTPS": "[variables('lampCommon').extProbeHTTPS]",
@@ -1295,11 +1285,7 @@
                 "httpsTermination": "[variables('lampCommon').httpsTermination]",
                 "lbDns": "[variables('lampCommon').lbDns]",
                 "lbName": "[variables('lampCommon').lbName]",
-                "lbOutName001": "[variables('lampCommon').lbOutName001]",
-                "lbOutName002": "[variables('lampCommon').lbOutName002]",
                 "lbPipName": "[variables('lampCommon').lbPipName]",
-                "lbOutPipName001": "[variables('lampCommon').lbOutPipName001]",
-                "lbOutPipName002": "[variables('lampCommon').lbOutPipName002]",
                 "lbSku": "[variables('lampCommon').lbSku]",
                 "lbTier": "[variables('lampCommon').lbTier]",
                 "location": "[variables('lampCommon').location]",
@@ -1387,8 +1373,8 @@
                 "vnetGatewayPublicIpResourceId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('lampCommon').gatewayPublicIPName)]",
                 "loadBalancerPublicIpResourceId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('lampCommon').lbPipName)]",
                 "loadBalancerOutputPublicIp": {
-                    "001OutboundPublicIpResourceId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('lampCommon').lbOutPipName001)]",
-                    "002OutboundPublicIpResourceId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('lampCommon').lbOutPipName002)]"
+                    "001OutboundPublicIpResourceId": "",
+                    "002OutboundPublicIpResourceId": ""
                 },
                 "appGatewayPublicIpResourceId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('lampCommon').appGwPipName)]"
             }
@@ -1482,8 +1468,6 @@
             "enableAccelNwForOtherVmsSwitch": "[parameters('enableAccelNwForOtherVmsSwitch')]",
             "extBeName": "[concat('lb-backend-',variables('resourceprefix'))]",
             "extFeName": "[concat('lb-frontend-',variables('resourceprefix'))]",
-            "extOutName001": "[concat('lb-outbound001-',variables('resourceprefix'))]",
-            "extOutName002": "[concat('lb-outbound002-',variables('resourceprefix'))]",
             "extNatPool": "[concat('lb-natpool-',variables('resourceprefix'))]",
             "extProbeHTTP": "[concat('lb-probe-http-',variables('resourceprefix'))]",
             "extProbeHTTPS": "[concat('lb-probe-https-',variables('resourceprefix'))]",
@@ -1493,7 +1477,7 @@
             "fileServerType": "[parameters('fileServerType')]",
             "fileServerVmCount": 2,
             "fileServerVmSku": "[parameters('fileServerVmSku')]",
-            "azureFileShareType": "[if(equals(parameters('fileServerType'),'azurefiles'), if(equals(parameters('storageAccountType'),'Premium_LRS'),'nfs','smb'), '')]",
+            "azureFileShareType": "[if(equals(parameters('fileServerType'),'azurefiles'), if(startsWith(parameters('storageAccountType'),'Premium_'),'nfs','smb'), '')]",
             "flexDbDomainName": ".mysql.database.azure.com",
             "frontDoorFQDN": "[format('{0}.azurefd.net', concat('myLampFrontDoor', variables('resourceprefix')))]",
             "gatewayName": "[concat('vnet-gateway-',variables('resourceprefix'))]",
@@ -1508,11 +1492,7 @@
             "lbSku": "[parameters('loadBalancerSku')]",
             "lbTier": "[parameters('loadBalancerTier')]",
             "lbName": "[concat('lb-',variables('resourceprefix'))]",
-            "lbOutName001": "[concat('lb-out001-',variables('resourceprefix'))]",
-            "lbOutName002": "[concat('lb-out002-',variables('resourceprefix'))]",
             "lbPipName": "[concat('lb-pubip-',variables('resourceprefix'))]",
-            "lbOutPipName001": "[concat('lb-outpubip001-',variables('resourceprefix'))]",
-            "lbOutPipName002": "[concat('lb-outpubip002-',variables('resourceprefix'))]",
             "location": "[parameters('location')]",
             "controllerInstallScriptFilename": "setup_controller.sh",
             "lampOnAzureConfigsJsonPath": "/var/lib/cloud/instance/lamp_on_azure_configs.json",
@@ -1578,6 +1558,9 @@
             "subnetSan": "[concat('san-subnet-',variables('resourceprefix'))]",
             "subnetSanPrefix": "[variables('subnetSanPrefix')]",
             "subnetSanRange": "[concat( variables('octets')[0], '.', variables('octets')[1], '.', string(add(int(variables('octets')[2]),2)), '.0/24')]",
+            "subnetFlexDb": "[concat('flexdb-subnet-',variables('resourceprefix'))]",
+            "subnetFlexDbPrefix": "[concat( variables('octets')[0], '.', variables('octets')[1], '.', string(add(int(variables('octets')[2]),1)))]",
+            "subnetFlexDbRange": "[concat( variables('octets')[0], '.', variables('octets')[1], '.', string(add(int(variables('octets')[2]),1)), '.0/24')]",
             "subnetWeb": "[concat('web-subnet-',variables('resourceprefix'))]",
             "subnetWebPrefix": "[concat( variables('octets')[0], '.', variables('octets')[1], '.', string(add(int(variables('octets')[2]),0)))]",
             "subnetWebRange": "[variables('subnetWebRange')]",

@@ -18,7 +18,7 @@
     "resources": [
         {
             "type": "Microsoft.Cache/Redis",
-            "apiVersion": "2019-07-01",
+            "apiVersion": "2021-06-01",
             "location": "[parameters('lampCommon').location]",
             "name": "[parameters('lampCommon').redisCacheName]",
             "properties": {
@@ -28,8 +28,15 @@
                     "family": "[parameters('lampCommon').redisSku.family]",
                     "name": "[parameters('lampCommon').redisSku.name]"
                 },
+                "redisVersion": "6",
+                "replicasPerMaster": 2,
                 "subnetId": "[parameters('subnetIdRedis')]"
-            }
+            },
+            "zones": [
+                "1",
+                "2",
+                "3"
+            ]
         }
     ],
     "variables": {
