@@ -68,12 +68,12 @@
         "documentation3": " storageAccountType - type of storage account",
         "isAzureFiles": "[equals(parameters('lampCommon').fileServerType, 'azurefiles')]",
         "isAzureFilesNFS": "[equals(parameters('lampCommon').azureFileShareType, 'nfs')]",
-        "storageName": "[concat(parameters('lampCommon').storageAccountName,if(variables('isAzureFiles'), 'af', 'naf'))]",
+        "storageName": "[concat(parameters('lampCommon').storageAccountName,'af')]",
         "storageAccountId": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageName'))]"
     },
     "outputs": {
         "storageAccountKey": {
-            "value": "[if(variables('isAzureFilesNFS'), '',listKeys(variables('storageAccountId'), '2019-06-01').keys[0].value)]",
+            "value": "[if(and(variables('isAzureFiles'), not(variables('isAzureFilesNFS'))), listKeys(variables('storageAccountId'), '2019-06-01').keys[0].value, '')]",
             "type": "string"
         },
         "storageAccountName": {
