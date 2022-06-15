@@ -11,37 +11,6 @@
     },
     "resources": [
         {
-            "condition": "[not(variables('isAzureFiles'))]",
-            "type": "Microsoft.Storage/storageAccounts",
-            "apiVersion": "2019-06-01",
-            "location": "[parameters('lampCommon').location]",
-            "name": "[concat(parameters('lampCommon').storageAccountName, 'naf')]",
-            "kind": "[if(equals(parameters('lampCommon').storageAccountType, 'Premium_ZRS'), 'BlockBlobStorage', 'Storage')]",
-            "sku": {
-                "name": "[parameters('lampCommon').storageAccountType]"
-            },
-            "properties": {
-                "encryption": {
-                    "keySource": "Microsoft.Storage",
-                    "services": {
-                        "blob": {
-                            "enabled": true
-                        },
-                        "file": {
-                            "enabled": true
-                        }
-                    }
-                },
-                "networkAcls": {
-                    "bypass": "AzureServices",
-                    "defaultAction": "Allow",
-                    "ipRules": [],
-                    "virtualNetworkRules": []
-                },
-                "supportsHttpsTrafficOnly": true
-            }
-        },
-        {
             "condition": "[and(variables('isAzureFiles'), not(variables('isAzureFilesNFS')))]",
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-06-01",
