@@ -38,7 +38,8 @@
                     "ipRules": [],
                     "virtualNetworkRules": []
                 },
-                "supportsHttpsTrafficOnly": true
+                "supportsHttpsTrafficOnly": true,
+                "allowBlobPublicAccess": false
             }
         },
         {
